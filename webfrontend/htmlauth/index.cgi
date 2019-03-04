@@ -147,8 +147,8 @@ for (my $i = 1; $i <= $cfg->param('BASE.MINISERVERS');$i++) {
 $template_title = "Midea2Lox";
 
 # Create help page
-#$helptext = "<b>Hilfe</b><br>Wenn ihr Hilfe beim Einrichten benötigt findet ihr diese im LoxWiki.";
-#$helptext = $helptext . "<br><a href='http://www.loxwiki.eu/display/LOXBERRY/MiRobot2Lox' target='_blank'>LoxWiki - MiRobot2Lox</a>";
+$helptext = "<b>Hilfe</b><br>Wenn ihr Hilfe beim Einrichten benötigt findet ihr diese im LoxWiki.";
+$helptext = $helptext . "<br><a href='https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox' target='_blank'>LoxWiki - Midea2Lox</a>";
 $helptext = $helptext . "<br><br><b>Debug/Log</b><br>Um Debug zu starten, den Schalter auf on stellen und speichern.<br>Die Log-Datei kann hier eingesehen werden. ";
 $helptext = $helptext . "<br><br><b>Achtung!</b> Wenn Debug aktiv ist werden sehr viele Daten ins Log geschrieben. Bitte nur bei Problemen nutzen.";
 
