@@ -6,21 +6,6 @@ import requests
 import configparser
 import logging
 
-#----------------------------------------------------------------------------
-#Midea User and Passwort
-#MideaUser = 'User'
-#MideaPassword = 'Pass'
-#UDP_Port = 7013
-#falls Probleme mit der Kommunikation auftreten, hier die IP des Loxberry eintragen:
-#----------------------------------------------------------------------------
-#LoxberryIP = "loxberry"
-#----------------------------------------------------------------------------
-
-
-
-_LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
-
 #Miniserver Daten Laden
 cfg = configparser.ConfigParser()
 cfg.read('REPLACEINSTALLFOLDER/config/plugins/REPLACEFOLDERNAME/midea2lox.cfg')
@@ -31,6 +16,13 @@ MideaUser = cfg.get('default','MideaUser')
 MideaPassword = cfg.get('default','MideaPassword')
 UDP_Port = int(cfg.get('default','UDP_PORT'))
 LoxberryIP = cfg.get('default','LoxberryIP')
+DEBUG = cfg.get('default','DEBUG')
+
+_LOGGER = logging.getLogger(__name__)
+if DEBUG == 1:
+	logging.basicConfig(level=logging.DEBUG, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
+else:
+	logging.basicConfig(level=logging.INFO, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
 
 def start_server():
 
