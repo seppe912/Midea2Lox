@@ -20,11 +20,11 @@ DEBUG = cfg.get('default','DEBUG')
 
 _LOGGER = logging.getLogger(__name__)
 if DEBUG == "1":
-	logging.basicConfig(level=logging.DEBUG, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log')
+	logging.basicConfig(level=logging.DEBUG, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
 	print("Debug is True")
 	_LOGGER.debug("Debug is True")
 else:
-    logging.basicConfig(level=logging.INFO, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log')
+    logging.basicConfig(level=logging.INFO, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
 
 def start_server():
 
@@ -66,7 +66,7 @@ def start_server():
                 send_to_midea()
             else:
                 print("Zu wenige Argumente")
-                _LOGGER.error("Zu wenige Argumente erhalten! Ăbertragung wird nicht gestartet")
+                _LOGGER.error("Zu wenige Argumente erhalten! UEbertragung wird nicht gestartet")
         except:
             print("fehler beim uebertragen")
             _LOGGER.info("Fehler bei send_to_midea")
