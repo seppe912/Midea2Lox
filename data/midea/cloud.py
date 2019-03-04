@@ -256,6 +256,7 @@ class cloud:
 
         def throw():
             raise ValueError(error_code, message)
+            _LOGGER.info("throw: '{}' - '{}'".format(error_code, message))
 
         def ignore():
             #if(__debug__):
