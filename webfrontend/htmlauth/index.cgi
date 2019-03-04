@@ -1,0 +1,184 @@
+#!/usr/bin/perl
+
+use File::HomeDir;
+use CGI qw/:standard/;
+use Config::Simple;
+use Cwd 'abs_path';
+use IO::Socket::INET;
+use HTML::Entities;
+use String::Escape qw( unquotemeta );
+use warnings;
+use strict;
+no strict "refs"; # we need it for template system
+
+my  $home = File::HomeDir->my_home;
+my  $lang;
+my  $installfolder;
+my  $cfg;
+my  $conf;
+our $psubfolder;
+our $template_title;
+our $namef;
+our $value;
+our %query;
+our $cache;
+our $helptext;
+our $language;	
+our $select_language;
+our $udp_port;	
+our $debug;
+our $select_debug;
+
+our $MideaUser;
+our $MideaPassword;
+our $LoxberryIP;
+our $LoxUser;
+our $LoxPassword;
+our $LoxberryIP;
+our $LoxIP;
+
+our $miniserver;
+our $select_ms;
+our $savedata;
+
+# Read Settings
+$cfg             = new Config::Simple("$home/config/system/general.cfg");
+$installfolder   = $cfg->param("BASE.INSTALLFOLDER");
+$lang            = $cfg->param("BASE.LANG");
+
+
+
+print "Content-Type: text/html\n\n";
+
+# Parse URL
+foreach (split(/&/,$ENV{"QUERY_STRING"}))
+{
+  ($namef,$value) = split(/=/,$_,2);
+  $namef =~ tr/+/ /;
+  $namef =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
+  $value =~ tr/+/ /;
+  $value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
+  $query{$namef} = $value;
+}
+
+# Set parameters coming in - GET over POST
+if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotemeta(param('miniserver')); } else { $miniserver = $miniserver;  } } else { $miniserver = quotemeta($query{'miniserver'}); }
+if ( !$query{'language'} ) { if ( param('language') ) { $language = quotemeta(param('language')); } else { $language = $language; } } else { $language = quotemeta($query{'language'}); }
+if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = $udp_port; } } else { $udp_port = quotemeta($query{'udp_port'}); }
+if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = $debug;  } } else { $debug = quotemeta($query{'debug'}); }
+
+if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
+if ( !$query{'LoxberryIP'} ) { if ( param('LoxberryIP')  ) { $LoxberryIP = quotemeta(param('LoxberryIP')); } else { $LoxberryIP = $LoxberryIP;  } } else { $LoxberryIP = quotemeta($query{'LoxberryIP'}); }
+if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
+
+
+$LoxUser         = $cfg->param("MINISERVER$miniserver.ADMIN");
+$LoxPassword     = $cfg->param("MINISERVER$miniserver.PASS");
+$LoxIP           = $cfg->param("MINISERVER$miniserver.IPADDRESS");
+
+# Figure out in which subfolder we are installed
+$psubfolder = abs_path($0);
+$psubfolder =~ s/(.*)\/(.*)\/(.*)$/$2/g;
+
+# Save settings to config file
+if (param('savedata')) {
+	#$conf = new Config::Simple("$home/config/plugins/$psubfolder/mi.cfg");
+	$conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
+	if ($debug ne 1) { $debug = 0 }
+	$conf->param('MINISERVER', unquotemeta("MINISERVER$miniserver"));	
+	$conf->param('LANGUAGE', unquotemeta($language));	
+	$conf->param('UDP_PORT', unquotemeta($udp_port));
+	$conf->param('DEBUG', unquotemeta($debug));		
+
+	$conf->param('MideaUser', unquotemeta($MideaUser));	
+	$conf->param('MideaPassword', unquotemeta($MideaPassword));
+	$conf->param('LoxberryIP', unquotemeta($LoxberryIP));	
+	$conf->param('LoxUser', unquotemeta($LoxUser));
+	$conf->param('LoxPassword', unquotemeta($LoxPassword));
+	$conf->param('LoxIP', unquotemeta($LoxIP));
+	
+	$conf->save();
+}
+
+# Parse config file
+#$conf = new Config::Simple("$home/config/plugins/$psubfolder/mi.cfg");
+$conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
+$miniserver = encode_entities($conf->param('MINISERVER'));
+$language = encode_entities($conf->param('LANGUAGE'));	
+$udp_port = encode_entities($conf->param('UDP_PORT'));
+$debug = encode_entities($conf->param('DEBUG'));
+
+$MideaPassword = encode_entities($conf->param('MideaPassword'));
+$LoxberryIP = encode_entities($conf->param('LoxberryIP'));
+$MideaUser = encode_entities($conf->param('MideaUser'));
+$LoxUser = encode_entities($conf->param('LoxUser'));
+$LoxIP = encode_entities($conf->param('LoxIP'));
+$LoxPassword = encode_entities($conf->param('LoxPassword'));
+
+# Set Enabled / Disabled switch
+#
+
+if ($debug eq "1") {
+	$select_debug = '<option value="0">off</option><option value="1" selected>on</option>';
+} else {
+	$select_debug = '<option value="0" selected>off</option><option value="1">on</option>';
+}
+# Set Language
+if ($language eq "de") {
+	$select_language = '<option selected value="de">german</option><option value="en">english</option>\n';
+} else {
+	$select_language = '<option selected value="en">english</option><option value="de">german</option>\n';
+}
+
+# ---------------------------------------
+# Fill Miniserver selection dropdown
+# ---------------------------------------
+for (my $i = 1; $i <= $cfg->param('BASE.MINISERVERS');$i++) {
+	if ("MINISERVER$i" eq $miniserver) {
+		$select_ms .= '<option selected value="'.$i.'">'.$cfg->param("MINISERVER$i.NAME")."</option>\n";
+	} else {
+		$select_ms .= '<option value="'.$i.'">'.$cfg->param("MINISERVER$i.NAME")."</option>\n";
+	}
+}
+
+
+
+# Title
+$template_title = "Midea2Lox";
+
+# Create help page
+$helptext = "<b>Hilfe</b><br>Wenn ihr Hilfe beim Einrichten benötigt findet ihr diese im LoxWiki.";
+$helptext = $helptext . "<br><a href='http://www.loxwiki.eu/display/LOXBERRY/MiRobot2Lox' target='_blank'>LoxWiki - MiRobot2Lox</a>";
+$helptext = $helptext . "<br><br><b>Debug/Log</b><br>Um Debug zu starten, den Schalter auf on stellen und speichern.<br>Die Log-Datei kann hier eingesehen werden. ";
+$helptext = $helptext . "<a href='http://loxberry/admin/system/tools/logfile.cgi?logfile=plugins/mirobot2lox/mirobot2lox.log&header=html&format=template' target='_blank'>Log-File - MiRobot2Lox</a>";
+$helptext = $helptext . "<br><br><b>Achtung!</b> Wenn Debug aktiv ist werden sehr viele Daten ins Log geschrieben. Bitte nur bei Problemen nutzen.";
+
+
+# Currently only german is supported - so overwrite user language settings:
+$lang = "de";
+
+# Load header and replace HTML Markup <!--$VARNAME--> with perl variable $VARNAME
+open(F,"$installfolder/templates/system/$lang/header.html") || die "Missing template system/$lang/header.html";
+  while (<F>) {
+    $_ =~ s/<!--\$(.*?)-->/${$1}/g;
+    print $_;
+  }
+close(F);
+
+# Load content from template
+open(F,"$installfolder/templates/plugins/$psubfolder/$lang/content.html") || die "Missing template $lang/content.html";
+  while (<F>) {
+    $_ =~ s/<!--\$(.*?)-->/${$1}/g;
+    print $_;
+  }
+close(F);
+
+# Load footer and replace HTML Markup <!--$VARNAME--> with perl variable $VARNAME
+open(F,"$installfolder/templates/system/$lang/footer.html") || die "Missing template system/$lang/header.html";
+  while (<F>) {
+    $_ =~ s/<!--\$(.*?)-->/${$1}/g;
+    print $_;
+  }
+close(F);
+
+exit;

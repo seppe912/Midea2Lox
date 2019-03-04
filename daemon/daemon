@@ -1,0 +1,47 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          midea2lox
+# Required-Start:    $all
+# Required-Stop::    $all
+# Should-Start:      $all
+# Should-Stop:       $all
+# Default-Start:
+# Default-Stop:      0 1 6
+# Short-Description: Start midea2lox at boot time
+# Description:       Manage the midea2lox daemon, bride between Midea-Cloud and Loxberry.
+### END INIT INFO
+
+#set -e
+#set -u
+#${DEBIAN_SCRIPT_DEBUG:+ set -v -x}
+. /lib/lsb/init-functions
+case "$1" in
+        'start')
+                log_daemon_msg "Starting Midea service" "Midea2Lox"
+                cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
+                ./midea2lox.py
+                log_end_msg 0 ;;
+        'stop')
+                log_daemon_msg "Stopping Midea service" "Midea2Lox"
+                killall midea2lox.py
+                log_end_msg 0;;
+        'restart')
+                log_daemon_msg "Restarting Midea service" "Midea2Lox"
+                killall midea2lox.py
+                cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
+                ./midea2lox.py
+                log_end_msg 0;;
+        '')
+                if [ -h /etc/init.d/Midea2Lox ]
+                then
+                  /etc/init.d/Midea2Lox start
+                else
+                  ln -s REPLACEINSTALLFOLDER/system/daemons/plugins/REPLACEFOLDERNAME /etc/init.d/Midea2Lox
+                  /data/systemctl daemon-reload
+                  /etc/init.d/Midea2Lox start
+                fi;;
+        *)
+                echo "usage $0 start|stop|restart" ;;
+
+esac
