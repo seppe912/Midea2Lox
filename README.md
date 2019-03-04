@@ -9,4 +9,4 @@ Installation:
 Plugin herunterladen und im Pluginmanager des Loxberry installieren.
 Anschließend die Zugangsdaten zur Midea API im Plugin eintragen. Danach muss ein Loxberry Neustart durchgeführt werden.
 Das Plugin übernimmt die Kommunikation zwischen Midea und Loxberry. Es werden die Virtuellen Eingänge des Loxberry direkt geschalten,
-daher müssen die Eingänge genau den Wortlaut wie in der Beispielkonfig haben.Die Beispieltkonfig für Loxone ist im Loxwiki enthalten.
+daher müssen die Eingänge genau den Wortlaut wie in der Beispielkonfig haben.Die Beispielkonfig für Loxone ist auch hier zu finden.
