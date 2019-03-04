@@ -269,6 +269,7 @@ class cloud:
             3144: restart_full,
             3004: session_restart,  # value is illegal.
             9999: session_restart,  # system error.
+            3123: restart_full,     # the appliance is off line
         }
 
         handler = error_handlers.get(error_code, throw)
