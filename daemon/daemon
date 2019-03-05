@@ -17,12 +17,6 @@
 #${DEBIAN_SCRIPT_DEBUG:+ set -v -x}
 
 
-# Set correct permissions on older LoxBerry systems prior 0.3.x
-if [ $EUID -eq 0 ]; then
-	/usr/sbin/usermod -aG dialout loxberry > /dev/null 2>&1
-	/usr/sbin/usermod -aG tty loxberry > /dev/null 2>&1
-fi
-
 is_running() {
 	/bin/ps -C "midea2lox.py" -opid= > /dev/null 2>&1
 }
