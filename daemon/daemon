@@ -28,7 +28,7 @@ case "$1" in
                     PID=`/bin/ps -C "midea2lox.py" -opid=`
                     echo "Midea2Lox is already running. PID: $PID"
                 else
-                    echo "Starting Fhem..."
+                    echo "Starting Midea2Lox.."
                 if [ $EUID -eq 0 ]; then
                     cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
                     su loxberry -c ./midea2lox.py > /dev/null 2>&1 &
