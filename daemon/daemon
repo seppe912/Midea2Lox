@@ -38,8 +38,7 @@ case "$1" in
                     cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
                     ./midea2lox.py > /dev/null 2>&1 &
                     log_end_msg 0
-					exit 0
-				fi;;
+                fi;;
         'stop')
                 log_daemon_msg "Stopping Midea service" "Midea2Lox"
                 killall midea2lox.py
