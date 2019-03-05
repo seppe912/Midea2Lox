@@ -40,16 +40,15 @@ case "$1" in
         'stop')
                 killall midea2lox.py;;
         'restart')
-                /bin/sh $0 stop
+                $0 stop
                 if is_running; then
-p
                     echo "Unable to stop Midea2Lox, will not try to restart."
                     exit 1
                 fi
-                /bin/sh $0 start
+                $0 start
                 ;;
         '')
-                /bin/sh $0 start
+                $0 start
                 ;;
         'status')
                 if is_running; then
