@@ -10,9 +10,12 @@
                      <td align="left" valign="bottom">
                         <h2> Midea2Lox - Settings</h2>
                      </td>
+<td colspan=5 align=center>
+<font face="courier"><b><!--$midea2loxstatus--></b></font>
+</td>
                      <td align="right" valign="middle">
                         <label id="labelmsenabled">
-                           <h3><a href='http://loxberry/admin/system/tools/logfile.cgi?logfile=plugins/midea2lox.log&header=txt' target='_blank'>Debug&nbsp;</a>&nbsp;</h3>
+                           <h3><a href='http://loxberry/admin/system/tools/logfile.cgi?logfile=plugins/Midea2Lox/midea2lox.log&header=txt' target='_blank'>Debug&nbsp;</a>&nbsp;</h3>
                         </label>
                      </td>
                      <td valign="middle" width="50">
@@ -53,6 +56,19 @@
 <td width="25%"><label>Loxberry IP  (default:loxberry)</label></td>
 <td width="50%"><input name="LoxberryIP" type="text" value="<!--$LoxberryIP-->" data-validation-error-msg="* Please enter an IP Adress from Loxberry or the netname (loxberry)" /></td>
 </tr>
+				
+<tr>
+<td>
+<b>Midea2Lox Server:</b>
+</td>
+<td>
+<a id="button" data-icon="check" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=start">Start</a>
+<a id="button" data-icon="delete" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=stop">Stop</a>
+<a id="button" data-icon="refresh" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=restart">Restart</a>
+<a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="/admin/system/tools/logfile.cgi?logfile=plugins/<!--$psubfolder-->/midea2lox.log&header=txt" target="_blank">Logfile</a>
+</td>
+</tr>
+
 </tbody>
 </table>
 <br />
