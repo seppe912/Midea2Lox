@@ -49,7 +49,8 @@ p
                 /bin/sh $0 start
                 ;;
         '')
-                    /bin/sh $0 start
+                /bin/sh $0 start
+                ;;
         'status')
                 if is_running; then
                     PID=`/bin/ps -C "midea2lox.py" -opid=`
