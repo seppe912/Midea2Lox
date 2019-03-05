@@ -15,13 +15,31 @@
 #set -e
 #set -u
 #${DEBIAN_SCRIPT_DEBUG:+ set -v -x}
+
+
+# Set correct permissions on older LoxBerry systems prior 0.3.x
+if [ $EUID -eq 0 ]; then
+	/usr/sbin/usermod -aG dialout loxberry > /dev/null 2>&1
+	/usr/sbin/usermod -aG tty loxberry > /dev/null 2>&1
+fi
+
+is_running() {
+	/bin/ps -C "midea2lox.py" -opid= > /dev/null 2>&1
+}
+
 . /lib/lsb/init-functions
 case "$1" in
         'start')
-                log_daemon_msg "Starting Midea service" "Midea2Lox"
-                cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
-                ./midea2lox.py
-                log_end_msg 0 ;;
+                if is_running; then
+                    PID=`/bin/ps -C "midea2lox.py" -opid=`
+                    echo "Midea2Lox is already running. PID: $PID"
+                    log_daemon_msg "Starting Midea service" "Midea2Lox"
+                else
+                    cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
+                    ./midea2lox.py > /dev/null 2>&1 &
+                    log_end_msg 0
+					exit 0
+				fi;;
         'stop')
                 log_daemon_msg "Stopping Midea service" "Midea2Lox"
                 killall midea2lox.py
@@ -30,7 +48,7 @@ case "$1" in
                 log_daemon_msg "Restarting Midea service" "Midea2Lox"
                 killall midea2lox.py
                 cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
-                ./midea2lox.py
+                ./midea2lox.py > /dev/null 2>&1 &
                 log_end_msg 0;;
         '')
                 if [ -h /etc/init.d/Midea2Lox ]
@@ -41,7 +59,18 @@ case "$1" in
                   /data/systemctl daemon-reload
                   /etc/init.d/Midea2Lox start
                 fi;;
-        *)
-                echo "usage $0 start|stop|restart" ;;
 
+        'status')
+                if is_running; then
+                    PID=`/bin/ps -C "midea2lox.py" -opid=`
+                    echo "Midea2Lox is running. PID: $PID"
+                else
+                    echo "Midea2Lox is stopped."
+                    exit 1
+                fi;;
+        *)
+                echo "usage $0 start|stop|restart|status" ;;
+				
 esac
+
+exit 0
