@@ -33,30 +33,26 @@ case "$1" in
                 if is_running; then
                     PID=`/bin/ps -C "midea2lox.py" -opid=`
                     echo "Midea2Lox is already running. PID: $PID"
-                    log_daemon_msg "Starting Midea service" "Midea2Lox"
                 else
                     cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
-                    ./midea2lox.py > /dev/null 2>&1 &
-                    log_end_msg 0
+                    su loxberry -c ./midea2lox.py > /dev/null 2>&1 &
                 fi;;
         'stop')
                 log_daemon_msg "Stopping Midea service" "Midea2Lox"
-                killall midea2lox.py
-                log_end_msg 0;;
+                killall midea2lox.py;;
         'restart')
                 log_daemon_msg "Restarting Midea service" "Midea2Lox"
                 killall midea2lox.py
                 cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
-                ./midea2lox.py > /dev/null 2>&1 &
-                log_end_msg 0;;
+                su loxberry -c ./midea2lox.py > /dev/null 2>&1 &;;
         '')
                 if [ -h /etc/init.d/Midea2Lox ]
                 then
-                  /etc/init.d/Midea2Lox start
+                 su loxberry -c /etc/init.d/Midea2Lox start
                 else
                   ln -s REPLACEINSTALLFOLDER/system/daemons/plugins/REPLACEFOLDERNAME /etc/init.d/Midea2Lox
                   /data/systemctl daemon-reload
-                  /etc/init.d/Midea2Lox start
+                  su loxberry -c /etc/init.d/Midea2Lox start
                 fi;;
 
         'status')
