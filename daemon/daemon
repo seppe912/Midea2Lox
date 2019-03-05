@@ -41,6 +41,7 @@ case "$1" in
                 else
                     cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
                     ./midea2lox.py > /dev/null 2>&1 &
+                fi
                 fi;;
         'stop')
                 killall midea2lox.py;;
