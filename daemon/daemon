@@ -46,10 +46,8 @@ p
                     echo "Unable to stop Midea2Lox, will not try to restart."
                     exit 1
                 fi
-                    /bin/sh $0 start
-                    ;;
-                cd REPLACEINSTALLFOLDER/data/plugins/REPLACEFOLDERNAME
-                su loxberry -c ./midea2lox.py > /dev/null 2>&1 &;;
+                /bin/sh $0 start
+                ;;
         '')
                     /bin/sh $0 start
         'status')
