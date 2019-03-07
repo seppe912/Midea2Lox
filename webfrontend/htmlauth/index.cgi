@@ -31,7 +31,6 @@ our $select_debug;
 
 our $MideaUser;
 our $MideaPassword;
-our $LoxberryIP;
 our $LoxUser;
 our $LoxPassword;
 our $LoxberryIP;
