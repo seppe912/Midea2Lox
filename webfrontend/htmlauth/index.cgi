@@ -66,7 +66,7 @@ foreach (split(/&/,$ENV{"QUERY_STRING"}))
 # Set parameters coming in - GET over POST
 if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotemeta(param('miniserver')); } else { $miniserver = $miniserver;  } } else { $miniserver = quotemeta($query{'miniserver'}); }
 if ( !$query{'language'} ) { if ( param('language') ) { $language = quotemeta(param('language')); } else { $language = $language; } } else { $language = quotemeta($query{'language'}); }
-if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = $udp_port; } } else { $udp_port = quotemeta($query{'udp_port'}); }
+if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = "7013"; } } else { $udp_port = quotemeta($query{'udp_port'}); }
 if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = $debug;  } } else { $debug = quotemeta($query{'debug'}); }
 
 if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
