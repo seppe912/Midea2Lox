@@ -34,11 +34,10 @@ our $MideaUser;
 our $MideaPassword;
 our $LoxUser;
 our $LoxPassword;
-our $LoxberryIP;
+our $LoxberryIP  = LoxBerry::System::get_localip();
 our $LoxIP;
 our $do;
 our $midea2loxstatus;
-my $lbhostname = lbhostname();
 
 our $miniserver;
 our $select_ms;
@@ -71,7 +70,6 @@ if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(pa
 if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = $debug;  } } else { $debug = quotemeta($query{'debug'}); }
 
 if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
-if ( !$query{'LoxberryIP'} ) { if ( param('LoxberryIP')  ) { $LoxberryIP = quotemeta(param('LoxberryIP')); } else { $LoxberryIP = $lbhostname;  } } else { $LoxberryIP = quotemeta($query{'LoxberryIP'}); }
 if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
 
 
@@ -112,7 +110,6 @@ $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
 
 $MideaPassword = encode_entities($conf->param('MideaPassword'));
-$LoxberryIP = encode_entities($conf->param('LoxberryIP'));
 $MideaUser = encode_entities($conf->param('MideaUser'));
 $LoxUser = encode_entities($conf->param('LoxUser'));
 $LoxIP = encode_entities($conf->param('LoxIP'));
