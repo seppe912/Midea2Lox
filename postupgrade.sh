@@ -14,7 +14,7 @@ echo "<INFO> Remove temporary folders"
 rm -r /tmp/$ARGV1\_upgrade
 
 #starting Midea2Lox
-cd $ARGV1/data/plugins/$ARGV3
+cd $ARGV5/data/plugins/$ARGV3
     ./midea2lox.py > /dev/null 2>&1 &
 
 # Exit with Status 0
