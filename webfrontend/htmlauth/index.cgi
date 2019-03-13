@@ -65,7 +65,7 @@ foreach (split(/&/,$ENV{"QUERY_STRING"}))
 
 # Set parameters coming in - GET over POST
 if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotemeta(param('miniserver')); } else { $miniserver = $miniserver;  } } else { $miniserver = quotemeta($query{'miniserver'}); }
-if ( !$query{'language'} ) { if ( param('language') ) { $language = quotemeta(param('language')); } else { $language = $language; } } else { $language = quotemeta($query{'language'}); }
+#if ( !$query{'language'} ) { if ( param('language') ) { $language = quotemeta(param('language')); } else { $language = $language; } } else { $language = quotemeta($query{'language'}); }
 if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = "7013"; } } else { $udp_port = quotemeta($query{'udp_port'}); }
 if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = $debug;  } } else { $debug = quotemeta($query{'debug'}); }
 
@@ -87,7 +87,7 @@ if (param('savedata')) {
 	$conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
 	if ($debug ne 1) { $debug = 0 }
 	$conf->param('MINISERVER', unquotemeta("MINISERVER$miniserver"));	
-	$conf->param('LANGUAGE', unquotemeta($language));	
+	$conf->param('LANGUAGE', unquotemeta($lang));	
 	$conf->param('UDP_PORT', unquotemeta($udp_port));
 	$conf->param('DEBUG', unquotemeta($debug));		
 
@@ -105,7 +105,7 @@ if (param('savedata')) {
 #$conf = new Config::Simple("$home/config/plugins/$psubfolder/mi.cfg");
 $conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
 $miniserver = encode_entities($conf->param('MINISERVER'));
-$language = encode_entities($conf->param('LANGUAGE'));	
+$lang = encode_entities($conf->param('LANGUAGE'));	
 $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
 
@@ -124,11 +124,11 @@ if ($debug eq "1") {
 	$select_debug = '<option value="0" selected>off</option><option value="1">on</option>';
 }
 # Set Language
-if ($language eq "de") {
-	$select_language = '<option selected value="de">german</option><option value="en">english</option>\n';
-} else {
-	$select_language = '<option selected value="en">english</option><option value="de">german</option>\n';
-}
+#if ($language eq "de") {
+#	$select_language = '<option selected value="de">german</option><option value="en">english</option>\n';
+#} else {
+#	$select_language = '<option selected value="en">english</option><option value="de">german</option>\n';
+#}
 
 # ---------------------------------------
 # Fill Miniserver selection dropdown
