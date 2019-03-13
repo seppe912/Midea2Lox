@@ -65,17 +65,12 @@ foreach (split(/&/,$ENV{"QUERY_STRING"}))
 
 # Set parameters coming in - GET over POST
 if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotemeta(param('miniserver')); } else { $miniserver = $miniserver;  } } else { $miniserver = quotemeta($query{'miniserver'}); }
-#if ( !$query{'language'} ) { if ( param('language') ) { $language = quotemeta(param('language')); } else { $language = $language; } } else { $language = quotemeta($query{'language'}); }
 if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = "7013"; } } else { $udp_port = quotemeta($query{'udp_port'}); }
-if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = $debug;  } } else { $debug = quotemeta($query{'debug'}); }
+if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = "0";  } } else { $debug = quotemeta($query{'debug'}); }
 
 if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
 if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
 
-
-$LoxUser         = $cfg->param("MINISERVER$miniserver.ADMIN");
-$LoxPassword     = $cfg->param("MINISERVER$miniserver.PASS");
-$LoxIP           = $cfg->param("MINISERVER$miniserver.IPADDRESS");
 
 # Figure out in which subfolder we are installed
 $psubfolder = abs_path($0);
@@ -83,7 +78,6 @@ $psubfolder =~ s/(.*)\/(.*)\/(.*)$/$2/g;
 
 # Save settings to config file
 if (param('savedata')) {
-	#$conf = new Config::Simple("$home/config/plugins/$psubfolder/mi.cfg");
 	$conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
 	if ($debug ne 1) { $debug = 0 }
 	$conf->param('MINISERVER', unquotemeta("MINISERVER$miniserver"));	
@@ -94,15 +88,14 @@ if (param('savedata')) {
 	$conf->param('MideaUser', unquotemeta($MideaUser));	
 	$conf->param('MideaPassword', unquotemeta($MideaPassword));
 	$conf->param('LoxberryIP', unquotemeta($LoxberryIP));	
-	$conf->param('LoxUser', unquotemeta($LoxUser));
-	$conf->param('LoxPassword', unquotemeta($LoxPassword));
-	$conf->param('LoxIP', unquotemeta($LoxIP));
+	$conf->param('LoxUser', unquotemeta($cfg->param("MINISERVER$miniserver.ADMIN")));
+	$conf->param('LoxPassword', unquotemeta($cfg->param("MINISERVER$miniserver.PASS")));
+	$conf->param('LoxIP', unquotemeta($cfg->param("MINISERVER$miniserver.IPADDRESS")));
 	
 	$conf->save();
 }
 
 # Parse config file
-#$conf = new Config::Simple("$home/config/plugins/$psubfolder/mi.cfg");
 $conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
 $miniserver = encode_entities($conf->param('MINISERVER'));
 $lang = encode_entities($conf->param('LANGUAGE'));	
@@ -123,12 +116,7 @@ if ($debug eq "1") {
 } else {
 	$select_debug = '<option value="0" selected>off</option><option value="1">on</option>';
 }
-# Set Language
-#if ($language eq "de") {
-#	$select_language = '<option selected value="de">german</option><option value="en">english</option>\n';
-#} else {
-#	$select_language = '<option selected value="en">english</option><option value="de">german</option>\n';
-#}
+
 
 # ---------------------------------------
 # Fill Miniserver selection dropdown
