@@ -3,12 +3,9 @@
 use File::HomeDir;
 use CGI qw/:standard/;
 use Config::Simple;
-use Cwd 'abs_path';
-use IO::Socket::INET;
 use HTML::Entities;
 use String::Escape qw( unquotemeta );
 use warnings;
-use strict;
 no strict "refs"; # we need it for template system
 use LoxBerry::System;
 
