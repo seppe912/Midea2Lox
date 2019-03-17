@@ -8,7 +8,7 @@ import logging
 
 #Miniserver Daten Laden
 cfg = configparser.ConfigParser()
-cfg.read('/opt/loxberry/config/plugins/Midea2Lox/midea2lox.cfg')
+cfg.read('REPLACEINSTALLFOLDER/config/plugins/REPLACEFOLDERNAME/midea2lox.cfg')
 LoxIP = cfg.get('default','LoxIP')
 LoxPassword = cfg.get('default','LoxPassword')
 LoxUser = cfg.get('default','LoxUser')
@@ -20,11 +20,11 @@ DEBUG = cfg.get('default','DEBUG')
 
 _LOGGER = logging.getLogger(__name__)
 if DEBUG == "1":
-	logging.basicConfig(level=logging.DEBUG, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log')
+	logging.basicConfig(level=logging.DEBUG, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
 	print("Debug is True")
 	_LOGGER.debug("Debug is True")
 else:
-    logging.basicConfig(level=logging.INFO, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log')
+    logging.basicConfig(level=logging.INFO, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
 
 def start_server():
 
