@@ -8,7 +8,7 @@ import logging
 
 #Miniserver Daten Laden
 cfg = configparser.ConfigParser()
-cfg.read('REPLACEINSTALLFOLDER/config/plugins/REPLACEFOLDERNAME/midea2lox.cfg')
+cfg.read('/opt/loxberry/config/plugins/Midea2Lox/midea2lox.cfg')
 LoxIP = cfg.get('default','LoxIP')
 LoxPassword = cfg.get('default','LoxPassword')
 LoxUser = cfg.get('default','LoxUser')
@@ -20,11 +20,11 @@ DEBUG = cfg.get('default','DEBUG')
 
 _LOGGER = logging.getLogger(__name__)
 if DEBUG == "1":
-	logging.basicConfig(level=logging.DEBUG, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
+	logging.basicConfig(level=logging.DEBUG, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log')
 	print("Debug is True")
 	_LOGGER.debug("Debug is True")
 else:
-    logging.basicConfig(level=logging.INFO, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
+    logging.basicConfig(level=logging.INFO, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log')
 
 def start_server():
 
@@ -45,7 +45,7 @@ def start_server():
         sys.exit()
 
     #Start listening on socket
-    #soc.listen(10)
+    #soc.listen(2)
     print('Socket now listening')
 
     # for handling task in separate jobs we need threading
@@ -59,11 +59,17 @@ def start_server():
         data = data.decode('utf-8')
         data = data.split(' ')
         print("Message: ", data)
-        _LOGGER.info("Message: ", data)
+        _LOGGER.info(data)
         try:
             Argumente = len(data)
             if Argumente == 8:
+                print("Übertragung zu Midea wird gestartet")
+                _LOGGER.info("Übertragung zu Midea wird gestartet")
                 send_to_midea()
+            elif data[0] == "status":
+                print("Status Update wird gestartet")
+                _LOGGER.info("Status Update wird gestartet")
+                update_midea()
             else:
                 print("Zu wenige Argumente")
                 _LOGGER.error("Zu wenige Argumente erhalten! UEbertragung wird nicht gestartet")
@@ -78,10 +84,16 @@ def start_server():
             requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/1" % (LoxUser, LoxPassword, LoxIP,))
             while True:
                 try:
-                    send_to_midea()
-                    requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/0" % (LoxUser, LoxPassword, LoxIP,))
-                    _LOGGER.info("Fehlerschleife beendet, erneutes senden OK")
-                    break
+                    if data[0] == "status":
+                        update_midea()
+                        requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/0" % (LoxUser, LoxPassword, LoxIP,))
+                        _LOGGER.info("Fehlerschleife beendet, erneutes senden OK")
+                        break
+                    else:
+                        send_to_midea()
+                        requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/0" % (LoxUser, LoxPassword, LoxIP,))
+                        _LOGGER.info("Fehlerschleife beendet, erneutes senden OK")
+                        break
                 except:
                     import time
                     time.sleep(30)
@@ -91,6 +103,7 @@ def start_server():
     soc.close()
 	
 def send_to_midea():
+
 	#Start
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP))
 	
@@ -160,5 +173,56 @@ def send_to_midea():
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, device.name))
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
 
+def update_midea():
+	#Start
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP))
+	
+	# The client takes an App_Key, an account email address and a password
+	client = midea_client('3742e9e5842d4ad59c2db887e12449f9', MideaUser, MideaPassword)
+	
+	# Log in right now, to check credentials (this step is optional, and will be called when listing devices)
+	client.setup()
+	
+	# List devices. These are complex state holding objects, no other trickery needed from here. 
+	devices = client.devices()
+	
+	for eachArg in data:   
+			print(eachArg)
+				
+	for device in devices:
+	
+		# Refresh the object with the actual state by querying it
+		device.refresh()	
+		print({
+			'id': device.id,
+			'name': device.name,
+			'power_state': device.power_state,
+			'audible_feedback': device.audible_feedback,
+			'target_temperature': device.target_temperature,
+			'operational_mode': device.operational_mode,
+			'fan_speed': device.fan_speed,
+			'swing_mode': device.swing_mode,
+			'eco_mode': device.eco_mode,
+			'turbo_mode': device.turbo_mode,
+			'indoor_temperature': device.indoor_temperature,
+			'outdoor_temperature': device.outdoor_temperature
+			
+		})
+
+	#prepare to finish
+	#send to Loxone
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.power_state/%s" % (LoxUser, LoxPassword, LoxIP, device.power_state))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, device.audible_feedback))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.target_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.target_temperature))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.operational_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.operational_mode))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.fan_speed/%s" % (LoxUser, LoxPassword, LoxIP, device.fan_speed))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.swing_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.swing_mode))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.eco_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.eco_mode))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.turbo_mode))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.indoor_temperature))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.outdoor_temperature))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.id/%s" % (LoxUser, LoxPassword, LoxIP, device.id))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, device.name))
+	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
 
 start_server()  
