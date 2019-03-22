@@ -43,7 +43,7 @@ PCONFIG=$LBPCONFIG/$PDIR
 PSBIN=$LBPSBIN/$PDIR
 PBIN=$LBPBIN/$PDIR
 
-killall midea2lox.py
+$0 killall midea2lox.py
 
 # Exit with Status 0
 exit 0
