@@ -20,11 +20,11 @@ DEBUG = cfg.get('default','DEBUG')
 
 _LOGGER = logging.getLogger(__name__)
 if DEBUG == "1":
-	logging.basicConfig(level=logging.DEBUG, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
+	logging.basicConfig(level=logging.DEBUG, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 	print("Debug is True")
 	_LOGGER.debug("Debug is True")
 else:
-    logging.basicConfig(level=logging.INFO, filename='REPLACEINSTALLFOLDER/log/plugins/REPLACEFOLDERNAME/midea2lox.log')
+    logging.basicConfig(level=logging.INFO, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
 def start_server():
 
