@@ -41,7 +41,7 @@ our $select_ms;
 our $savedata;
 
 # Read Settings
-$cfg             = new Config::Simple("$home/config/system/general.cfg");
+$cfg             = new Config::Simple("$lbsconfigdir/general.cfg");
 $installfolder   = $cfg->param("BASE.INSTALLFOLDER");
 $lang            = $cfg->param("BASE.LANG");
 
@@ -75,7 +75,7 @@ $psubfolder =~ s/(.*)\/(.*)\/(.*)$/$2/g;
 
 # Save settings to config file
 if (param('savedata')) {
-	$conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
+	$conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
 	if ($debug ne 1) { $debug = 0 }
 	$conf->param('MINISERVER', unquotemeta("MINISERVER$miniserver"));	
 	$conf->param('LANGUAGE', unquotemeta($lang));	
@@ -93,7 +93,7 @@ if (param('savedata')) {
 }
 
 # Parse config file
-$conf = new Config::Simple("$home/config/plugins/$psubfolder/midea2lox.cfg");
+$conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
 $miniserver = encode_entities($conf->param('MINISERVER'));
 $lang = encode_entities($conf->param('LANGUAGE'));	
 $udp_port = encode_entities($conf->param('UDP_PORT'));
@@ -161,7 +161,7 @@ $helptext = $helptext . "<br><br><b>Achtung!</b> Wenn Debug aktiv ist werden seh
 $lang = "de";
 
 # Load header and replace HTML Markup <!--$VARNAME--> with perl variable $VARNAME
-open(F,"$installfolder/templates/system/$lang/header.html") || die "Missing template system/$lang/header.html";
+open(F,"$lbstemplatedir/$lang/header.html") || die "Missing template system/$lang/header.html";
   while (<F>) {
     $_ =~ s/<!--\$(.*?)-->/${$1}/g;
     print $_;
@@ -169,7 +169,7 @@ open(F,"$installfolder/templates/system/$lang/header.html") || die "Missing temp
 close(F);
 
 # Load content from template
-open(F,"$installfolder/templates/plugins/$psubfolder/$lang/content.html") || die "Missing template $lang/content.html";
+open(F,"$lbptemplatedir/$lang/content.html") || die "Missing template $lang/content.html";
   while (<F>) {
     $_ =~ s/<!--\$(.*?)-->/${$1}/g;
     print $_;
@@ -177,7 +177,7 @@ open(F,"$installfolder/templates/plugins/$psubfolder/$lang/content.html") || die
 close(F);
 
 # Load footer and replace HTML Markup <!--$VARNAME--> with perl variable $VARNAME
-open(F,"$installfolder/templates/system/$lang/footer.html") || die "Missing template system/$lang/header.html";
+open(F,"$lbstemplatedir/$lang/footer.html") || die "Missing template system/$lang/header.html";
   while (<F>) {
     $_ =~ s/<!--\$(.*?)-->/${$1}/g;
     print $_;
