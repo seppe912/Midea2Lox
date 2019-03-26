@@ -9,7 +9,7 @@
 # Default-Start:
 # Default-Stop:      0 1 6
 # Short-Description: Start midea2lox at boot time
-# Description:       Manage the midea2lox daemon, bride between Midea-Cloud and Loxberry.
+# Description:       Manage the midea2lox daemon, bridge between Midea-Cloud and Loxberry.
 ### END INIT INFO
 
 #set -e
