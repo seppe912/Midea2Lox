@@ -90,6 +90,7 @@ if (param('savedata')) {
 	$conf->param('LoxIP', unquotemeta($cfg->param("MINISERVER$miniserver.IPADDRESS")));
 	
 	$conf->save();
+	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 }
 
 # Parse config file
