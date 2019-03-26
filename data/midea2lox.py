@@ -8,7 +8,7 @@ import logging
 
 #Miniserver Daten Laden
 cfg = configparser.ConfigParser()
-cfg.read('REPLACELBHOMEDIR/config/plugins/REPLACELBPPLUGINDIR/midea2lox.cfg')
+cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
 LoxIP = cfg.get('default','LoxIP')
 LoxPassword = cfg.get('default','LoxPassword')
 LoxUser = cfg.get('default','LoxUser')
@@ -20,11 +20,11 @@ DEBUG = cfg.get('default','DEBUG')
 
 _LOGGER = logging.getLogger(__name__)
 if DEBUG == "1":
-	logging.basicConfig(level=logging.DEBUG, filename='REPLACELBHOMEDIR/log/plugins/REPLACELBPPLUGINDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+	logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 	print("Debug is True")
 	_LOGGER.debug("Debug is True")
 else:
-    logging.basicConfig(level=logging.INFO, filename='REPLACELBHOMEDIR/log/plugins/REPLACELBPPLUGINDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
 def start_server():
 
