@@ -48,17 +48,12 @@ ARGV2=$2 # Second argument is real Plugin name
 ARGV3=$3 # Third argument is Plugin installation folder
 ARGV5=$5 # Fifth argument is Base folder of LoxBerry
 
-/bin/sed -i "s:REPLACEFOLDERNAME:$ARGV3:g" $ARGV5/system/daemons/plugins/$ARGV2
-/bin/sed -i "s:REPLACEINSTALLFOLDER:$ARGV5:g" $ARGV5/system/daemons/plugins/$ARGV2
-/bin/sed -i "s:REPLACEFOLDERNAME:$ARGV3:g" $ARGV5/data/plugins/$ARGV2/midea2lox.py
-/bin/sed -i "s:REPLACEINSTALLFOLDER:$ARGV5:g" $ARGV5/data/plugins/$ARGV2/midea2lox.py
-
 chmod +x $PDATA/midea2lox.py
 
 
 /bin/echo "#############################################################################################"
 /bin/echo "#  Nach der Installation bitte die Einstellungen zu allen MiniServern anpassen und speichern."
-/bin/echo "#  Danach den LoxBerry Neustarten."
+/bin/echo "#  Danach den Service starten."
 /bin/echo "#############################################################################################"
 
 # Exit with Status 0
