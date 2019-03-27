@@ -9,14 +9,17 @@ import logging
 #Miniserver Daten Laden
 cfg = configparser.ConfigParser()
 cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
-LoxIP = cfg.get('default','LoxIP')
-LoxPassword = cfg.get('default','LoxPassword')
-LoxUser = cfg.get('default','LoxUser')
 MideaUser = cfg.get('default','MideaUser')
 MideaPassword = cfg.get('default','MideaPassword')
 UDP_Port = int(cfg.get('default','UDP_PORT'))
 LoxberryIP = cfg.get('default','LoxberryIP')
 DEBUG = cfg.get('default','DEBUG')
+Miniserver = cfg.get('default','Miniserver')
+
+cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
+LoxIP = cfg.get(Miniserver,'IPADDRESS')
+LoxPassword = cfg.get(Miniserver,'PASS')
+LoxUser = cfg.get(Miniserver,'ADMIN')
 
 _LOGGER = logging.getLogger(__name__)
 if DEBUG == "1":
