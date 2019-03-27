@@ -26,16 +26,11 @@ our $select_language;
 our $udp_port;	
 our $debug;
 our $select_debug;
-
 our $MideaUser;
 our $MideaPassword;
-our $LoxUser;
-our $LoxPassword;
 our $LoxberryIP  = LoxBerry::System::get_localip();
-our $LoxIP;
 our $do;
 our $midea2loxstatus;
-
 our $miniserver;
 our $select_ms;
 our $savedata;
@@ -84,10 +79,6 @@ if (param('savedata')) {
 
 	$conf->param('MideaUser', unquotemeta($MideaUser));	
 	$conf->param('MideaPassword', unquotemeta($MideaPassword));
-	$conf->param('LoxberryIP', unquotemeta($LoxberryIP));	
-	$conf->param('LoxUser', unquotemeta($cfg->param("MINISERVER$miniserver.ADMIN")));
-	$conf->param('LoxPassword', unquotemeta($cfg->param("MINISERVER$miniserver.PASS")));
-	$conf->param('LoxIP', unquotemeta($cfg->param("MINISERVER$miniserver.IPADDRESS")));
 	
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
@@ -102,9 +93,7 @@ $debug = encode_entities($conf->param('DEBUG'));
 
 $MideaPassword = encode_entities($conf->param('MideaPassword'));
 $MideaUser = encode_entities($conf->param('MideaUser'));
-$LoxUser = encode_entities($conf->param('LoxUser'));
-$LoxIP = encode_entities($conf->param('LoxIP'));
-$LoxPassword = encode_entities($conf->param('LoxPassword'));
+
 
 # Set Enabled / Disabled switch
 #
@@ -151,7 +140,7 @@ $template_title = "Midea2Lox";
 $midea2loxstatus = qx($installfolder/system/daemons/plugins/$psubfolder status);
 
 # Create help page
-$helptext = "<b>Hilfe</b><br>Wenn ihr Hilfe beim Einrichten benötigt findet ihr diese im LoxWiki.";
+$helptext = "<b>Hilfe</b><br>Wenn ihr Hilfe beim Einrichten benĂ¶tigt findet ihr diese im LoxWiki.";
 $helptext = $helptext . "<br><a href='https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox' target='_blank'>LoxWiki - Midea2Lox</a>";
 $helptext = $helptext . "<br><br><b>Debug/Log</b><br>Um Debug zu starten, den Schalter auf on stellen und speichern.<br>Die Log-Datei kann hier eingesehen werden. ";
 $helptext = $helptext . "<a href='/admin/system/tools/logfile.cgi?logfile=plugins/$psubfolder/midea2lox.log&header=html&format=template&only=once' target='_blank'>Log-File - Midea2Lox</a>";
