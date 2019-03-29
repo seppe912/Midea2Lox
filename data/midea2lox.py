@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 from midea.client import client as midea_client
 from midea.device import air_conditioning_device as ac
 import sys
