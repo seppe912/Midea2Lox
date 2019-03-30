@@ -67,43 +67,22 @@ def start_server():
         try:
             Argumente = len(data)
             if Argumente == 8:
-                print("Übertragung zu Midea wird gestartet")
-                _LOGGER.info("Übertragung zu Midea wird gestartet")
+                print("UEbertragung zu Midea wird gestartet")
+                _LOGGER.info("UEbertragung zu Midea wird gestartet")
                 send_to_midea()
+                _LOGGER.info("UEbertragung erfolgreich")
             elif data[0] == "status":
                 print("Status Update wird gestartet")
                 _LOGGER.info("Status Update wird gestartet")
                 update_midea()
+                _LOGGER.info("Update erfolgreich")
             else:
                 print("Zu wenige Argumente")
                 _LOGGER.error("Zu wenige Argumente erhalten! UEbertragung wird nicht gestartet")
         except:
-            print("fehler beim uebertragen")
-            _LOGGER.info("Fehler bei send_to_midea")
-            import traceback
-            traceback.print_exc()
-            _LOGGER.info(traceback.print_exc())
-            print("sende erneut")
-            _LOGGER.info("sende erneut")
-            requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/1" % (LoxUser, LoxPassword, LoxIP,))
-            while True:
-                try:
-                    if data[0] == "status":
-                        update_midea()
-                        requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/0" % (LoxUser, LoxPassword, LoxIP,))
-                        _LOGGER.info("Fehlerschleife beendet, erneutes senden OK")
-                        break
-                    else:
-                        send_to_midea()
-                        requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_Fehlerschleife/0" % (LoxUser, LoxPassword, LoxIP,))
-                        _LOGGER.info("Fehlerschleife beendet, erneutes senden OK")
-                        break
-                except:
-                    import time
-                    time.sleep(30)
-                    print("2. erneuter Versuch")
-                    _LOGGER.error("Fehlerschleife aktiv! sende erneut, send_to_midea, solange bis kein Fehler mehr vorhanden ist")
-					
+            print("Fehler bei send_to_midea, UEbertragung abgebrochen")
+            _LOGGER.info("Fehler bei send_to_midea, , UEbertragung abgebrochen")
+            requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
     soc.close()
 	
 def send_to_midea():
