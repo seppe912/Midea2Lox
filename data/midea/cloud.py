@@ -87,9 +87,10 @@ class cloud:
             #if(__debug__):
             _LOGGER.info("Retrying API call: '{}'".format(endpoint))
             self._retries += 1
-            if(self._retries < 3):
+            if(self._retries < 20):
                 #self.get_login_id()
                 #self.login()
+                time.sleep(30) #give it some time
                 return self.api_request(endpoint, args)
             else:
                 _LOGGER.error("RecursionError: '{}' - '{}'".format(response['errorCode'], response['msg']))
@@ -108,18 +109,18 @@ class cloud:
             'loginAccount': self.login_account
         })
         self.login_id = response['loginId']
-        _LOGGER.info("self.get_login_id: Get the login ID from the email address: '{}'".format(self.login_id))
+        _LOGGER.debug("self.get_login_id: Get the login ID from the email address: '{}'".format(self.login_id))
 #        _LOGGER.info("self.get_login_id: Get the login ID from the email address")
 
     def login(self):
         """
         Performs a user login with the credentials supplied to the constructor
         """
-        _LOGGER.info("Performs a user login with the credentials supplied to the constructor")
+        _LOGGER.debug("Performs a user login with the credentials supplied to the constructor")
 #        if self.login_id == None:
         if not self.login_id:
             self.get_login_id()
-            _LOGGER.info("self.login: self.login_id == None - login.self using self.get_login_id")
+            _LOGGER.debug("self.login: self.login_id == None - login.self using self.get_login_id")
             #_LOGGER.info("self.login: self.session before if self.session: '{}' - '{}'".format(self.session, self.security.accessToken))
         # if self.session:
             # _LOGGER.info("self.login: Don't try logging in again, someone beat this thread to it")
@@ -136,26 +137,26 @@ class cloud:
  #              'password': self.security.encryptPassword(self.login_id, self.password)
  #          })
         #_LOGGER.info("Don't try logging in again, someone beat this thread to it")
-        _LOGGER.info("self.login: self.session: '{}' - '{}'".format(self, self.security.accessToken))
+        _LOGGER.debug("self.login: self.session: '{}' - '{}'".format(self, self.security.accessToken))
         self.security.accessToken = self.session['accessToken']
 
     def loginfix(self):
         """
         Performs a user forced login with the credentials supplied to the constructor
         """
-        _LOGGER.info("FIX Performs a user login with the credentials supplied to the constructor")
+        _LOGGER.debug("FIX Performs a user login with the credentials supplied to the constructor")
         self.get_login_id()
         #_LOGGER.info("FIX self.loginfix: self.login_id == None - login.self using self.get_login_id")
         #_LOGGER.info("FIX self.loginfix: self.session before if self.session : '{}' - '{}'".format(self.session, self.security.accessToken))
 
         # Log in and store the session
-        _LOGGER.info("FIX Log in and store the session")
+        _LOGGER.debug("FIX Log in and store the session")
         self.session = self.api_request("user/login", {
             'loginAccount': self.login_account,
             'password': self.security.encryptPassword(self.login_id, self.password)
         })
 
-        _LOGGER.info("FIX self.loginfix: self.session: '{}' - '{}'".format(self, self.security.accessToken))
+        _LOGGER.debug("FIX self.loginfix: self.session: '{}' - '{}'".format(self, self.security.accessToken))
         self.security.accessToken = self.session['accessToken']
         time.sleep(10) #Give it some time..
 
