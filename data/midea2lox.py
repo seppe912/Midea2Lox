@@ -75,7 +75,7 @@ def start_server():
                 print("Status Update wird gestartet")
                 _LOGGER.info("Status Update wird gestartet")
                 update_midea()
-                _LOGGER.info("Update erfolgreich")
+                _LOGGER.info("Status Update erfolgreich")
             else:
                 print("Zu wenige Argumente")
                 _LOGGER.error("Zu wenige Argumente erhalten! UEbertragung wird nicht gestartet")
