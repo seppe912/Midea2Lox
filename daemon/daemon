@@ -32,9 +32,11 @@ case "$1" in
                 if [ $EUID -eq 0 ]; then
                     cd REPLACELBPDATADIR
                     su loxberry -c ./midea2lox.py > /dev/null 2>&1 &
+                    sleep 1
                 else
                     cd REPLACELBPDATADIR
                     ./midea2lox.py > /dev/null 2>&1 &
+                    sleep 1
                 fi
                 fi;;
         'stop')
