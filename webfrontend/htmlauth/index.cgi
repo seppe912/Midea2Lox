@@ -79,6 +79,7 @@ if (param('savedata')) {
 
 	$conf->param('MideaUser', unquotemeta($MideaUser));	
 	$conf->param('MideaPassword', unquotemeta($MideaPassword));
+	$conf->param('LoxberryIP', unquotemeta($LoxberryIP));
 	
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
