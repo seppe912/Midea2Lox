@@ -15,7 +15,7 @@ MideaPassword = cfg.get('default','MideaPassword')
 UDP_Port = int(cfg.get('default','UDP_PORT'))
 LoxberryIP = cfg.get('default','LoxberryIP')
 DEBUG = cfg.get('default','DEBUG')
-Miniserver = cfg.get('default','Miniserver')
+Miniserver = cfg.get('default','MINISERVER')
 
 cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
 LoxIP = cfg.get(Miniserver,'IPADDRESS')
