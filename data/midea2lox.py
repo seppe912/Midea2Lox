@@ -7,7 +7,7 @@ import requests
 import configparser
 import logging
 
-#Miniserver Daten Laden
+# Miniserver Daten Laden
 cfg = configparser.ConfigParser()
 cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
 MideaUser = cfg.get('default','MideaUser')
@@ -30,6 +30,7 @@ if DEBUG == "1":
 else:
     logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
+# Mainprogramm
 def start_server():
 
     import socket
@@ -84,7 +85,8 @@ def start_server():
             _LOGGER.info("Fehler bei send_to_midea, , UEbertragung abgebrochen")
             requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
     soc.close()
-	
+
+# send to Midea
 def send_to_midea():
 
 	#Start
@@ -156,6 +158,7 @@ def send_to_midea():
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, device.name))
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
 
+# Update Midea status
 def update_midea():
 	#Start
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP))
@@ -208,4 +211,5 @@ def update_midea():
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, device.name))
 	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
 
+# Start script
 start_server()  
