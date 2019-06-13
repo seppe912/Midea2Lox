@@ -19,6 +19,7 @@ Miniserver = cfg.get('default','MINISERVER')
 
 cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
 LoxIP = cfg.get(Miniserver,'IPADDRESS')
+LoxPort = cfg.get(Miniserver,'PORT')
 LoxPassword = cfg.get(Miniserver,'PASS')
 LoxUser = cfg.get(Miniserver,'ADMIN')
 
@@ -83,14 +84,14 @@ def start_server():
         except:
             print("Fehler bei send_to_midea, UEbertragung abgebrochen")
             _LOGGER.info("Fehler bei send_to_midea, , UEbertragung abgebrochen")
-            requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
+            requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
     soc.close()
 
 # send to Midea
 def send_to_midea():
 
 	#Start
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 	
 	# The client takes an App_Key, an account email address and a password
 	client = midea_client('3742e9e5842d4ad59c2db887e12449f9', MideaUser, MideaPassword)
@@ -144,24 +145,24 @@ def send_to_midea():
 		
 	#prepare to finish
 	#send to Loxone
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.power_state/%s" % (LoxUser, LoxPassword, LoxIP, device.power_state))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, device.audible_feedback))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.target_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.target_temperature))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.operational_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.operational_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.fan_speed/%s" % (LoxUser, LoxPassword, LoxIP, device.fan_speed))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.swing_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.swing_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.eco_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.eco_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.turbo_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.indoor_temperature))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.outdoor_temperature))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.id/%s" % (LoxUser, LoxPassword, LoxIP, device.id))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, device.name))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.power_state))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.audible_feedback))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.target_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.target_temperature))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.operational_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.operational_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.fan_speed/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.fan_speed))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.swing_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.swing_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.eco_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.eco_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.turbo_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.indoor_temperature))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.outdoor_temperature))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.id/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.name))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
 # Update Midea status
 def update_midea():
 	#Start
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 	
 	# The client takes an App_Key, an account email address and a password
 	client = midea_client('3742e9e5842d4ad59c2db887e12449f9', MideaUser, MideaPassword)
@@ -197,19 +198,19 @@ def update_midea():
 
 	#prepare to finish
 	#send to Loxone
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.power_state/%s" % (LoxUser, LoxPassword, LoxIP, device.power_state))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, device.audible_feedback))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.target_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.target_temperature))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.operational_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.operational_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.fan_speed/%s" % (LoxUser, LoxPassword, LoxIP, device.fan_speed))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.swing_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.swing_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.eco_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.eco_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, device.turbo_mode))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.indoor_temperature))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, device.outdoor_temperature))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.id/%s" % (LoxUser, LoxPassword, LoxIP, device.id))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, device.name))
-	requests.get("http://%s:%s@%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.power_state))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.audible_feedback))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.target_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.target_temperature))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.operational_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.operational_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.fan_speed/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.fan_speed))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.swing_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.swing_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.eco_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.eco_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.turbo_mode))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.indoor_temperature))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.outdoor_temperature))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.id/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.name/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.name))
+	requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
 # Start script
 start_server()  
