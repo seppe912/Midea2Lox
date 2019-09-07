@@ -60,6 +60,7 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
+        key = ["True", "False", "status", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
         global data
         data, addr = soc.recvfrom(1024)
         data = data.decode('utf-8')
@@ -68,7 +69,7 @@ def start_server():
         _LOGGER.info(data)
         try:
             Argumente = len(data)
-            if Argumente == 8:
+            if Argumente == 8 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
                 print("UEbertragung zu Midea wird gestartet")
                 _LOGGER.info("UEbertragung zu Midea wird gestartet")
                 send_to_midea()
@@ -79,8 +80,8 @@ def start_server():
                 update_midea()
                 _LOGGER.info("Status Update erfolgreich")
             else:
-                print("Zu wenige Argumente")
-                _LOGGER.error("Zu wenige Argumente erhalten! UEbertragung wird nicht gestartet")
+                print("Falsche Argumente erhalten! UEbertragung wird nicht gestartet. Entweder zu wenige Argumente oder fehlerhafte Argumente erhalten, bitte die Loxone Konfiguration überprüfen.")
+                _LOGGER.error("Falsche Argumente erhalten! UEbertragung wird nicht gestartet. Entweder zu wenige Argumente oder fehlerhafte Argumente erhalten, bitte die Loxone Konfiguration überprüfen.")
         except:
             print("Fehler bei send_to_midea, UEbertragung abgebrochen")
             _LOGGER.info("Fehler bei send_to_midea, , UEbertragung abgebrochen")
