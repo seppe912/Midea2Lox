@@ -82,6 +82,8 @@ def start_server():
             else:
                 print("Falsche Argumente erhalten! UEbertragung wird nicht gestartet. Entweder zu wenige Argumente oder fehlerhafte Argumente erhalten, bitte die Loxone Konfiguration ueberpruefen.Please check your Loxone config, wrong arguments sent")
                 _LOGGER.error("Falsche Argumente erhalten! UEbertragung wird nicht gestartet. Entweder zu wenige Argumente oder fehlerhafte Argumente erhalten, bitte die Loxone Konfiguration ueberpruefen. Please check your Loxone config, wrong arguments sent")
+                _LOGGER.error("erlaubte Argumente:")
+                _LOGGER.error(key)
         except:
             print("Fehler bei send_to_midea, UEbertragung abgebrochen")
             _LOGGER.info("Fehler bei send_to_midea, , UEbertragung abgebrochen")
