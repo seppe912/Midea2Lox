@@ -83,7 +83,7 @@ def start_server():
                 for eachArg in data:
                     if eachArg not in key and eachArg != data[2]:
                         print("falsches Argument erhalten: ", eachArg)
-                        _LOGGER.error("falsches Argument erhalten: {}".format(eachArg))						
+                        _LOGGER.error("falsches Argument erhalten: '{}'".format(eachArg))						
                 _LOGGER.info("erlaubte Argumente: {}".format(key))
         except:
             print("Fehler bei send_to_midea, UEbertragung abgebrochen")
