@@ -80,10 +80,11 @@ def start_server():
                 update_midea()
                 _LOGGER.info("Status Update erfolgreich")
             else:
-                print("Falsche Argumente erhalten! UEbertragung wird nicht gestartet. Entweder zu wenige Argumente oder fehlerhafte Argumente erhalten, bitte die Loxone Konfiguration ueberpruefen.Please check your Loxone config, wrong arguments sent")
-                _LOGGER.error("Falsche Argumente erhalten! UEbertragung wird nicht gestartet. Entweder zu wenige Argumente oder fehlerhafte Argumente erhalten, bitte die Loxone Konfiguration ueberpruefen. Please check your Loxone config, wrong arguments sent")
-                _LOGGER.error("erlaubte Argumente:")
-                _LOGGER.error(key)
+                for eachArg in data:
+                    if eachArg not in key and eachArg != data[2]:
+                        print("falsches Argument erhalten: ", eachArg)
+                        _LOGGER.error("falsches Argument erhalten: {}".format(eachArg))						
+                _LOGGER.error("erlaubte Argumente: {}".format(key))
         except:
             print("Fehler bei send_to_midea, UEbertragung abgebrochen")
             _LOGGER.info("Fehler bei send_to_midea, , UEbertragung abgebrochen")
