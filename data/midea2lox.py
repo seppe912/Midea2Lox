@@ -64,7 +64,7 @@ def start_server():
             Argumente = len(data)
             if Argumente == 8 or 10 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
                 print("send data to Midea Appliance")
-                _LOGGER.info("send data to Midea Appliance")
+                _LOGGER.info("send data to Midea Appliance %s @ %s" % (data[8], data[9]))
                 send_to_midea()
             elif data[0] == "status":
                 print("starting Status update")
