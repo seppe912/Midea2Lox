@@ -134,6 +134,9 @@ if ( param('do') ) {
 	if ( $do eq "restart") {
 		system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 	}
+	if ( $do eq "getID") {
+	system ("$installfolder/data/plugins/$psubfolder/getID.py &");
+	}
 }
 
 # Title
