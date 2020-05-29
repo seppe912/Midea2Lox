@@ -17,12 +17,12 @@ import logging
 
 # Miniserver Daten Laden
 cfg = configparser.ConfigParser()
-cfg.read('/opt/loxberry/config/plugins/Midea2Lox/midea2lox.cfg')
+cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
 MideaUser = cfg.get('default','MideaUser')
 MideaPassword = cfg.get('default','MideaPassword')
 
 _LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
 #Start
 _LOGGER.info("connecting to Midea Cloud") 
