@@ -49,6 +49,7 @@ ARGV3=$3 # Third argument is Plugin installation folder
 ARGV5=$5 # Fifth argument is Base folder of LoxBerry
 
 chmod +x $PDATA/midea2lox.py
+chmod +x $PDATA/getID.py
 
 
 /bin/echo "#############################################################################################"
