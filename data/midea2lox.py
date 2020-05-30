@@ -72,7 +72,7 @@ def start_server():
                 update_midea()
             else:
                 for eachArg in data:
-                    if eachArg not in key and eachArg != data[2]:
+                    if eachArg not in key and eachArg != data[2] and eachArg != data[8] and eachArg != data[9]:
                         print("getting wrong Argument: ", eachArg)
                         _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
                 _LOGGER.info("allowed Arguments: {}".format(key))
