@@ -13,3 +13,5 @@ Das Plugin übernimmt die Kommunikation zwischen Midea und Loxberry.Auf dem Loxb
 daher müssen die Eingänge in Loxone genau den Wortlaut wie in der Beispielkonfig haben.Die Beispielkonfig für Loxone ist auch hier zu finden.
 
 Weitere Infos sind unter https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox zu finden
+
+Ab V2.0 findet die kommunikation direkt über LAN ohne Cloud statt.
