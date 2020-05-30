@@ -14,4 +14,4 @@ daher müssen die Eingänge in Loxone genau den Wortlaut wie in der Beispielkonf
 
 Weitere Infos sind unter https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox zu finden
 
-Ab V2.0 findet die kommunikation direkt über LAN ohne Cloud statt.
+Ab V2.0 findet die kommunikation direkt über LAN ohne Cloud statt. Lediglich die ID der Geräte muss einmaig von der Cloud ausgelesen werden
