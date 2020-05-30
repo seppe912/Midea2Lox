@@ -47,9 +47,9 @@ class lan:
             import sys
             print(str(sys.exc_info()))
             _LOGGER.error(str(sys.exc_info()))
-            _LOGGER.error("retry %s @ %s:%s " %(self._retries, self.device_ip, self.device_port))
             if(self._retries < 10):
                 time.sleep(10) #give it some time
+                _LOGGER.error("retry %s @ %s:%s " %(self._retries, self.device_ip, self.device_port))
                 return self.request(message)
             else:
                 _LOGGER.error("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
