@@ -62,13 +62,21 @@ def start_server():
         try:
             global Argumente
             Argumente = len(data)
-            if Argumente == 8 or 10 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
+            if Argumente == 8:
+                print("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                exit()
+            elif Argumente == 10 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
                 print("send data to Midea Appliance")
                 _LOGGER.info("send data to Midea Appliance %s @ %s" % (data[8], data[9]))
                 send_to_midea()
-            elif data[0] == "status":
+            elif data[0] == "status" and Argumente == 3:
                 print("starting Status update")
                 _LOGGER.info("starting Status update")
+                update_midea()
+            elif data[0] == "status" and Argumente == 1:
+                print("starting Status update")
+                _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 update_midea()
             else:
                 for eachArg in data:
@@ -90,12 +98,8 @@ def send_to_midea():
     #Start, set Loxone Script to active
     requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
     
-    if Argumente == 10:
-        device_ip = str(data[9])
-        device_id = int(data[8])
-    else:
-        _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
-        exit
+    device_ip = str(data[9])
+    device_id = int(data[8])
 
     client = midea_device(device_ip, int(device_id))
     device = client.setup()
@@ -151,14 +155,9 @@ def update_midea():
     #Start, set Loxone Script to active
     requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
     
-    if Argumente == 3:
-        device_ip = str(data[2])
-        device_id = int(data[1])
-    else:
-        _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP over Loxone, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
-        exit
+    device_ip = str(data[2])
+    device_id = int(data[1])
     
-
     client = midea_device(device_ip, int(device_id))
     device = client.setup()
     
