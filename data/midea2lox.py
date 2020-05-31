@@ -79,11 +79,18 @@ def start_server():
                 _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 update_midea()
             else:
-                for eachArg in data:
-                    if eachArg not in key and eachArg != data[2] and eachArg != data[8] and eachArg != data[9]:
-                        print("getting wrong Argument: ", eachArg)
-                        _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
-                _LOGGER.info("allowed Arguments: {}".format(key))
+                if Argumente == 10:
+                    for eachArg in data:
+                        if eachArg not in key and eachArg != data[2] and eachArg != data[8] and eachArg != data[9]:
+                            print("getting wrong Argument: ", eachArg)
+                            _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
+                    _LOGGER.info("allowed Arguments: {}".format(key))
+                else:
+                    for eachArg in data:
+                        if eachArg not in key and eachArg != data[2]:
+                            print("getting wrong Argument: ", eachArg)
+                            _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
+                    _LOGGER.info("allowed Arguments: {}".format(key))
         except:
             import sys
             print('Error : ' + str(sys.exc_info()))
