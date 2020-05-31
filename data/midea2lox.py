@@ -75,9 +75,8 @@ def start_server():
                 _LOGGER.info("starting Status update")
                 update_midea()
             elif data[0] == "status" and Argumente == 1:
-                print("starting Status update")
+                print("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
-                update_midea()
             else:
                 if Argumente == 10:
                     for eachArg in data:
