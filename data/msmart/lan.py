@@ -30,7 +30,7 @@ class lan:
         sock.settimeout(10)
         # Connect the Device
         device_address = (self.device_ip, self.device_port)
-        _LOGGER.debug("connect to %s:%s" %(self.device_ip, self.device_port))
+        _LOGGER.debug("connect to %s:%s" %(device_address))
         
 
         try:
