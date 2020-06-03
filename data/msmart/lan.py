@@ -53,7 +53,7 @@ class lan:
                 _LOGGER.info("retry %s @ %s:%s " %(self._retries, self.device_ip, self.device_port))
                 return self.request(message)
             else:
-                _LOGGER.error("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
+                exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
         finally:
             sock.close()
         _LOGGER.debug("Received from %s:%s %s." %(self.device_ip, self.device_port, message.hex()))
