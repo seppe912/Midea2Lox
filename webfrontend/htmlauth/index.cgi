@@ -94,7 +94,6 @@ if (param('saveCloud')) {
 	
 	$conf->save();
     system ("$installfolder/data/plugins/$psubfolder/getID.py &");
-	
 }
 
 
