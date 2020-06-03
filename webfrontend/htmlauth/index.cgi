@@ -28,6 +28,8 @@ our $debug;
 our $select_debug;
 our $MideaUser;
 our $MideaPassword;
+our $MideaUser2;
+our $MideaPassword2;
 our $LoxberryIP  = LoxBerry::System::get_localip();
 our $do;
 our $midea2loxstatus;
@@ -76,14 +78,25 @@ if (param('savedata')) {
 	$conf->param('LANGUAGE', unquotemeta($lang));	
 	$conf->param('UDP_PORT', unquotemeta($udp_port));
 	$conf->param('DEBUG', unquotemeta($debug));		
-
-	$conf->param('MideaUser', unquotemeta($MideaUser));	
-	$conf->param('MideaPassword', unquotemeta($MideaPassword));
-	$conf->param('LoxberryIP', unquotemeta($LoxberryIP));
-	
+    $conf->param('LoxberryIP', unquotemeta($LoxberryIP));
+    
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 }
+
+# Save settings to config file
+if (param('saveCloud')) {
+	$conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
+	if ($debug ne 1) { $debug = 0 }
+
+	$conf->param('MideaUser', unquotemeta($MideaUser));	
+	$conf->param('MideaPassword', unquotemeta($MideaPassword));
+	
+	$conf->save();
+    system ("$installfolder/data/plugins/$psubfolder/getID.py &");
+	
+}
+
 
 # Parse config file
 $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
@@ -135,7 +148,7 @@ if ( param('do') ) {
 		system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 	}
 	if ( $do eq "getID") {
-	system ("$installfolder/data/plugins/$psubfolder/getID.py &");
+        system ("$installfolder/data/plugins/$psubfolder/getID.py &");
 	}
 }
 
