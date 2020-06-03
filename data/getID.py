@@ -22,7 +22,12 @@ _LOGGER.info("connecting to Midea Cloud")
 client = midea_client('3742e9e5842d4ad59c2db887e12449f9', MideaUser, MideaPassword)
 
 # Log in right now, to check credentials (this step is optional, and will be called when listing devices)
-client.setup()
+try: 
+    client.setup()
+except:
+    import sys
+    print('Error : ' + str(sys.exc_info()))
+    _LOGGER.error(str(sys.exc_info()))
 
 # List devices. These are complex state holding objects, no other trickery needed from here. 
 devices = client.devices()
