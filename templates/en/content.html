@@ -2,7 +2,6 @@
    <div class=\"ui-body ui-body-a ui-corner-all loxberry-logo\">
       <div style=\"margin: 5%;\">
       <form method="post" data-ajax="false" name="main_form" id="main_form" action="./index.cgi">
-         <input type="hidden" name="savedata" id="savedata" value="1">
          <div class="form-group">
             <table valign="bottom" width="100%">
                <tbody>
@@ -47,7 +46,7 @@
 
 <tr>
 <td width="25%"><label>Einstellungen Speichern und Midea2Lox neu starten</label>
-<td width="50%"><input id="do" name="do" type="submit" value="Save"></td>
+<td width="50%"><input id="savedata" name="savedata" type="submit" value="Save and restart"></td>
 </tr>
 
 
@@ -81,8 +80,8 @@
 </tr>
 
 <tr>
-<td width="25%"><label>Zugangsdaten speichern</label>
-<td width="50%"><input id="do" name="do" type="submit" value="Save"></td>
+<td width="25%"><label>Zugangsdaten speichern und ID von Cloud laden</label>
+<td width="50%"><input id="saveCloud" name="saveCloud" type="submit" value="Save and getID"></td>
 </tr>
 
 <tr>
