@@ -93,7 +93,7 @@ def start_server():
         except:
             import sys
             print('Error : ' + str(sys.exc_info()))
-            _LOGGER.error('Error : ' + str(sys.exc_info()))
+            _LOGGER.error(str(sys.exc_info()))
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
     soc.close()
 
