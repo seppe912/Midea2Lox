@@ -51,7 +51,7 @@ class lan:
             if(self._retries < 10):
                 _LOGGER.info("wait 10 seconds, and retry")
                 time.sleep(10) #give it some time
-                _LOGGER.info("retry %s @ %s:%s " %(self._retries, self.device_ip, self.device_port))
+                _LOGGER.info("retry %s/10 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
                 return self.request(message)
             else:
                 exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
