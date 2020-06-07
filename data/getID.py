@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import logging
+import sys
 
 try:
     from midea.client import client as midea_client
@@ -32,7 +34,6 @@ client = midea_client('3742e9e5842d4ad59c2db887e12449f9', MideaUser, MideaPasswo
 try: 
     client.setup()
 except:
-    import sys
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
 
