@@ -1,12 +1,19 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from msmart.device import air_conditioning_device as ac
-from msmart.device import device as midea_device
-
-import sys
-import requests
-import configparser
 import logging
+import sys
+    
+try:
+    from msmart.device import air_conditioning_device as ac
+    from msmart.device import device as midea_device
+    import requests
+    import configparser
+except:
+    _LOGGER = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    print('Error : ' + str(sys.exc_info()))
+    _LOGGER.error(str(sys.exc_info()))
+    sys.exit()
 
 # Miniserver Daten Laden
 cfg = configparser.ConfigParser()
@@ -44,7 +51,6 @@ def start_server():
         print('Socket bind complete, listen at' , LoxberryIP, ":", UDP_Port)
         _LOGGER.info("Socket bind complete, listen at {}:{}".format(LoxberryIP, UDP_Port))
     except socket.error as msg:
-        import sys
         print('Bind failed. Error : ' + str(sys.exc_info()))
         _LOGGER.error('Bind failed. Error : ' + str(sys.exc_info()))
         sys.exit()
@@ -91,7 +97,6 @@ def start_server():
                             _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
                     _LOGGER.info("allowed Arguments: {}".format(key))
         except:
-            import sys
             print('Error : ' + str(sys.exc_info()))
             _LOGGER.error(str(sys.exc_info()))
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
