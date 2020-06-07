@@ -11,7 +11,7 @@ try:
 
 
     # Miniserver Daten Laden
-    cfg = configparser.ConfigParser()
+    cfg = configparser.RawConfigParser()
     cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
     UDP_Port = int(cfg.get('default','UDP_PORT'))
     LoxberryIP = cfg.get('default','LoxberryIP')
