@@ -30,7 +30,7 @@ try:
     if DEBUG == "1":
        logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
        print("Debug is True")
-        _LOGGER.debug("Debug is True")
+       _LOGGER.debug("Debug is True")
     else:
        logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
