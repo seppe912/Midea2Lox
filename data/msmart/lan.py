@@ -40,10 +40,10 @@ class lan:
             sock.sendall(message)
             # Received data
             response = sock.recv(512)
-        #except socket.timeout:
-        #    _LOGGER.info("Connect the Device %s:%s TimeOut for 10s. don't care about a small amount of this. if many maybe not support." %(self.device_ip, self.device_port))
-        #    return bytearray()
-        except socket.error or socket.timeout:
+        except socket.timeout:
+            _LOGGER.info("Connect the Device %s:%s TimeOut for 10s. don't care about a small amount of this. if many maybe not support." %(self.device_ip, self.device_port))
+            return bytearray()
+        except socket.error:
             self._retries += 1
             import sys
             print(str(sys.exc_info()))
