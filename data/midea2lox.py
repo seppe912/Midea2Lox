@@ -8,7 +8,7 @@ import configparser
 import logging
 
 # Miniserver Daten Laden
-cfg = configparser.ConfigParser()
+cfg = configparser.RawConfigParser()
 cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
 MideaUser = cfg.get('default','MideaUser')
 MideaPassword = cfg.get('default','MideaPassword')
