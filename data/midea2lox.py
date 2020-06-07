@@ -8,36 +8,38 @@ try:
     from msmart.device import device as midea_device
     import requests
     import configparser
+
+
+    # Miniserver Daten Laden
+    cfg = configparser.ConfigParser()
+    cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
+    MideaUser = cfg.get('default','MideaUser')
+    MideaPassword = cfg.get('default','MideaPassword')
+    UDP_Port = int(cfg.get('default','UDP_PORT'))
+    LoxberryIP = cfg.get('default','LoxberryIP')
+    DEBUG = cfg.get('default','DEBUG')
+    Miniserver = cfg.get('default','MINISERVER')
+
+    cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
+    LoxIP = cfg.get(Miniserver,'IPADDRESS')
+    LoxPort = cfg.get(Miniserver,'PORT')
+    LoxPassword = cfg.get(Miniserver,'PASS')
+    LoxUser = cfg.get(Miniserver,'ADMIN')
+
+    _LOGGER = logging.getLogger(__name__)
+    if DEBUG == "1":
+       logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       print("Debug is True")
+        _LOGGER.debug("Debug is True")
+    else:
+       logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+
 except:
     _LOGGER = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
-
-# Miniserver Daten Laden
-cfg = configparser.ConfigParser()
-cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
-MideaUser = cfg.get('default','MideaUser')
-MideaPassword = cfg.get('default','MideaPassword')
-UDP_Port = int(cfg.get('default','UDP_PORT'))
-LoxberryIP = cfg.get('default','LoxberryIP')
-DEBUG = cfg.get('default','DEBUG')
-Miniserver = cfg.get('default','MINISERVER')
-
-cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
-LoxIP = cfg.get(Miniserver,'IPADDRESS')
-LoxPort = cfg.get(Miniserver,'PORT')
-LoxPassword = cfg.get(Miniserver,'PASS')
-LoxUser = cfg.get(Miniserver,'ADMIN')
-
-_LOGGER = logging.getLogger(__name__)
-if DEBUG == "1":
-    logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-    print("Debug is True")
-    _LOGGER.debug("Debug is True")
-else:
-    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
 # Mainprogramm
 def start_server():
