@@ -1,10 +1,17 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from midea.client import client as midea_client
+try:
+    from midea.client import client as midea_client
 
-import configparser
-import logging
+    import configparser
+    import logging
+except:
+    _LOGGER = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    print('Error : ' + str(sys.exc_info()))
+    _LOGGER.error(str(sys.exc_info()))
+    sys.exit()
 
 # Midea Cloud Zugangsdaten laden
 cfg = configparser.ConfigParser()
