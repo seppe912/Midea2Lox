@@ -34,9 +34,9 @@ try:
 
     for device in devices:
 
-       count +=1
-       print("Appliance %s, Name: %s, ID: %s" % (count, device.name, device.id))
-      _LOGGER.info("Appliance {}: Name: {}, ID: {}".format(count, device.name, device.id))
+        count +=1
+        print("Appliance %s, Name: %s, ID: %s" % (count, device.name, device.id))
+        _LOGGER.info("Appliance {}: Name: {}, ID: {}".format(count, device.name, device.id))
     
 except:
     _LOGGER = logging.getLogger(__name__)
