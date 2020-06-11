@@ -61,7 +61,6 @@ echo "<INFO> Plugin Log folder (on RAMDISK!) is: $PLOG"
 echo "<INFO> Plugin CONFIG folder is: $PCONFIG"
 
 pip3 install pycryptodome
-pip3 install Click
 pip3 install requests
 
 # Exit with Status 0
