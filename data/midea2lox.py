@@ -6,6 +6,7 @@ import sys
 try:
     from msmart.device import air_conditioning_device as ac
     from msmart.device import device as midea_device
+    from msmart.device import convert_device_id_int
     import requests
     import configparser
 
@@ -142,9 +143,7 @@ def send_to_midea():
         device.apply()
         
         # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
-        old = bytearray.fromhex(device.id)
-        new = reversed(old)
-        id = int(bytearray(new).hex(), 16)
+        id = convert_device_id_int(device.id)
         
         #send to Loxone
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.power_state))
@@ -193,9 +192,7 @@ def update_midea():
         })
         
         # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
-        old = bytearray.fromhex(device.id)
-        new = reversed(old)
-        id = int(bytearray(new).hex(), 16)
+        id = convert_device_id_int(device.id)
         
         #send to Loxone
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.power_state))
