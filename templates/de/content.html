@@ -1,44 +1,44 @@
 <div role=\"main\" class=\"ui-content\">
-   <div class=\"ui-body ui-body-a ui-corner-all loxberry-logo\">
-      <div style=\"margin: 5%;\">
-      <form method="post" data-ajax="false" name="main_form" id="main_form" action="./index.cgi">
-         <div class="form-group">
-            <table valign="bottom" width="100%">
-               <tbody>
-                  <tr>
-                     <td align="left" valign="bottom">
-                        <h2> Midea2Lox - Settings</h2>
-                     </td>
+<div class=\"ui-body ui-body-a ui-corner-all loxberry-logo\">
+<div style=\"margin: 5%;\">
+<form method="post" data-ajax="false" name="main_form" id="main_form" action="./index.cgi">
+<div class="form-group">
+<table valign="bottom" width="100%">
+<tbody>
+<tr>
+<td align="left" valign="bottom">
+<h2> Midea2Lox - Settings</h2>
+</td>
 <td colspan=5 align=center>
 <font face="courier"><b><!--$midea2loxstatus--></b></font>
 </td>
-                     <td align="right" valign="middle">
-                        <label id="labelmsenabled">
-                           <h3><a href='http://loxberry/admin/system/tools/logfile.cgi?logfile=plugins/<!--$psubfolder-->/midea2lox.log&header=html&format=template&only=once' target='_blank'>Debug&nbsp;</a>&nbsp;</h3>
-                        </label>
-                     </td>
-                     <td valign="middle" width="50">
-                        <fieldset>
-                           <select id="debug" name="debug" data-role="flipswitch">
-                              <!--$select_debug-->
-                           </select>
-                        </fieldset>
-                  </tr>
-               </tbody>
-            </table>
-            <br>
-			<table class="formtable" border="0" width="100%">
-													<tr>
-														<td width="25%">
-															<label id="labelfbpass">Miniserver:</label>
-														</td>
-														<td width="50%">
-															<select id="miniserver" name="miniserver" data-mini="true">
-																<!--$select_ms-->
-															</select>
-														</td>
-													</tr>
-			
+<td align="right" valign="middle">
+<label id="labelmsenabled">
+<h3><a href='http://loxberry/admin/system/tools/logfile.cgi?logfile=plugins/<!--$psubfolder-->/midea2lox.log&header=html&format=template&only=once' target='_blank'>Debug&nbsp;</a>&nbsp;</h3>
+</label>
+</td>
+<td valign="middle" width="50">
+<fieldset>
+<select id="debug" name="debug" data-role="flipswitch">
+<!--$select_debug-->
+</select>
+</fieldset>
+</tr>
+</tbody>
+</table>
+<br>
+<table class="formtable" border="0" width="100%">
+<tr>
+<td width="25%">
+<label id="labelfbpass">Miniserver:</label>
+</td>
+<td width="50%">
+<select id="miniserver" name="miniserver" data-mini="true">
+    <!--$select_ms-->
+</select>
+</td>
+</tr>
+
 <tr>
 <td width="25%"><label>UDP Port</label></td>
 <td width="50%"><input name="udp_port" type="number" min="7000" max="8000" maxlength="5" value="<!--$udp_port-->" data-validation-error-msg="* Please enter an free UDP-Port for the Receiver" /></td>
@@ -46,7 +46,7 @@
 
 <tr>
 <td width="25%"><label>Einstellungen Speichern und Midea2Lox neu starten</label>
-<td width="50%"><input id="savedata" name="savedata" type="submit" value="Save and restart"></td>
+<td width="50%"><input id="savedata" name="savedata" type="submit" value="Speichern und Neustarten"></td>
 </tr>
 
 
@@ -63,33 +63,11 @@
 
 
 <tr>
-<td align="left" valign="bottom"> 
-<h2> Midea - Cloud-Settings</h2>
-<td colspan=5 align=left>
-<b>wird nur benötigt, wenn die ID des Midea Geärtes unbekannt ist</b>
-</td>
-</tr>
-
-<tr>
-<td width="25%"><label>Midea User</label></td>
-<td width="50%"><input name="MideaUser" type="email" value="<!--$MideaUser-->" data-validation-error-msg="* Please enter the User from Midea" /></td>
-</tr>
-<tr>
-<td width="25%"><label>Midea Passwort</label></td>
-<td width="50%"><input name="MideaPassword" type="password" autocomplete="off" value="<!--$MideaPassword-->" data-validation-error-msg="* Please enter the Password from Midea" /></td>
-</tr>
-
-<tr>
-<td width="25%"><label>Zugangsdaten speichern und ID von Cloud laden</label>
-<td width="50%"><input id="saveCloud" name="saveCloud" type="submit" value="Save and getID"></td>
-</tr>
-
-<tr>
 <td>
-<b>Cloudupdate für Geräte ID</b> Bitte abwarten! Für details siehe Logdatei. Die Midea-Cloud braucht manchmal etwas Zeit zum Antworten
+<b>Entdecke Midea Geräte</b> Bitte 10 Sekunden abwarten! Für details siehe Logdatei.
 </td>
 <td>
-<a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=getID">getID</a>
+<a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=discover">discover</a>
 <a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="/admin/system/tools/logfile.cgi?logfile=plugins/<!--$psubfolder-->/midea2lox.log&header=html&format=template&only=once" target="_blank">Logfile</a>
 </td>
 </tr>
@@ -97,7 +75,7 @@
 </tbody>
 </table>
 <br />
-<table border="1" width="100%" cellspacing="0" cellpadding="20">
+<table border="1" width="100%" height="100%" cellspacing="0" cellpadding="20" valign="top">
 <tbody>
 <tr>
 <td width="100%">
