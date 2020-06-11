@@ -4,6 +4,7 @@ Integration von Midea in Loxone
 Dieses Loxberry Plugin ermöglicht eine kommunikation zwischen dem Loxberry/Loxone zu Midea Klimaanlagen.
 
 Der Hauptpart, das Python3 Midea Script, stammt von NeoAcheron https://github.com/NeoAcheron/midea-ac-py. Vielen Dank dafür, ohne dieses Plugin hätte das nicht funktioniert.
+Für die Steuerung über LAN hat mac_zhou mit msmart https://github.com/mac-zhou/midea-msmart großartige leistung geleistet. Danke dafür!
 
 Installation:
 Plugin herunterladen und im Pluginmanager des Loxberry installieren.
@@ -14,4 +15,4 @@ daher müssen die Eingänge in Loxone genau den Wortlaut wie in der Beispielkonf
 
 Weitere Infos sind unter https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox zu finden
 
-Ab V2.0 findet die kommunikation direkt über LAN ohne Cloud statt. Lediglich die ID der Geräte muss einmaig von der Cloud ausgelesen werden
+Ab V2.0 findet die kommunikation direkt über LAN ohne Cloud statt. 
