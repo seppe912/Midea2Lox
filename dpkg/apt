@@ -2,6 +2,6 @@
 # One line per package, use exact packagename as you would do for apt-get.
 #
 python3
-python3.7-requests
-python3.7-pycryptodome
+python3-requests
+python3-pycryptodome
 libstring-escape-perl
