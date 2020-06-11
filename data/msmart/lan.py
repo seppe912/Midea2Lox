@@ -11,7 +11,7 @@ from msmart.security import security
 # The Midea cloud client is by far the more obscure part of this library, and without some serious reverse engineering
 # this would not have been possible. Thanks Yitsushi for the ruby implementation. This is an adaptation to Python 3
 
-VERSION = '0.1.16'
+VERSION = '0.1.17'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class lan:
     def request(self, message):
         # Create a TCP/IP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(10)
+        sock.settimeout(8)
         
         # Connect the Device
         device_address = (self.device_ip, self.device_port)
