@@ -69,7 +69,6 @@ if (param('savedata')) {
 	$conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
 	if ($debug ne 1) { $debug = 0 }
 	$conf->param('MINISERVER', unquotemeta("MINISERVER$miniserver"));	
-	$conf->param('LANGUAGE', unquotemeta($lang));	
 	$conf->param('UDP_PORT', unquotemeta($udp_port));
 	$conf->param('DEBUG', unquotemeta($debug));		
     $conf->param('LoxberryIP', unquotemeta($LoxberryIP));
@@ -82,7 +81,6 @@ if (param('savedata')) {
 # Parse config file
 $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
 $miniserver = encode_entities($conf->param('MINISERVER'));
-$lang = encode_entities($conf->param('LANGUAGE'));	
 $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
 
