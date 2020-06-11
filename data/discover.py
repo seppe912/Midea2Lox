@@ -3,6 +3,12 @@
 import logging
 import sys
 
+import configparser
+
+cfg = configparser.RawConfigParser()
+cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
+DEBUG = cfg.get('default','DEBUG')
+
 try:
     from msmart.cli import discover
 
@@ -17,4 +23,7 @@ except:
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
 
-discover()
+if DEBUG == 1:
+    discover(1)
+else:
+    discover(0)
