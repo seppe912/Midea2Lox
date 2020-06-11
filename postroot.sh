@@ -60,5 +60,7 @@ echo "<INFO> Plugin Data folder is: $PDATA"
 echo "<INFO> Plugin Log folder (on RAMDISK!) is: $PLOG"
 echo "<INFO> Plugin CONFIG folder is: $PCONFIG"
 
+pip3 install pycryptodome
+
 # Exit with Status 0
 exit 0
