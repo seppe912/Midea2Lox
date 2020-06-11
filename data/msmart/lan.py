@@ -11,9 +11,10 @@ from msmart.security import security
 # The Midea cloud client is by far the more obscure part of this library, and without some serious reverse engineering
 # this would not have been possible. Thanks Yitsushi for the ruby implementation. This is an adaptation to Python 3
 
-VERSION = '0.1.15'
+VERSION = '0.1.16'
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class lan:
     def __init__(self, device_ip, device_id):
@@ -28,24 +29,25 @@ class lan:
         # Create a TCP/IP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(10)
+        
         # Connect the Device
         device_address = (self.device_ip, self.device_port)
-        _LOGGER.debug("connect to %s:%s" %(device_address))
-        
 
         try:
-            # Send data
             sock.connect(device_address)
-            _LOGGER.debug("Sending to %s:%s %s." %(self.device_ip, self.device_port, message.hex()))
+            # Send data
+            _LOGGER.debug("Sending to %s:%s %s." %
+                          (self.device_ip, self.device_port, message.hex()))
             sock.sendall(message)
+
             # Received data
             response = sock.recv(512)
         #except socket.timeout:
-        #    _LOGGER.info("Connect the Device %s:%s TimeOut for 10s. don't care about a small amount of this. if many maybe not support." %(self.device_ip, self.device_port))
-        #    return bytearray()
+        #    _LOGGER.info("Connect the Device %s:%s TimeOut for 10s. don't care about a small amount of this. if many maybe not support." % (
+        #        self.device_ip, self.device_port))
+        #    return bytearray(0)
         except socket.error or socket.timeout:
             self._retries += 1
-            import sys
             print(str(sys.exc_info()))
             _LOGGER.error(str(sys.exc_info()))
             if(self._retries < 10):
@@ -54,10 +56,15 @@ class lan:
                 _LOGGER.info("retry %s/10 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
                 return self.request(message)
             else:
-                exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
+                sys.exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
         finally:
             sock.close()
-        _LOGGER.debug("Received from %s:%s %s." %(self.device_ip, self.device_port, message.hex()))
+        _LOGGER.debug("Received from %s:%s %s." %
+                      (self.device_ip, self.device_port, message.hex()))
+        if response.hex() == message.hex():
+            _LOGGER.debug("Something wrong! reply is same. %s:%s %s." % (
+                self.device_ip, self.device_port, message.hex()))
+            exit()
         return response
 
     def encode(self, data: bytearray):
@@ -77,12 +84,13 @@ class lan:
                 data[i] = data[i] + 256
         return bytearray(data)
 
-    def appliance_transparent_send(self, data): 
-        encoded = self.encode(data)
+    def appliance_transparent_send(self, data):
         response = bytearray(self.request(data))
         if len(response) > 0:
-            reply = self.decode(self.security.aes_decrypt(response[40:88]))
+            if len(response) == 88:
+                reply = self.decode(self.security.aes_decrypt(response[40:72]))
+            else:
+                reply = self.decode(self.security.aes_decrypt(response[40:88]))
             return reply
         else:
-            return bytearray()
-
+            sys.exit("response is 0")
