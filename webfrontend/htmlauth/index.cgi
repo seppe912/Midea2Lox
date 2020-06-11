@@ -26,10 +26,6 @@ our $select_language;
 our $udp_port;	
 our $debug;
 our $select_debug;
-our $MideaUser;
-our $MideaPassword;
-our $MideaUser2;
-our $MideaPassword2;
 our $LoxberryIP  = LoxBerry::System::get_localip();
 our $do;
 our $midea2loxstatus;
@@ -62,8 +58,6 @@ if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotem
 if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = "7013"; } } else { $udp_port = quotemeta($query{'udp_port'}); }
 if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = "0";  } } else { $debug = quotemeta($query{'debug'}); }
 
-if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
-if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
 
 
 # Figure out in which subfolder we are installed
@@ -84,18 +78,6 @@ if (param('savedata')) {
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 }
 
-# Save settings to config file
-if (param('saveCloud')) {
-	$conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
-	if ($debug ne 1) { $debug = 0 }
-
-	$conf->param('MideaUser', unquotemeta($MideaUser));	
-	$conf->param('MideaPassword', unquotemeta($MideaPassword));
-	
-	$conf->save();
-    system ("$installfolder/data/plugins/$psubfolder/getID.py &");
-}
-
 
 # Parse config file
 $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
@@ -103,9 +85,6 @@ $miniserver = encode_entities($conf->param('MINISERVER'));
 $lang = encode_entities($conf->param('LANGUAGE'));	
 $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
-
-$MideaPassword = encode_entities($conf->param('MideaPassword'));
-$MideaUser = encode_entities($conf->param('MideaUser'));
 
 
 # Set Enabled / Disabled switch
@@ -146,8 +125,8 @@ if ( param('do') ) {
 	if ( $do eq "restart") {
 		system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 	}
-	if ( $do eq "getID") {
-        system ("$installfolder/data/plugins/$psubfolder/getID.py &");
+	if ( $do eq "discover") {
+        system ("$installfolder/data/plugins/$psubfolder/discover.py &");
 	}
 }
 
@@ -164,7 +143,7 @@ $helptext = $helptext . "<br><br><b>Achtung!</b> Wenn Debug aktiv ist werden seh
 
 
 # Currently only german is supported - so overwrite user language settings:
-$lang = "de";
+#$lang = "de";
 
 # Load header and replace HTML Markup <!--$VARNAME--> with perl variable $VARNAME
 open(F,"$lbstemplatedir/$lang/header.html") || die "Missing template system/$lang/header.html";
