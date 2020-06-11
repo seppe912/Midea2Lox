@@ -1,4 +1,4 @@
-import click
+#import click
 import logging
 import socket
 import sys
@@ -34,8 +34,8 @@ BROADCAST_MSG = bytearray([
 ])
 
 
-@click.command()
-@click.option("-d", "--debug", default=False, count=True)
+#@click.command()
+#@click.option("-d", "--debug", default=False, count=True)
 # @click.pass_context
 def discover(debug: int):
     """Discover Midea Devices with UDP Broadcast"""
