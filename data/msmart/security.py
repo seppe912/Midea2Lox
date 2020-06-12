@@ -1,6 +1,7 @@
 
 import hashlib
 import logging
+import sys
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
@@ -31,7 +32,7 @@ class security:
         except ValueError as e:
             _LOGGER.error(
                 "aes_decrypt error: {} - data: {}".format(repr(e), raw.hex()))
-            return bytearray(0)
+            sys.exit()
 
     def aes_encrypt(self, raw):
         # Make sure to pad the data
