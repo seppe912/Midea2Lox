@@ -198,7 +198,6 @@ class air_conditioning_device(device):
             cmd.swing_mode = self._swing_mode.value
             cmd.eco_mode = self._eco_mode
             cmd.turbo_mode = self._turbo_mode
-
             pkt_builder = packet_builder(self.id)
 #            cmd.night_light = False
             cmd.fahrenheit = self.farenheit_unit
