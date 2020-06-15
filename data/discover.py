@@ -8,7 +8,7 @@ cfg = configparser.RawConfigParser()
 cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
 DEBUG = cfg.get('default','DEBUG')
 
-    try:
+try:
     from msmart.cli import discover
 
     if DEBUG == "1":
