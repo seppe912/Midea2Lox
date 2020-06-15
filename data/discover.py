@@ -23,7 +23,7 @@ except:
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
 
-if DEBUG == 1:
+if DEBUG == "1":
     discover(1)
 else:
     discover(0)
