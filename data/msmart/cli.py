@@ -52,12 +52,13 @@ def discover(debug: int):
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     sock.settimeout(5)
     found_devices = {}
+    discover_time = 10
     _LOGGER.info(
-        "Discovering devices with UDP Broadcast, wait 10 seconds...")
+        "Discovering devices with UDP Broadcast, wait 10 seconds +10s after each found device...")
     for i in range(10):
         try:
             sock.sendto(BROADCAST_MSG, ("255.255.255.255", 6445))
-            while (datetime.now()-t1).seconds <= 10:
+            while (datetime.now()-t1).seconds  <= discover_time:
                 data, addr = sock.recvfrom(512)
                 m_ip = addr[0]
                 if len(data) >= 41 and m_ip not in found_devices:
@@ -77,6 +78,7 @@ def discover(debug: int):
                         "Found a {} '0x{}' at {} - id: {} - sn: {} - ssid: {}".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
                     print(
                         "Found a {} '0x{}' at {} - id: {}<br>".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
+                    discover_time += (datetime.now()-t1).seconds
                     found = True
         except socket.timeout:
             continue
