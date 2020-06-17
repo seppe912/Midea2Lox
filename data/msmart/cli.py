@@ -7,7 +7,6 @@ from msmart.device import convert_device_id_int
 from msmart.device import device as midea_device
 from datetime import datetime 
 t1 = datetime.now() 
-found = False
 
 
 if sys.version_info < (3, 5):
@@ -79,7 +78,6 @@ def discover(debug: int):
                     print(
                         "Found a {} '0x{}' at {} - id: {}<br>".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
                     discover_time = 10 + (datetime.now()-t1).seconds
-                    found = True
         except socket.timeout:
             continue
         except KeyboardInterrupt:
