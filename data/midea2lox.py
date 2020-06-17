@@ -25,7 +25,7 @@ try:
     LoxPassword = cfg.get(Miniserver,'PASS')
     LoxUser = cfg.get(Miniserver,'ADMIN')
 
-    _LOGGER = logging.getLogger(__name__)
+    _LOGGER = logging.getLogger("Midea2Lox.py")
     if DEBUG == "1":
        logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
        print("Debug is True")
@@ -34,7 +34,7 @@ try:
        logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
 
 except:
-    _LOGGER = logging.getLogger(__name__)
+    _LOGGER = logging.getLogger("Midea2Lox.py")
     logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
