@@ -61,7 +61,6 @@ class lan:
             sock.close()
         _LOGGER.debug("Received from {}:{} {}".format(
             self.device_ip, self.device_port, message.hex()))
-            exit()
         return response
 
     def encode(self, data: bytearray):
