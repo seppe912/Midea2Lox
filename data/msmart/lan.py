@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import logging
 import requests
 import datetime
@@ -11,7 +12,7 @@ from msmart.security import security
 # The Midea cloud client is by far the more obscure part of this library, and without some serious reverse engineering
 # this would not have been possible. Thanks Yitsushi for the ruby implementation. This is an adaptation to Python 3
 
-VERSION = '0.1.18'
+VERSION = '0.1.19'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,14 +31,13 @@ class lan:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(8)
         
-        # Connect the Device
-        device_address = (self.device_ip, self.device_port)
-
         try:
+            # Connect the Device
+            device_address = (self.device_ip, self.device_port)
             sock.connect(device_address)
             # Send data
-            _LOGGER.debug("Sending to %s:%s %s." %
-                          (self.device_ip, self.device_port, message.hex()))
+            _LOGGER.debug("Sending to {}:{} {}".format(
+                self.device_ip, self.device_port, message.hex()))
             sock.sendall(message)
 
             # Received data
@@ -59,11 +59,8 @@ class lan:
                 sys.exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
         finally:
             sock.close()
-        _LOGGER.debug("Received from %s:%s %s." %
-                      (self.device_ip, self.device_port, message.hex()))
-        if response.hex() == message.hex():
-            _LOGGER.debug("Something wrong! reply is same. %s:%s %s." % (
-                self.device_ip, self.device_port, message.hex()))
+        _LOGGER.debug("Received from {}:{} {}".format(
+            self.device_ip, self.device_port, message.hex()))
             exit()
         return response
 
