@@ -60,6 +60,7 @@ echo "<INFO> Plugin Data folder is: $PDATA"
 echo "<INFO> Plugin Log folder (on RAMDISK!) is: $PLOG"
 echo "<INFO> Plugin CONFIG folder is: $PCONFIG"
 
+pip install --upgrade pip
 pip3 install pycryptodome
 pip3 install requests
 
