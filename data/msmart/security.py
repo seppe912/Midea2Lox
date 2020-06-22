@@ -31,8 +31,7 @@ class security:
         except ValueError as e:
             _LOGGER.error(
                 "aes_decrypt error: {} - data: {}".format(repr(e), raw.hex()))
-            import sys
-            sys.exit()
+            return bytearray(0)
 
     def aes_encrypt(self, raw):
         # Make sure to pad the data
