@@ -138,7 +138,7 @@ class set_command(base_command):
     def turbo_mode(self, turbo_mode_enabled: bool):
         self.data[0x14] = 0x02 if turbo_mode_enabled else 0
         
-@property
+    @property
     def screen_display(self):
         return self.data[0x14] & 0x10 > 0
 
