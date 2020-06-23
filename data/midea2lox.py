@@ -161,8 +161,8 @@ def send_to_midea():
             _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
             print("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
         else:
-            _LOGGER.info("Device Midea.{} @ {} is not supportet".format(id, device.ip))
-            print("Device Midea.{} @ {} is not supportet".format(id, device.ip))
+            _LOGGER.info("Device is not supportet")
+            print("Device Midea is not supportet")
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
@@ -216,8 +216,8 @@ def update_midea():
             _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
             print("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
         else:
-            _LOGGER.info("Device Midea.{} @ {} is not supportet".format(id, device.ip))
-            print("Device Midea.{} @ {} is not supportet".format(id, device.ip))
+            _LOGGER.info("Device is not supportet")
+            print("Device Midea is not supportet")
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
