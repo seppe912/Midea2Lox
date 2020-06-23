@@ -186,7 +186,6 @@ def update_midea():
             print({
                 'id hex': device.id,
                 'id': id,
-                #'name': device.name,
                 'power_state': device.power_state,
                 'audible_feedback': device.prompt_tone,
                 'target_temperature': device.target_temperature,
