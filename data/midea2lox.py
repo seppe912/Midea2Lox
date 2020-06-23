@@ -141,6 +141,7 @@ def send_to_midea():
         
         # commit the changes with apply()
         device.apply()
+        _LOGGER.info("Status Update for Midea.{} @ {} successful".format(id, device.ip))
         
         # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
         id = convert_device_id_int(device.id)
