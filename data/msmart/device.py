@@ -191,7 +191,10 @@ class air_conditioning_device(device):
             if not self._defer_update:
                 self.update(response)
                 self._defer_update = False
-
+            _LOGGER.info("Update from {} @ {} successful".format(convert_device_id_int(self.id), self.ip))
+        else:
+            exit("response is 0")
+            
     def apply(self):
         self._updating = True
         try:
@@ -222,6 +225,9 @@ class air_conditioning_device(device):
                     self._defer_update = True
                 if not self._defer_update:
                     self.update(response)
+                _LOGGER.info("Data sending to {} @ {} successful".format(convert_device_id_int(self.id), self.ip))
+            else:
+                exit("response is 0")
         finally:
             self._updating = False
             self._defer_update = False
