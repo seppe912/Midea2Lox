@@ -82,10 +82,10 @@ def discover(debug: int):
                         "*** Found a {} '0x{}' at {} - id: {} - sn: {} - ssid: {}".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
                     print(
                         "Found a {} '0x{}' at {} - id: {}<br>".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
+                    discover_time = 10 + (datetime.now()-t1).seconds
                 elif m_ip not in found_devices:
                     _LOGGER.info("Maybe not midea local data {} {}".format(m_ip, data.hex()))
 
-                    discover_time = 10 + (datetime.now()-t1).seconds
         except socket.timeout:
             continue
         except KeyboardInterrupt:
