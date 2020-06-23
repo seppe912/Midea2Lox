@@ -142,10 +142,10 @@ def send_to_midea():
         # commit the changes with apply()
         device.apply()
         
+        # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
+        id = convert_device_id_int(device.id)
+        
         if device.support == True:
-            
-            # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
-            id = convert_device_id_int(device.id)
             
             #send to Loxone
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.power_state))
@@ -180,7 +180,11 @@ def update_midea():
         device = client.setup()
         
         # Refresh the object with the actual state by querying it
-        device.refresh()   
+        device.refresh()  
+        
+        # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
+        id = convert_device_id_int(device.id)
+        
         if device.support == True:
             print({
                 'id hex': device.id,
@@ -197,9 +201,6 @@ def update_midea():
                 'outdoor_temperature': device.outdoor_temperature
             })
             
-            # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
-            id = convert_device_id_int(device.id)
-
             _LOGGER.info("Status Update for Midea.{} @ {} successful".format(id, device.ip))
             #send to Loxone
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.power_state))
