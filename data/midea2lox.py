@@ -142,11 +142,9 @@ def send_to_midea():
         # commit the changes with apply()
         device.apply()
         
-        # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
-        id = convert_device_id_int(device.id)
-        
         if device.support == True:
-            
+            # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
+            id = convert_device_id_int(device.id)
             #send to Loxone
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.power_state))
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.prompt_tone))
@@ -182,12 +180,12 @@ def update_midea():
         # Refresh the object with the actual state by querying it
         device.refresh()  
         
-        # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
-        id = convert_device_id_int(device.id)
-        
         if device.support == True:
+            # msmart send hex ID, get it back to Decimal Number for Loxone Inputs
+            id = convert_device_id_int(device.id)
             print({
                 'id hex': device.id,
+                'id': id,
                 #'name': device.name,
                 'power_state': device.power_state,
                 'audible_feedback': device.prompt_tone,
@@ -202,6 +200,7 @@ def update_midea():
             })
             
             _LOGGER.info("Status Update for Midea.{} @ {} successful".format(id, device.ip))
+            
             #send to Loxone
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.power_state))
             requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.prompt_tone))
