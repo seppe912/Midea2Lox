@@ -42,10 +42,6 @@ class lan:
 
             # Received data
             response = sock.recv(512)
-        #except socket.timeout:
-        #    _LOGGER.info("Connect the Device %s:%s TimeOut for 10s. don't care about a small amount of this. if many maybe not support." % (
-        #        self.device_ip, self.device_port))
-        #    return bytearray(0)
         except socket.timeout:
             self._retries += 1
             print(str(sys.exc_info()))
@@ -100,4 +96,4 @@ class lan:
                 reply = self.decode(self.security.aes_decrypt(response[40:88]))
             return reply
         else:
-            sys.exit("response is 0")
+            return bytearray(0)
