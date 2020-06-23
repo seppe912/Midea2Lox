@@ -156,8 +156,8 @@ def send_to_midea():
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.turbo_mode))
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.indoor_temperature))
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.outdoor_temperature))
-        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
-        print("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
+        _LOGGER.info("sending status to Loxone for Midea.{} @ {} successful".format(id, device.ip))
+        print("sending status to Loxone for Midea.{} @ {} successful".format(id, device.ip))
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
@@ -209,8 +209,8 @@ def update_midea():
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.turbo_mode))
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.indoor_temperature))
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, id, device.outdoor_temperature))
-        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
-        print("sending to Loxone for Midea.{} @ {} successful".format(id, device.ip))
+        _LOGGER.info("sending status to Loxone for Midea.{} @ {} successful".format(id, device.ip))
+        print("sending status to Loxone for Midea.{} @ {} successful".format(id, device.ip))
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
