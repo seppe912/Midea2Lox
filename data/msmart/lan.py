@@ -44,7 +44,6 @@ class lan:
             response = sock.recv(512)
         except socket.timeout:
             self._retries += 1
-            print(str(sys.exc_info()))
             _LOGGER.error(str(sys.exc_info()))
             if(self._retries <= 2):
                 _LOGGER.info("wait 3 seconds, and retry")
@@ -55,7 +54,6 @@ class lan:
                 return bytearray(0)
         except socket.error:
             self._retries += 1
-            print(str(sys.exc_info()))
             _LOGGER.error(str(sys.exc_info()))
             if(self._retries <= 10):
                 _LOGGER.info("wait 10 seconds, and retry")
