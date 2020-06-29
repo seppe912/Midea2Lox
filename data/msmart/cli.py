@@ -17,7 +17,7 @@ if sys.version_info < (3, 5):
     )
     sys.exit(1)
 
-VERSION = '0.1.19'
+VERSION = 'msmart 0.1.20'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,6 +53,7 @@ def discover(debug: int):
     sock.settimeout(5)
     found_devices = {}
     discover_time = 10
+    _LOGGER.info("msmart version: {}".format(VERSION))
     _LOGGER.info(
         "Discovering devices with UDP Broadcast, wait 10 seconds +10s after each found device...")
     for i in range(10):
