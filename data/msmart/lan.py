@@ -39,8 +39,8 @@ class lan:
             self._retries += 1
             _LOGGER.error(str(sys.exc_info()))
             if(self._retries <= 2):
-                _LOGGER.info("wait 3 seconds, and retry")
-                time.sleep(3) #give it some time
+                _LOGGER.info("wait 5 seconds, and retry")
+                time.sleep(5) #give it some time
                 _LOGGER.info("retry %s/2 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
                 return self.request(message)
             else:
