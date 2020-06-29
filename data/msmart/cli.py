@@ -17,7 +17,7 @@ if sys.version_info < (3, 5):
     )
     sys.exit(1)
 
-VERSION = 'msmart 0.1.20'
+VERSION = '0.1.20'
 
 _LOGGER = logging.getLogger(__name__)
 
