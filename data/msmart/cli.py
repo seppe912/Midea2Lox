@@ -100,7 +100,7 @@ def discover(debug: int):
 def support_test(device_ip, device_id: int):
     _device = midea_device(device_ip, device_id)
     device = _device.setup()
-    device.refresh()
+    device.refresh(broadcast = True)
     if device.support:
         return 'supported'
     else:
