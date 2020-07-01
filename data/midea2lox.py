@@ -140,7 +140,7 @@ def send_to_midea():
         device.turbo_mode = eval(data[7])
         
         # commit the changes with apply()
-        device.apply()
+        device.apply(broadcast = False)
         
         if device.support == True:
             send_to_loxone(device)
@@ -164,7 +164,7 @@ def update_midea():
         device = client.setup()
         
         # Refresh the object with the actual state by querying it
-        device.refresh()  
+        device.refresh(broadcast = False) 
         
         if device.support == True:
 
