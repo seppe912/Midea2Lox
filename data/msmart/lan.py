@@ -36,6 +36,8 @@ class lan:
             # Received data
             response = sock.recv(512)
         except socket.timeout:
+            _LOGGER.info("Connect the Device %s:%s TimeOut for 8s. don't care about a small amount of this. if many maybe not support".format(
+                self.device_ip, self.device_port))
             if broadcast:
                 return bytearray(0)
             else:
@@ -50,7 +52,7 @@ class lan:
                     return bytearray(0)
         except socket.error:
             self._retries += 1
-            _LOGGER.error(str(sys.exc_info()))
+            _LOGGER.debug(str(sys.exc_info()))
             if(self._retries <= 40):
                 _LOGGER.info("Device is Offline. Wait 10 seconds, and retry.")
                 time.sleep(10) #give it some time
