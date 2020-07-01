@@ -106,9 +106,8 @@ def start_server():
 
 # send to Midea Appliance over LAN/WLAN
 def send_to_midea():
-
-    #Start, set Loxone Script to active
     try: 
+        #Start, set Loxone Script to active
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
         
         device_ip = str(data[9])
