@@ -171,13 +171,13 @@ class air_conditioning_device(device):
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
 
-    def refresh(self):
+    def refresh(self, broadcast):
         cmd = request_status_command(self.type)
         pkt_builder = packet_builder(self.id)
         pkt_builder.set_command(cmd)
 
         data = pkt_builder.finalize()
-        data = self._lan_service.appliance_transparent_send(data)
+        data = self._lan_service.appliance_transparent_send(data, broadcast)
         _LOGGER.debug(
             "refresh - Recieved from {}, {}: {}".format(self.ip, self.id, data.hex()))
         if len(data) > 0:
@@ -195,7 +195,7 @@ class air_conditioning_device(device):
                     # self.update_special(response)
                 self._defer_update = False
             
-    def apply(self):
+    def apply(self, broadcast):
         self._updating = True
         try:
             cmd = set_command(self.type)
@@ -213,7 +213,7 @@ class air_conditioning_device(device):
             pkt_builder.set_command(cmd)
 
             data = pkt_builder.finalize()
-            data = self._lan_service.appliance_transparent_send(data)
+            data = self._lan_service.appliance_transparent_send(data, broadcast)
             _LOGGER.debug(
                 "apply - Recieved from {}, {}: {}".format(self.ip, self.id, data.hex()))
             if len(data) > 0:
