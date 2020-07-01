@@ -19,7 +19,7 @@ class lan:
         self.security = security()
         self._retries = 0
 
-    def request(self, message):
+    def request(self, message, broadcast):
         # Create a TCP/IP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(8)
@@ -36,23 +36,26 @@ class lan:
             # Received data
             response = sock.recv(512)
         except socket.timeout:
-            self._retries += 1
-            _LOGGER.error(str(sys.exc_info()))
-            if(self._retries <= 2):
-                _LOGGER.info("wait 5 seconds, and retry")
-                time.sleep(5) #give it some time
-                _LOGGER.info("retry %s/2 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
-                return self.request(message)
-            else:
+            if broadcast:
                 return bytearray(0)
+            else:
+                self._retries += 1
+                _LOGGER.error(str(sys.exc_info()))
+                if(self._retries <= 20):
+                    _LOGGER.info("wait 5 seconds, and retry")
+                    time.sleep(5) #give it some time
+                    _LOGGER.info("retry %s/20 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
+                    return self.request(message, broadcast)
+                else:
+                    return bytearray(0)
         except socket.error:
             self._retries += 1
             _LOGGER.error(str(sys.exc_info()))
-            if(self._retries <= 20):
-                _LOGGER.info("wait 10 seconds, and retry")
+            if(self._retries <= 40):
+                _LOGGER.info("Device is Offline. Wait 10 seconds, and retry.")
                 time.sleep(10) #give it some time
-                _LOGGER.info("retry %s/20 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
-                return self.request(message)
+                _LOGGER.info("retry %s/40 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
+                return self.request(message, broadcast)
             else:
                 sys.exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
         finally:
@@ -78,8 +81,8 @@ class lan:
                 data[i] = data[i] + 256
         return bytearray(data)
 
-    def appliance_transparent_send(self, data):
-        response = bytearray(self.request(data))
+    def appliance_transparent_send(self, data, broadcast):
+        response = bytearray(self.request(data, broadcast))
         if len(response) > 0:
             if len(response) == 88:
                 reply = self.decode(self.security.aes_decrypt(response[40:72]))
