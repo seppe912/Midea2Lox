@@ -39,6 +39,8 @@ class lan:
             _LOGGER.info("Connect the Device %s:%s TimeOut for 8s. don't care about a small amount of this. if many maybe not support".format(
                 self.device_ip, self.device_port))
             if broadcast:
+                _LOGGER.info("Connect the Device %s:%s TimeOut for 8s. don't care about a small amount of this. if many maybe not support".format(
+                    self.device_ip, self.device_port))
                 return bytearray(0)
             else:
                 self._retries += 1
@@ -51,15 +53,20 @@ class lan:
                 else:
                     return bytearray(0)
         except socket.error:
-            self._retries += 1
-            _LOGGER.debug(str(sys.exc_info()))
-            if(self._retries <= 40):
-                _LOGGER.info("Device is Offline. Wait 10 seconds, and retry.")
-                time.sleep(10) #give it some time
-                _LOGGER.info("retry %s/40 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
-                return self.request(message, broadcast)
+            if broadcast:
+                _LOGGER.info("Couldn't connect with Device {}:{}".format(
+                    self.device_ip, self.device_port))
+                return bytearray(0)
             else:
-                sys.exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
+                self._retries += 1
+                _LOGGER.error(str(sys.exc_info()))
+                if(self._retries <= 40):
+                    _LOGGER.info("Device is Offline. Wait 10 seconds, and retry.")
+                    time.sleep(10) #give it some time
+                    _LOGGER.info("retry %s/40 @ %s:%s " %(self._retries, self.device_ip, self.device_port))
+                    return self.request(message, broadcast)
+                else:
+                    sys.exit("Socket Error! Please Check your IP and ID from the AC and that your AC is connected to your Router")
         finally:
             sock.close()
         _LOGGER.debug("Received from {}:{} {}".format(
