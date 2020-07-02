@@ -70,7 +70,6 @@ def start_server():
         print("Incomming Message from Loxone: ", data)
         _LOGGER.info("Incomming Message from Loxone: {}".format(data))
         try:
-            global Argumente
             Argumente = len(data)
             if Argumente == 8:
                 print("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
