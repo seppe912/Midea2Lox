@@ -64,7 +64,7 @@ def discover(debug: int):
                 m_ip = addr[0]
                 m_id, m_type, m_sn, m_ssid = 'unknown', 'unknown', 'unknown', 'unknown'
                 if len(data) >= 104 and (data[:2].hex() == '5a5a' or data[8:10].hex() == '5a5a') and m_ip not in found_devices:
-                    _LOGGER.info("Midea Local Data {} {}".format(m_ip, data.hex()))
+                    _LOGGER.debug("Midea Local Data {} {}".format(m_ip, data.hex()))
                     if data[8:10].hex() == '5a5a':
                         data = data[8:-16]
                     m_id = convert_device_id_int(data[20:26].hex())
