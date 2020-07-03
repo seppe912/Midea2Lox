@@ -369,7 +369,7 @@ class unknown_device(device):
         pkt_builder.set_command(cmd)
 
         data = pkt_builder.finalize()
-        data = self._lan_service.appliance_transparent_send(self.id, data)
+        data = self._lan_service.appliance_transparent_send(self.id, data, broadcast)
         if len(data) > 0:
             response = appliance_response(data)
             _LOGGER.debug("Decoded Data: {}".format({
