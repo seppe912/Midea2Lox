@@ -86,6 +86,7 @@ def start_server():
             elif data[0] == "status" and Argumente == 1:
                 print("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 _LOGGER.info("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                exit()
             else:
                 if Argumente == 10:
                     for eachArg in data:
