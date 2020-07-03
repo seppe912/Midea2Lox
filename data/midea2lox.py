@@ -72,8 +72,8 @@ def start_server():
         try:
             Argumente = len(data)
             if Argumente == 8:
-                print("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
-                _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                print("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                _LOGGER.info("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 exit()
             elif Argumente == 10 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
                 print("send data to Midea Appliance")
@@ -84,8 +84,8 @@ def start_server():
                 _LOGGER.info("starting Status update")
                 update_midea()
             elif data[0] == "status" and Argumente == 1:
-                print("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
-                _LOGGER.info("On Midea2Lox V2.0 you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                print("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
+                _LOGGER.info("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
             else:
                 if Argumente == 10:
                     for eachArg in data:
