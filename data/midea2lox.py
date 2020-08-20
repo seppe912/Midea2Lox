@@ -87,6 +87,14 @@ def start_server():
                 print("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 _LOGGER.info("On Midea2Lox V2.x you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
                 exit()
+            elif data[0] == "status" and Argumente == 6:
+                print("starting Status update new Protokoll")
+                _LOGGER.info("starting Status update new Protokoll")
+                update_midea_8370()
+            elif Argumente == 13 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
+                print("send data to Midea Appliance with new Protokoll")
+                _LOGGER.info("send data to Midea Appliance %s @ %s with new Protokoll" % (data[8], data[9]))
+                send_to_midea_8370()
             else:
                 if Argumente == 10:
                     for eachArg in data:
@@ -193,6 +201,106 @@ def update_midea():
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
+
+# send to Midea Appliance over LAN/WLAN new Protokoll 8370
+def send_to_midea_8370():
+    try: 
+        #Start, set Loxone Script to active
+        requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
+        
+        device_ip = str(data[9])
+        device_id = int(data[8])
+
+        client = midea_device(device_ip, int(device_id))
+        device = ac(device_ip, int(device_id))
+        
+        # If the device is using protocol 3 (aka 8370), you must authenticate with your
+        # WiFi network's credentials for local control
+        #device.authenticate('YOUR_AC_MAC', 'YOUR_WIFI_SSID', 'YOUR_WIFI_PW')
+        device.authenticate(str(data[10]), str(data[11]), str(data[12]), False)
+        
+        # Print Loxone sent Arguments
+        for eachArg in data:   
+            print(eachArg)
+            _LOGGER.debug(eachArg)
+                    
+        # Midea AC only supports auto Fanspeed in auto-Operationalmode.
+        if eval(data[3]) == ac.operational_mode_enum.auto:
+            fanspeed = ac.fan_speed_enum.Auto
+        else:
+            fanspeed = eval(data[4])
+     
+        
+        # Set the state of the device and
+        device.power_state = eval(data[0])
+        device.prompt_tone = eval(data[1])
+        device.target_temperature = int(data[2])
+        device.operational_mode = eval(data[3])
+        device.fan_speed = fanspeed
+        device.swing_mode = eval(data[5])
+        device.eco_mode = eval(data[6])
+        device.turbo_mode = eval(data[7])
+        
+        # commit the changes with apply()
+        device.apply(False)
+        
+        if device.support == True:
+            send_to_loxone(device)
+        else:
+            _LOGGER.info("Device is not supportet")
+            print("Device is not supportet")
+    finally:
+        requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
+
+
+# Update Midea status new Protokoll 8370
+def update_midea_8370():
+    #Start, set Loxone Script to active
+    try:
+        requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/1" % (LoxUser, LoxPassword, LoxIP, LoxPort))
+        
+        device_ip = str(data[2])
+        device_id = int(data[1])
+        
+        #client = midea_device(device_ip, int(device_id))
+        device = ac(device_ip, int(device_id))
+        
+        # If the device is using protocol 3 (aka 8370), you must authenticate with your
+        # WiFi network's credentials for local control
+        #device.authenticate('YOUR_AC_MAC', 'YOUR_WIFI_SSID', 'YOUR_WIFI_PW')
+        device.authenticate(str(data[3]), str(data[4]), str(data[5]), False)
+        
+        # Refresh the object with the actual state by querying it
+        device.refresh(False) 
+        
+        if device.support == True:
+
+            print({
+                'id hex': device.id,
+                #'id': device.id,
+                'power_state': device.power_state,
+                'audible_feedback': device.prompt_tone,
+                'target_temperature': device.target_temperature,
+                'operational_mode': device.operational_mode,
+                'fan_speed': device.fan_speed,
+                'swing_mode': device.swing_mode,
+                'eco_mode': device.eco_mode,
+                'turbo_mode': device.turbo_mode,
+                'indoor_temperature': device.indoor_temperature,
+                'outdoor_temperature': device.outdoor_temperature
+            })
+            
+            _LOGGER.info("Status Update for Midea.{} @ {} successful".format(device.id, device.ip))
+            send_to_loxone(device)
+        else:
+            _LOGGER.info("Device is not supportet")
+            print("Device is not supportet")
+    finally:
+        requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
+
+
+
+
 def send_to_loxone(device):
     requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.power_state))
     requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.prompt_tone))
@@ -209,4 +317,4 @@ def send_to_loxone(device):
 
 
 # Start script
-start_server()  
+start_server()   
