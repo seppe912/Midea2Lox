@@ -171,9 +171,9 @@ class air_conditioning_device(device):
 
     def refresh(self, broadcast):
         cmd = request_status_command(self.type)
-        self._send_cmd(cmd)
+        self._send_cmd(cmd, broadcast)
 
-    def _send_cmd(self, cmd):
+    def _send_cmd(self, cmd, broadcast):
         pkt_builder = packet_builder(self.id)
         pkt_builder.set_command(cmd)
         data = pkt_builder.finalize()
@@ -221,7 +221,7 @@ class air_conditioning_device(device):
             cmd.turbo_mode = self._turbo_mode
             pkt_builder = packet_builder(self.id)
 #            cmd.night_light = False
-            self._send_cmd(cmd)
+            self._send_cmd(cmd, broadcast)
         finally:
             self._updating = False
             self._defer_update = False
@@ -356,7 +356,7 @@ class unknown_device(device):
     def __init__(self, lan_service: lan):
         super().__init__(lan_service)
 
-    def refresh(self):
+    def refresh(self, broadcast):
         cmd = request_status_command(self.type)
         pkt_builder = packet_builder()
         pkt_builder.set_command(cmd)

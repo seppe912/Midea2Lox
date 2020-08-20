@@ -51,7 +51,7 @@ class lan:
             self._socket.send(message)
 
             # Received data
-            response = sock.recv(1024)
+            response = self._socket.recv(1024)
         except socket.timeout:
             _LOGGER.info("Connect the Device %s:%s TimeOut for 8s. don't care about a small amount of this. if many maybe not support".format(
                 self.device_ip, self.device_port))
@@ -106,7 +106,7 @@ class lan:
             self._disconnect()
             raise error
 
-    def appliance_transparent_send_8370(self, data, msgtype=MSGTYPE_ENCRYPTED_REQUEST):
+    def appliance_transparent_send_8370(self, data, broadcast, msgtype=MSGTYPE_ENCRYPTED_REQUEST):
         if self._socket == None:
             self._authenticate()
         data = self.security.encode_8370(data, msgtype)
@@ -119,7 +119,7 @@ class lan:
         return packets
             
     def appliance_transparent_send(self, data, broadcast):
-        response = self.request(data)
+        response = self.request(data, broadcast)
         if len(response) > 40 + 16:
             return [self.security.aes_decrypt(response[40:-16])]
         return [response]
