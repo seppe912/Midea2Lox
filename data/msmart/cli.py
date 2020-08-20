@@ -4,8 +4,7 @@ import logging
 import socket
 import sys
 from msmart.security import security
-from msmart.device import convert_device_id_int
-from msmart.device import device as midea_device
+from msmart.device import air_conditioning_device as midea_device
 from datetime import datetime 
 t1 = datetime.now() 
 
@@ -62,27 +61,48 @@ def discover(debug: int):
             while (datetime.now()-t1).seconds  <= discover_time:
                 data, addr = sock.recvfrom(512)
                 m_ip = addr[0]
-                m_id, m_type, m_sn, m_ssid = 'unknown', 'unknown', 'unknown', 'unknown'
-                if len(data) >= 104 and (data[:2].hex() == '5a5a' or data[8:10].hex() == '5a5a') and m_ip not in found_devices:
+                m_protocol = 2
+                if m_ip in found_devices:
+                    continue
+                if data[:2] == bytes([0x83, 0x70]):
+                    data = data[8:-16]
+                    m_protocol = 3
+                if data[:2] == bytes([0x5a, 0x5a]) and len(data) >= 104:
                     _LOGGER.debug("Midea Local Data {} {}".format(m_ip, data.hex()))
-                    if data[8:10].hex() == '5a5a':
-                        data = data[8:-16]
-                    m_id = convert_device_id_int(data[20:26].hex())
+                    m_id = int.from_bytes(data[20:26], 'little')
                     found_devices[m_ip] = m_id
                     encrypt_data = data[40:-16]
                     reply = _security.aes_decrypt(encrypt_data)
 
-                    m_sn = reply[14:14+26].decode("utf-8")
+                    m_ip = '.'.join([str(i) for i in reply[3::-1]])
+                    m_port = int.from_bytes(reply[4:8], 'little')
+                    m_sn = reply[8:40].decode()
                     # ssid like midea_xx_xxxx net_xx_xxxx
-                    m_ssid = reply[14+27:14+27+13].decode("utf-8")
-                    m_type = m_ssid.split('_')[1]
+                    m_ssid_len = reply[40]
+                    m_ssid = reply[41:41+m_ssid_len].decode()
+                    m_id_reserve = reply[43+m_ssid_len]
+                    b = reply[44+m_ssid_len]
+                    m_enable_extra = (b >> 7) == 1
+                    m_support_extra_auth = (b & 1) == 1
+                    m_support_extra_channel = (b & 2) == 2
+                    m_support_extra_last_error_code = (b & 4) == 4
+                    m_extra_high = reply[45+m_ssid_len]
+                    m_udp_version = int.from_bytes(reply[46+m_ssid_len:50+m_ssid_len], 'little')
+                    m_type = reply[55+m_ssid_len:56+m_ssid_len].hex()
+                    m_subtype = int.from_bytes(reply[57+m_ssid_len:59+m_ssid_len], 'little')
+                    m_mac = reply[63+m_ssid_len:69+m_ssid_len].hex()
+                    m_protocol_version = reply[69+m_ssid_len:75+m_ssid_len].hex()
+                    m_random_code = reply[78+m_ssid_len:94+m_ssid_len]
 
-                    m_support = support_test(m_ip, int(m_id))
+                    if m_protocol == 2:
+                        m_support = support_test(m_ip, m_id)
+                    else:
+                        m_support = 'supported'
 
                     _LOGGER.info(
-                        "*** Found a {} '0x{}' at {} - id: {} - sn: {} - ssid: {}".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
+                        "*** Found a {} '{}' ({}) at {}:{} - id: {} - sn: {} - ssid: {} - mac: {} - protocol: {}".format(m_support, m_type, m_subtype, m_ip, m_port, m_id, m_sn, m_ssid, m_mac, m_protocol))
                     print(
-                        "Found a {} '0x{}' at {} - id: {}<br>".format(m_support, m_type, m_ip, m_id, m_sn, m_ssid))
+                        "*** Found a {} '{}' ({}) at {}:{} - id: {} - sn: {} - ssid: {} - mac: {} - protocol: {}".format(m_support, m_type, m_subtype, m_ip, m_port, m_id, m_sn, m_ssid, m_mac, m_protocol))
                     discover_time = 10 + (datetime.now()-t1).seconds
                 elif m_ip not in found_devices:
                     _LOGGER.info("Maybe not midea local data {} {}".format(m_ip, data.hex()))
@@ -98,21 +118,12 @@ def discover(debug: int):
 
 
 def support_test(device_ip, device_id: int):
-    _device = midea_device(device_ip, device_id)
-    device = _device.setup()
+    device = midea_device(device_ip, device_id)
     device.refresh(True)
     if device.support:
         return 'supported'
     else:
         return 'unsupported'
-
-
-def remove_duplicates(device_list: list):
-    newlist = []
-    for i in device_list:
-        if i not in newlist:
-            newlist.append(i)
-    return newlist
 
 
 # if __name__ == '__main__':
