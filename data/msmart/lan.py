@@ -90,15 +90,15 @@ class lan:
             self.device_ip, self.device_port, response.hex()))
         return response
 
-    def authenticate(self, mac: str, ssid: str, pw: str):
+    def authenticate(self, mac: str, ssid: str, pw: str, broadcast):
         self._token, self._key = self.security.token_key_pair(mac, ssid, pw)
-        self._authenticate()
+        self._authenticate(broadcast)
         
-    def _authenticate(self):
+    def _authenticate(self, broadcast):
         if not self._token or not self._key:
             raise Exception('missing token key pair')
         request = self.security.encode_8370(self._token, MSGTYPE_HANDSHAKE_REQUEST)
-        response = self.request(request)[8:72]
+        response = self.request(request, broadcast)[8:72]
         try:
             tcp_key = self.security.tcp_key(response, self._key)
             _LOGGER.debug('Got TCP key for {}:{} {}'.format(self.device_ip, self.device_port, tcp_key.hex()))
