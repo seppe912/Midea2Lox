@@ -35,15 +35,15 @@ class device:
         self._support = False
         self._protocol_version = 2
 
-    def authenticate(self, mac: str, ssid: str, pw: str):
+    def authenticate(self, mac: str, ssid: str, pw: str, broadcast):
         self._protocol_version = 3
         self._mac = mac
         self._wifi_ssid = ssid
         self._wifi_pw = pw
-        self._authenticate()
+        self._authenticate(broadcast)
 
-    def _authenticate(self):
-        self._lan_service.authenticate(self._mac, self._wifi_ssid, self._wifi_pw)
+    def _authenticate(self, broadcast):
+        self._lan_service.authenticate(self._mac, self._wifi_ssid, self._wifi_pw, broadcast)
 
     def set_device_detail(self, device_detail: dict):
         self._id = device_detail['id']

@@ -102,7 +102,6 @@ def discover(debug: int):
                     print(
                         "*** Found a {} '{}' ({}) at {}:{} - id: {} - sn: {} - ssid: {} - mac: {} - protocol: {}".format(m_support, m_type, m_subtype, m_ip, m_port, m_id, m_sn, m_ssid, m_mac, m_protocol))
                     discover_time = 10 + (datetime.now()-t1).seconds
-
         except socket.timeout:
             continue
         except KeyboardInterrupt:
