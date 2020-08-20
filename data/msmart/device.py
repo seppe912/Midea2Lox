@@ -222,7 +222,6 @@ class air_conditioning_device(device):
             pkt_builder = packet_builder(self.id)
 #            cmd.night_light = False
             self._send_cmd(cmd)
-                _LOGGER.info("Data sending to {} @ {} successful".format(convert_device_id_int(self.id), self.ip))
         finally:
             self._updating = False
             self._defer_update = False
