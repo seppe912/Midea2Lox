@@ -134,7 +134,16 @@ def send_to_midea():
         # Set the state of the device and
         device.power_state = eval(data[0])
         device.prompt_tone = eval(data[1])
-        device.target_temperature = int(data[2])
+        #device.target_temperature = int(data[2])
+        #Midea AC only supports Temperature from 17 to 30 °C
+        if int(data[2]) < 17:
+            device.target_temperature = 17
+            _LOGGER.info("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 17°C".format(data[2]))
+        elif int(data[2]) > 30:
+            device.target_temperature = 30
+            _LOGGER.info("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 30°C".format(data[2]))
+        else:
+            device.target_temperature = int(data[2])
         device.operational_mode = eval(data[3])
         device.fan_speed = fanspeed
         device.swing_mode = eval(data[5])
