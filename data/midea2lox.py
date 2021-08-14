@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
+
+Midea2Lox_Version = '3.0.0'
     
 try:
     from msmart.device import air_conditioning_device as ac
