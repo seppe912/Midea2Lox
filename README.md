@@ -16,3 +16,5 @@ daher müssen die Eingänge in Loxone genau den Wortlaut wie in der Beispielkonf
 Weitere Infos sind unter https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox zu finden
 
 Ab V2.0 findet die kommunikation direkt über LAN ohne Cloud statt. 
+
+Ab V3.0 werden die neueren Stiks mit Protokoll Version 3 über LAN unterstützt.
