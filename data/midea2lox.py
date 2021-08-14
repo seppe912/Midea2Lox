@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
+import time
 
 Midea2Lox_Version = '3.0.0'
     
