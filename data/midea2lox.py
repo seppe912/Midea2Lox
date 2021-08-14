@@ -7,8 +7,6 @@ Midea2Lox_Version = '3.0.0'
     
 try:
     from msmart.device import air_conditioning_device as ac
-    from msmart.device import device as midea_device
-    from msmart.device import convert_device_id_int
     import requests
     import configparser
 
