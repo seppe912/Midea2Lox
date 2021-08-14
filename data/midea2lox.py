@@ -131,7 +131,7 @@ def send_to_midea():
 
             while device.online == False and retries <= 10: # retry 10 times
                 retries += 1
-                _LOGGER.info("retry %s/10" %(retries))
+                _LOGGER.info("refresh retry %s/10" %(retries))
                 time.sleep(5)
                 device.refresh()
 
@@ -245,7 +245,7 @@ def send_to_midea():
             device.apply()
             while device.online == False and retries <= 10: # retry 10 times
                 retries += 1
-                _LOGGER.info("retry %s" %(retries))
+                _LOGGER.info("apply retry %s" %(retries))
                 time.sleep(5)
                 device.apply()
             
