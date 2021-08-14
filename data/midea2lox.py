@@ -172,6 +172,10 @@ def send_to_midea():
                     _LOGGER.info("retry refresh %s/5" %(retries))
                     time.sleep(5)
                     device.refresh()
+                    
+                if device.online == False:
+                    _LOGGER.error("Device is Offline")
+                    exit()
                 
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
