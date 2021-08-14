@@ -29,7 +29,7 @@ Es wird kein Android Handy benötigt, man kann die Key´s auch über einen Emula
 
 --- Midea Klimaanlage muss bereits mit dem Midea Account (der APP) registriert sein und im WLAN angemeldet sein ---
 1. Installiere und starte LDplayer4
-2. LDplayer4--> Einstellungen(rechts oben)0 --> andere Einstellungen --> ADB Debug auf "open connection" ändern und speichern.
+2. LDplayer4--> Einstellungen(rechts oben) --> andere Einstellungen --> ADB Debug auf "open connection" ändern und speichern.
 3. MideaApp installieren (rechts im Menü +APK / APK installieren --> Midea-Air-gettoken-only-oversea.apk)
 4. platform-tools am PC entpacken und darin enthaltene "Midea get Key and K1.bat" starten
 5. Midea App in LDplayer öffnen, mit Account anmelden.
