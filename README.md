@@ -28,8 +28,8 @@ Token und K1
 
 1. Installiere und starte LDplayer4
 2. LDplayer4--> Einstellungen(rechts oben)0 --> andere Einstellungen --> ADB Debug auf "open connection" ändern und speichern.
-3. App installieren (rechts im Menü +APK / APK installieren)
-4. platform-tools entpacken und darin enthaltene "Midea get Key and K1.bat" starten
-5. Midea App in LDplayer öffnen, mit Account anmelden
+3. MideaApp installieren (rechts im Menü +APK / APK installieren --> Midea-Air-gettoken-only-oversea.apk)
+4. platform-tools am PC entpacken und darin enthaltene "Midea get Key and K1.bat" starten
+5. Midea App in LDplayer öffnen, mit Account anmelden.
 6. Anschließend wird im cmd Fenster (platform-tools) die Device Informationen angezeigt. Diese können dann gespeichert werden und müssen über Loxone an Midea2Lox zur steuerung von V3 Sticks mit gesendet werden.
-
+Details zur Loxone Konfig und weitere Infos sind unter https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox zu finden
