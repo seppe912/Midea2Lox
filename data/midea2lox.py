@@ -64,7 +64,7 @@ def start_server():
         data, addr = soc.recvfrom(1024)
         data = data.decode('utf-8')
         data = data.split(' ')
-        if data[0] != '0':
+        if data[0] != '0' and data[0] != '':
             print("Incomming Message from Loxone: ", data)
             _LOGGER.info("Incomming Message from Loxone: {}".format(data))
             try:
