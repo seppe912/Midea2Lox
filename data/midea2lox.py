@@ -99,7 +99,7 @@ def send_to_midea():
             elif len(eachArg) == 14 and eachArg.isdigit():
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
-            elif len(eachArg) == 14 and not eachArg.isdigit():
+            elif len(eachArg) == 14 and not eachArg.isdigit() or len(eachArg) == 15 or len(eachArg) == 13:
                 device_ip = eachArg
                 _LOGGER.debug("Device ip: {}".format(device_ip))
             elif eachArg == "status":
