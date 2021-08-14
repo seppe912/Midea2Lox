@@ -221,7 +221,7 @@ def send_to_midea():
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
                         if eachArg != device_k1 and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
-                            _LOGGER.error("Given command '{}'is unknown".format(eachArg))
+                            _LOGGER.error("Given command '{}' is unknown".format(eachArg))
 
             # Errorhandling
             try: # Midea AC only supports auto Fanspeed in auto-Operationalmode.
