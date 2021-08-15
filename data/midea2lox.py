@@ -245,10 +245,13 @@ def send_to_midea():
                 device.apply()
             
         if device.online == True:
+            if statusupdate == 1:
+                _LOGGER.info("Status Update successful for Midea.{} @ {}".format(device.id, device.ip))
+            else:
+                _LOGGER.info("set new Parameter on Midea.{} @ {} successful".format(device.id, device.ip))
             send_to_loxone(device)
         else:
-            _LOGGER.info("Device is offline")
-            print("Device is offline")
+            _LOGGER.error("Device is offline")
     
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
@@ -280,7 +283,7 @@ def send_to_loxone(device):
             _LOGGER.error("Error {} on set Loxone Input '{}', please Check User,PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
     
     if r_error == 0:
-        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
+        _LOGGER.info("Set Loxone-Inputs for Midea.{} @ {} successful".format(device.id, device.ip))
         
         
 # Start script
