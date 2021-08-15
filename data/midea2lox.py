@@ -177,7 +177,7 @@ def send_to_midea():
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
                 
-                for eachArg in data: #find keys from Loxone to msmart
+                for eachArg in data: #find keys from Loxone for msmart
                     if eachArg in power:
                         if eachArg == "power.True":
                             device.power_state = True                
