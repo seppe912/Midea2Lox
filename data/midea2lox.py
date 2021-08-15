@@ -255,19 +255,33 @@ def send_to_midea():
 
 
 def send_to_loxone(device):
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.power_state/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.power_state))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.audible_feedback/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.prompt_tone))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.target_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.target_temperature))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.operational_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.operational_mode))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.fan_speed/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.fan_speed))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.swing_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.swing_mode))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.eco_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.eco_mode))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.turbo_mode/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.turbo_mode))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.indoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.indoor_temperature))
-    requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.%s.outdoor_temperature/%s" % (LoxUser, LoxPassword, LoxIP, LoxPort, device.id, device.outdoor_temperature))
-    _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
-    print("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
+    r_error = 0
+    
+    adress_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
+    adress_power_state = ("%sMidea.%s.power_state/%s" % (adress_loxone, device.id, device.power_state))
+    adress_audible_feedback = ("%sMidea.%s.audible_feedback/%s" % (adress_loxone, device.id, device.prompt_tone))
+    adress_target_temperature = ("%sMidea.%s.target_temperature/%s" % (adress_loxone, device.id, device.target_temperature))
+    adress_operational_mode = ("%sMidea.%s.operational_mode/%s" % (adress_loxone, device.id, device.operational_mode))
+    adress_fan_speed = ("%sMidea.%s.fan_speed/%s" % (adress_loxone, device.id, device.fan_speed))
+    adress_swing_mode = ("%sMidea.%s.swing_mode/%s" % (adress_loxone, device.id, device.swing_mode))
+    adress_eco_mode = ("%sMidea.%s.eco_mode/%s" % (adress_loxone, device.id, device.eco_mode))
+    adress_turbo_mode = ("%sMidea.%s.turbo_mode/%s" % (adress_loxone, device.id, device.turbo_mode))
+    adress_indoor_temperature = ("%sMidea.%s.indoor_temperature/%s" % (adress_loxone, device.id, device.indoor_temperature))
+    adress_outdoor_temperature = ("%sMidea.%s.outdoor_temperature/%s" % (adress_loxone, device.id, device.outdoor_temperature))
 
+    adresses = [adress_power_state, adress_audible_feedback, adress_target_temperature, adress_operational_mode, adress_fan_speed, adress_swing_mode, adress_eco_mode, adress_turbo_mode, adress_indoor_temperature, adress_outdoor_temperature]
+    
+    for eachArg in adresses:
+        r = requests.get(eachArg)
+        if r.status_code != 200:
+            r_error = 1
+            Loxinput = eachArg.replace(adress_loxone,'')
+            _LOGGER.error("Error {} on set Loxone Input '{}', please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
+    
+    if r_error == 0:
+        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
+
+        
 # Start script
 start_server()  
