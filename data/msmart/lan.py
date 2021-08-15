@@ -29,7 +29,7 @@ class lan:
             self._socket.settimeout(8)
             try:
                 self._socket.connect((self.device_ip, self.device_port))
-                time.sleep(1)
+                time.sleep(1) # Midea2Lox support, will be needed on slower Raspberry´s
             except Exception as error:
                 _LOGGER.error("Connect Error: {}:{} {}".format(
                     self.device_ip, self.device_port, error))
