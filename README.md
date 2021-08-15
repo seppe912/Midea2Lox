@@ -24,7 +24,7 @@ Es wird kein Android Handy benötigt, man kann die Key´s auch über einen Emula
 
 # Token und K1
 - Download LDplayer4 https://en.ldplayer.net/?from=en
-- Download app https://media.githubusercontent.com/media/mac-zhou/LFS/main/Midea-Air-gettoken-only-oversea.apk (thanks mac_zhou) --> in der App wurde das Loglevel erhöt um den Token zu bekommen.
+- Download app #link ergänzen# (thanks mac_zhou) --> in der App wurde das Loglevel erhöt um den Token zu bekommen.
 - Download [platform-tools.zip](https://github.com/seppe912/Midea2Lox/files/6986140/platform-tools.zip)
 
 --- Midea Klimaanlage muss bereits mit dem Midea Account (der APP) registriert sein und im WLAN angemeldet sein ---
