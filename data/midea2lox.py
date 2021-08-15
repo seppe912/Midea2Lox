@@ -137,7 +137,7 @@ def send_to_midea():
                 device.refresh()
 
         else: # apply() AC changes
-            #support older Loxone configs created wirh Midea2Lox V2.x.x 
+            #support older Loxone configs created with Midea2Lox V2.x.x 
             key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
             if len(data) == 10 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:: 
                 _LOGGER.info("Use support Mode for older Loxone configs created with Midea2Lox V2.x.x")
