@@ -5,5 +5,5 @@ python3
 python3-pip
 python3-requests
 python3-pycryptodome
-python-3pycryptodomex
+python3-pycryptodomex
 libstring-escape-perl
