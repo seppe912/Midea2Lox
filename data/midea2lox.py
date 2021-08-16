@@ -249,7 +249,7 @@ def send_to_midea():
             device.apply()
             while device.online == False and retries < 10: # retry 10 times
                 retries += 1
-                _LOGGER.info("apply retry %s" %(retries))
+                _LOGGER.info("apply retry %s/10" %(retries))
                 sleep(5)
                 device.apply()
             
