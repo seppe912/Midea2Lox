@@ -23,8 +23,8 @@ Diese benötigen einen Token und K1 Key, der über die Android-App ausgelesen we
 Es wird kein Android Handy benötigt, man kann die Key´s auch über einen Emulator entnehmen. Die Klimaanlagen mit V3 USB Stick müssen vorher mit der Midea App registriert werden, anschließend wird die App nicht mehr benötigt.
 
 # Token und K1
-- Download LDplayer4 https://en.ldplayer.net/?from=en
-- Download app #link ergänzen# (thanks mac_zhou) --> in der App wurde das Loglevel erhöt um den Token zu bekommen.
+- Download [LDplayer4](https://en.ldplayer.net/?from=en)
+- Download [Midea app](https://www.mediafire.com/file/g38vhkdf4r3icbv/Midea-Air-gettoken-only-oversea.apk/file)  (thanks mac_zhou) --> in der App wurde das Loglevel erhöt um den Token zu bekommen.
 - Download [platform-tools.zip](https://github.com/seppe912/Midea2Lox/files/6986140/platform-tools.zip)
 
 --- Midea Klimaanlage muss bereits mit dem Midea Account (der APP) registriert sein und im WLAN angemeldet sein ---
@@ -33,5 +33,5 @@ Es wird kein Android Handy benötigt, man kann die Key´s auch über einen Emula
 3. MideaApp installieren (rechts im Menü +APK / APK installieren --> Midea-Air-gettoken-only-oversea.apk)
 4. platform-tools am PC entpacken und darin enthaltene "Midea get Key and K1.bat" starten
 5. Midea App in LDplayer öffnen, mit Account anmelden.
-6. Anschließend wird im cmd Fenster (platform-tools) die Device Informationen angezeigt. Diese können dann gespeichert werden und müssen über Loxone an Midea2Lox zur steuerung von V3 Sticks mit gesendet werden.
-Details zur Loxone Konfig und weitere Infos sind unter https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox zu finden
+6. Anschließend wird im cmd Fenster (platform-tools) die Device Informationen angezeigt. Diese können dann kopiert werden und müssen über Loxone an Midea2Lox zur steuerung von V3 Sticks mit gesendet werden.
+Details zur Loxone Konfig und weitere Infos sind im [LoxWiki](https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox) zu finden
