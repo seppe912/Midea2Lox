@@ -176,6 +176,8 @@ def send_to_midea():
                 if device.online == False:
                     _LOGGER.error("Device is Offline")
                     sys.exit()
+                else:
+                    device._online = False # set Onlinestate back to False to notice an send failure later in apply()
                 
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
