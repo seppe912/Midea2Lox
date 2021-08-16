@@ -253,7 +253,12 @@ def send_to_midea():
                 device.apply()
             
         if device.online == True:
-            send_to_loxone(device)
+            if statusupdate == 1:
+                _LOGGER.info("Statusupdate for Midea.{} @ {} successful".format(device.id, device.ip))
+                send_to_loxone(device)
+            else:
+                _LOGGER.info("Set new state for Midea.{} @ {} successful".format(device.id, device.ip))
+                send_to_loxone(device)
         else:
             _LOGGER.info("Device is offline")
             print("Device is offline")
