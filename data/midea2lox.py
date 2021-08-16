@@ -293,7 +293,7 @@ def send_to_loxone(device):
             _LOGGER.error("Error {} on set Loxone Input '{}', please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
     
     if r_error == 0:
-        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
+        _LOGGER.info("Set Loxone Inputs for Midea.{} @ {} successful".format(device.id, device.ip))
 
         
 # Start script
