@@ -9,43 +9,47 @@ from msmart.command import base_command as request_status_command
 from msmart.command import set_command
 from msmart.packet_builder import packet_builder
 
-VERSION = '0.1.20'
+VERSION = '0.1.29'
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def convert_device_id_hex(device_id: int):
-    hex_string = hex(device_id)[2:]
-    if len(hex_string) % 2 != 0:
-        hex_string = '0' + hex_string
-    old = bytearray.fromhex(hex_string)
-    new = reversed(old)
-    return bytearray(new).hex()
+    return device_id.to_bytes(6, 'little').hex()
 
 
 def convert_device_id_int(device_id: str):
-    old = bytearray.fromhex(device_id)
-    new = reversed(old)
-    return int(bytearray(new).hex(), 16)
+    return int.from_bytes(bytes.fromhex(device_id), 'little')
 
 
 class device:
 
-    def __init__(self, device_ip: str, device_id: int):
-        device_id = convert_device_id_hex(device_id)
-        self._lan_service = lan(device_ip, device_id)
+    def __init__(self, device_ip: str, device_id: int, device_port: int):
+        # device_id = convert_device_id_hex(device_id)
+        self._lan_service = lan(device_ip, device_id, device_port)
         self._ip = device_ip
         self._id = device_id
+        self._port = device_port
+        self._keep_last_known_online_state = False
         self._type = 0xac
         self._updating = False
         self._defer_update = False
         self._half_temp_step = False
         self._support = False
+        self._online = False
+        self._active = True
+        self._protocol_version = 2
 
-    def setup(self):
-        # self.air_conditioning_device.refresh()
-        device = air_conditioning_device(self._ip, self._id)
-        return device
+    def authenticate(self, key: str, token: str):
+        # compatible example.py
+        if key != "YOUR_AC_K1" and token != "YOUR_AC_TOKEN":
+            self._protocol_version = 3
+            self._token = bytearray.fromhex(token)
+            self._key = bytearray.fromhex(key)
+            self._authenticate()
+
+    def _authenticate(self):
+        self._lan_service.authenticate(self._token, self._key)
 
     def set_device_detail(self, device_detail: dict):
         self._id = device_detail['id']
@@ -71,6 +75,10 @@ class device:
         return self._ip
 
     @property
+    def port(self):
+        return self._ip
+
+    @property
     def name(self):
         return self._name
 
@@ -88,21 +96,30 @@ class device:
 
     @property
     def active(self):
-        return True
+        return self._active
 
     @property
     def online(self):
-        return True
+        return self._online
 
     @property
     def support(self):
         return self._support
+
+    @property
+    def keep_last_known_online_state(self):
+        return self._keep_last_known_online_state
+
+    @keep_last_known_online_state.setter
+    def keep_last_known_online_state(self, feedback: bool):
+        self._keep_last_known_online_state = feedback
 
 
 class air_conditioning_device(device):
 
     class fan_speed_enum(Enum):
         Auto = 102
+        Full = 100
         High = 80
         Medium = 60
         Low = 40
@@ -154,8 +171,8 @@ class air_conditioning_device(device):
             _LOGGER.debug("Unknown Swing Mode: {}".format(value))
             return air_conditioning_device.swing_mode_enum.Off
 
-    def __init__(self, device_ip: str, device_id: str):
-        super().__init__(device_ip, convert_device_id_int(device_id))
+    def __init__(self, *args, **kwargs):
+        super(air_conditioning_device, self).__init__(*args, **kwargs)
         self._prompt_tone = False
         self._power_state = False
         self._target_temperature = 17.0
@@ -164,23 +181,44 @@ class air_conditioning_device(device):
         self._swing_mode = air_conditioning_device.swing_mode_enum.Off
         self._eco_mode = False
         self._turbo_mode = False
-        self.farenheit_unit = False # default unit is Celcius. this is just to control the temperatue unit of the AC's display. the target_temperature setter always expects a celcius temperature (resolution of 0.5C), as does the midea API
+        self.farenheit_unit = False  # default unit is Celcius. this is just to control the temperatue unit of the AC's display. the target_temperature setter always expects a celcius temperature (resolution of 0.5C), as does the midea API
 
         self._on_timer = None
         self._off_timer = None
+        self._online = False # set to False for Midea2Lox support (send retries on offline Device)
+        self._active = True
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
 
-    def refresh(self, broadcast):
+    def refresh(self):
         cmd = request_status_command(self.type)
+        self._send_cmd(cmd)
+
+    def _send_cmd(self, cmd):
         pkt_builder = packet_builder(self.id)
         pkt_builder.set_command(cmd)
-
         data = pkt_builder.finalize()
-        data = self._lan_service.appliance_transparent_send(data, broadcast)
         _LOGGER.debug(
-            "refresh - Recieved from {}, {}: {}".format(self.ip, self.id, data.hex()))
+            "pkt_builder: {}:{} len: {} data: {}".format(self.ip, self.port, len(data), data.hex()))
+        if self._protocol_version == 3:
+            responses = self._lan_service.appliance_transparent_send_8370(data)
+        else:
+            responses = self._lan_service.appliance_transparent_send(data)
+        _LOGGER.debug(
+            "Got responses from {}:{} Version: {} Count: {}".format(self.ip, self.port, self._protocol_version, len(responses)))
+        for response in responses:
+            self._process_response(response)
+
+    def _process_response(self, data):
+        _LOGGER.debug(
+            "Update from {}:{} {}".format(self.ip, self.port, data.hex()))
         if len(data) > 0:
+            self._online = True
+            if data == b'ERROR':
+                _LOGGER.debug(
+                    "Got ERROR from {}, {}".format(self.ip, self.id))
+                # self._authenticate()
+                return
             response = appliance_response(data)
             self._defer_update = False
             self._support = True
@@ -189,13 +227,15 @@ class air_conditioning_device(device):
                     self.update(response)
                 if data[0xa] == 0xa1 or data[0xa] == 0xa0:
                     '''only update indoor_temperature and outdoor_temperature'''
-                    _LOGGER.debug("refresh - Special Respone. {}, {}: {}".format(
-                        self.ip, self.id, data[0xa:].hex()))
+                    _LOGGER.debug("Update - Special Respone. {}:{} {}".format(
+                        self.ip, self.port, data[0xa:].hex()))
                     pass
                     # self.update_special(response)
                 self._defer_update = False
-            
-    def apply(self, broadcast):
+        elif not self._keep_last_known_online_state:
+            self._online = False
+
+    def apply(self):
         self._updating = True
         try:
             cmd = set_command(self.type)
@@ -207,28 +247,10 @@ class air_conditioning_device(device):
             cmd.swing_mode = self._swing_mode.value
             cmd.eco_mode = self._eco_mode
             cmd.turbo_mode = self._turbo_mode
-            pkt_builder = packet_builder(self.id)
+            # pkt_builder = packet_builder(self.id)
 #            cmd.night_light = False
             cmd.fahrenheit = self.farenheit_unit
-            pkt_builder.set_command(cmd)
-
-            data = pkt_builder.finalize()
-            data = self._lan_service.appliance_transparent_send(data, broadcast)
-            _LOGGER.debug(
-                "apply - Recieved from {}, {}: {}".format(self.ip, self.id, data.hex()))
-            if len(data) > 0:
-                response = appliance_response(data)
-                self._support = True
-                if not self._defer_update:
-                    if data[0xa] == 0xc0:
-                        self.update(response)
-                    if data[0xa] == 0xa1 or data[0xa] == 0xa0:
-                        '''only update indoor_temperature and outdoor_temperature'''
-                        _LOGGER.debug("apply - Special Respone. {}, {}: {}".format(
-                            self.ip, self.id, data[0xa:].hex()))
-                        pass
-                        # self.update_special(response)
-                _LOGGER.info("Data sending to {} @ {} successful".format(convert_device_id_int(self.id), self.ip))
+            self._send_cmd(cmd)
         finally:
             self._updating = False
             self._defer_update = False
@@ -244,14 +266,14 @@ class air_conditioning_device(device):
             res.swing_mode)
         self._eco_mode = res.eco_mode
         self._turbo_mode = res.turbo_mode
-        indoor_temperature = res.indoor_temperature 
+        indoor_temperature = res.indoor_temperature
         if indoor_temperature != 0xff:
             self._indoor_temperature = indoor_temperature
         outdoor_temperature = res.outdoor_temperature
         if outdoor_temperature != 0xff:
             self._outdoor_temperature = outdoor_temperature
-        self._timer_on = res.on_timer
-        self._timer_off = res.off_timer
+        self._on_timer = res.on_timer
+        self._off_timer = res.off_timer
 
     def update_special(self, res: appliance_response):
         indoor_temperature = res.indoor_temperature
@@ -260,7 +282,7 @@ class air_conditioning_device(device):
         outdoor_temperature = res.outdoor_temperature
         if outdoor_temperature != 0xff:
             self._outdoor_temperature = outdoor_temperature
-        
+
     @property
     def prompt_tone(self):
         return self._prompt_tone
@@ -369,8 +391,9 @@ class unknown_device(device):
         pkt_builder.set_command(cmd)
 
         data = pkt_builder.finalize()
-        data = self._lan_service.appliance_transparent_send(self.id, data, broadcast)
+        data = self._lan_service.appliance_transparent_send(self.id, data)
         if len(data) > 0:
+            self._online = True
             response = appliance_response(data)
             _LOGGER.debug("Decoded Data: {}".format({
                 'prompt_tone': response.prompt_tone,
@@ -383,6 +406,8 @@ class unknown_device(device):
                 'eco_mode': response.eco_mode,
                 'turbo_mode': response.turbo_mode
             }))
+        elif not self._keep_last_known_online_state:
+            self._online = False
 
     def apply(self):
         _LOGGER.debug("Cannot apply, device not fully supported yet")
