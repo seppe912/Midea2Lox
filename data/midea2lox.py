@@ -136,7 +136,7 @@ def send_to_midea():
         if statusupdate == 1: # refresh() AC State
             device.refresh()
 
-            while device.online == False and retries <= 10: # retry 10 times
+            while device.online == False and retries < 10: # retry 10 times
                 retries += 1
                 _LOGGER.info("refresh retry %s/10" %(retries))
                 sleep(5)
@@ -164,7 +164,7 @@ def send_to_midea():
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
                 device.refresh() # get actual state of the Device
-                while device.online == False and retries <= 5: # retry 5 times
+                while device.online == False and retries < 5: # retry 5 times
                     retries += 1
                     _LOGGER.info("retry refresh %s/5" %(retries))
                     sleep(5)
@@ -246,7 +246,7 @@ def send_to_midea():
 
             # commit the changes with apply()
             device.apply()
-            while device.online == False and retries <= 10: # retry 10 times
+            while device.online == False and retries < 10: # retry 10 times
                 retries += 1
                 _LOGGER.info("apply retry %s" %(retries))
                 sleep(5)
