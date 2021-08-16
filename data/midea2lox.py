@@ -219,7 +219,7 @@ def send_to_midea():
                     elif eachArg in swing:
                         device.swing_mode = eval(eachArg)
                         _LOGGER.debug(device.swing_mode)
-                    elif len(eachArg) == 2:
+                    elif len(eachArg) == 2 and eachArg.isdigit():
                         device.target_temperature = int(eachArg)
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
