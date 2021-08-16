@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import logging
 import socket
-import time
+from time import sleep as sleep
 from msmart.security import security, MSGTYPE_HANDSHAKE_REQUEST, MSGTYPE_ENCRYPTED_REQUEST
 
 VERSION = '0.1.29'
@@ -29,7 +29,7 @@ class lan:
             self._socket.settimeout(8)
             try:
                 self._socket.connect((self.device_ip, self.device_port))
-                time.sleep(1) # Midea2Lox support, will be needed on slower Raspberry´s
+                sleep(1) # Midea2Lox support, will be needed on slower Raspberry´s
             except Exception as error:
                 _LOGGER.error("Connect Error: {}:{} {}".format(
                     self.device_ip, self.device_port, error))
