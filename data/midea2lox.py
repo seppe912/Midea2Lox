@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import logging
-from sys import exit as exit
+import sys
 from time import sleep as sleep
 from netaddr import IPNetwork
 
@@ -40,7 +40,7 @@ except:
     logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
-    exit()
+    sys.exit()
 
 # Mainprogramm
 def start_server():
@@ -57,7 +57,7 @@ def start_server():
     except socket.error as msg:
         print('Bind failed. Error : ' + str(sys.exc_info()))
         _LOGGER.error('Bind failed. Error : ' + str(sys.exc_info()))
-        exit()
+        sys.exit()
 
     #Loxone Midea.AC_script reset to 0 on start from Midea2Lox
     requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
@@ -109,7 +109,7 @@ def send_to_midea():
                 statusupdate = 1
                 _LOGGER.debug("statusupdate =: {}".format(statusupdate))
             try:
-                if eachArg in IPNetwork('0.0.0.0/0'):
+                if eachArg in IPNetwork('255.255.0.0/1'):
                     device_ip = eachArg
                     _LOGGER.debug("Device ip: {}".format(device_ip))
             except:
@@ -121,7 +121,7 @@ def send_to_midea():
             device_ip is not None
         except:
             _LOGGER.error("On Midea2Lox V2.x and higher you need to send your Device ID and Device IP, please check your Loxone Config and see in Loxwiki: https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox")
-            exit()
+            sys.exit()
         
         device = ac(device_ip, int(device_id), 6444)
         
@@ -175,7 +175,7 @@ def send_to_midea():
                     
                 if device.online == False:
                     _LOGGER.error("Device is Offline")
-                    exit()
+                    sys.exit()
                 
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
