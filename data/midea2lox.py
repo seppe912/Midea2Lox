@@ -234,7 +234,7 @@ def send_to_midea():
                     device.fan_speed = ac.fan_speed_enum.Auto
                     _LOGGER.info("set auto-Fanspeed because of Auto-Operational Mode")
             except:
-                return
+                pass
                 
             try: #Midea AC only supports Temperature from 17 to 30 °C
                 if int(device.target_temperature) < 17:
@@ -244,7 +244,7 @@ def send_to_midea():
                     _LOGGER.info("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 30°C".format(device.target_temperature))
                     device.target_temperature = 30
             except:
-                return
+                pass
 
             # commit the changes with apply()
             device.apply()
