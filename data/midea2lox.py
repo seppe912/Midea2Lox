@@ -109,7 +109,7 @@ def send_to_midea():
                 statusupdate = 1
                 _LOGGER.debug("statusupdate =: {}".format(statusupdate))
             try:
-                if eachArg in IPNetwork('255.255.0.0/1'):
+                if eachArg in IPNetwork('0/0') and not eachArg.isdigit():
                     device_ip = eachArg
                     _LOGGER.debug("Device ip: {}".format(device_ip))
             except:
