@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import logging
-import sys
-import time
+from sys import exit as exit
+from time import sleep as sleep
+from netaddr import IPNetwork
 
 Midea2Lox_Version = '3.0.0'
     
@@ -39,7 +40,7 @@ except:
     logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
-    sys.exit()
+    exit()
 
 # Mainprogramm
 def start_server():
@@ -52,10 +53,11 @@ def start_server():
         soc.bind((LoxberryIP, UDP_Port))
         print('Socket bind complete, listen at' , LoxberryIP, ":", UDP_Port)
         _LOGGER.info("Socket bind complete, listen at {}:{}".format(LoxberryIP, UDP_Port))
+
     except socket.error as msg:
         print('Bind failed. Error : ' + str(sys.exc_info()))
         _LOGGER.error('Bind failed. Error : ' + str(sys.exc_info()))
-        sys.exit()
+        exit()
 
     #Loxone Midea.AC_script reset to 0 on start from Midea2Lox
     requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
@@ -100,12 +102,19 @@ def send_to_midea():
             elif len(eachArg) == 14 and eachArg.isdigit():
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
-            elif len(eachArg) == 14 and not eachArg.isdigit() or len(eachArg) == 15 or len(eachArg) == 13:
-                device_ip = eachArg
-                _LOGGER.debug("Device ip: {}".format(device_ip))
+            # elif len(eachArg) == 14 and not eachArg.isdigit() or len(eachArg) == 15 or len(eachArg) == 13:
+                # device_ip = eachArg
+                # _LOGGER.debug("Device ip: {}".format(device_ip))
             elif eachArg == "status":
                 statusupdate = 1
                 _LOGGER.debug("statusupdate =: {}".format(statusupdate))
+            try:
+                if eachArg in IPNetwork('0.0.0.0/0'):
+                    device_ip = eachArg
+                    _LOGGER.debug("Device ip: {}".format(device_ip))
+            except:
+                pass
+
         
         try:
             device_id is not None
@@ -130,17 +139,15 @@ def send_to_midea():
         if statusupdate == 1: # refresh() AC State
             device.refresh()
 
-            while device.online == False and retries < 10: # retry 10 times
+            while device.online == False and retries <= 10: # retry 10 times
                 retries += 1
                 _LOGGER.info("refresh retry %s/10" %(retries))
-                time.sleep(5)
+                sleep(5)
                 device.refresh()
 
         else: # apply() AC changes
-            #support older Loxone configs created with Midea2Lox V2.x.x 
-            key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
-            if len(data) == 10 and data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
-                _LOGGER.info("Use support Mode for older Loxone configs created with Midea2Lox V2.x.x")
+            if len(data) == 10: #support older Midea2Lox Versions <3.x
+                key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
                 if data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
                     device.power_state = eval(data[0])
                     device.prompt_tone = eval(data[1])
@@ -160,17 +167,15 @@ def send_to_midea():
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
                 device.refresh() # get actual state of the Device
-                while device.online == False and retries < 5: # retry 5 times
+                while device.online == False and retries <= 5: # retry 10 times
                     retries += 1
                     _LOGGER.info("retry refresh %s/5" %(retries))
-                    time.sleep(5)
+                    sleep(5)
                     device.refresh()
                     
                 if device.online == False:
                     _LOGGER.error("Device is Offline")
                     exit()
-                else:
-                    device._online = False # set onlinestatus back to False to detect timeouts on sending apply()
                 
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
@@ -181,7 +186,7 @@ def send_to_midea():
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
                 
-                for eachArg in data: #find keys from Loxone for msmart
+                for eachArg in data: #find keys from Loxone to msmart
                     if eachArg in power:
                         if eachArg == "power.True":
                             device.power_state = True                
@@ -242,20 +247,17 @@ def send_to_midea():
 
             # commit the changes with apply()
             device.apply()
-            while device.online == False and retries < 10: # retry 10 times
+            while device.online == False and retries <= 10: # retry 10 times
                 retries += 1
                 _LOGGER.info("apply retry %s" %(retries))
-                time.sleep(5)
+                sleep(5)
                 device.apply()
             
         if device.online == True:
-            if statusupdate == 1:
-                _LOGGER.info("Status Update successful for Midea.{} @ {}".format(device.id, device.ip))
-            else:
-                _LOGGER.info("Set new Parameter on Midea.{} @ {} successful".format(device.id, device.ip))
             send_to_loxone(device)
         else:
-            _LOGGER.error("Device is offline")
+            _LOGGER.info("Device is offline")
+            print("Device is offline")
     
     finally:
         requests.get("http://%s:%s@%s:%s/dev/sps/io/Midea.AC_script/0" % (LoxUser, LoxPassword, LoxIP, LoxPort))
@@ -266,29 +268,29 @@ def send_to_loxone(device):
     
     adress_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
-    adresses = [
-        ("%sMidea.%s.power_state/%s" % (adress_loxone, device.id, device.power_state)),                 #power_state
-        ("%sMidea.%s.audible_feedback/%s" % (adress_loxone, device.id, device.prompt_tone)),            #audible_feedback / promt Tone
-        ("%sMidea.%s.target_temperature/%s" % (adress_loxone, device.id, device.target_temperature)),   #target_temperature
-        ("%sMidea.%s.operational_mode/%s" % (adress_loxone, device.id, device.operational_mode)),       #operational_mode
-        ("%sMidea.%s.fan_speed/%s" % (adress_loxone, device.id, device.fan_speed)),                     #fan_speed
-        ("%sMidea.%s.swing_mode/%s" % (adress_loxone, device.id, device.swing_mode)),                   #swing_mode
-        ("%sMidea.%s.eco_mode/%s" % (adress_loxone, device.id, device.eco_mode)),                       #eco_mode
-        ("%sMidea.%s.turbo_mode/%s" % (adress_loxone, device.id, device.turbo_mode)),                   #turbo_mode
-        ("%sMidea.%s.indoor_temperature/%s" % (adress_loxone, device.id, device.indoor_temperature)),   #indoor_temperature
-        ("%sMidea.%s.outdoor_temperature/%s" % (adress_loxone, device.id, device.outdoor_temperature))  #outdoor_temperature
-        ]
-        
+    adress_power_state = ("%sMidea.%s.power_state/%s" % (adress_loxone, device.id, device.power_state))
+    adress_audible_feedback = ("%sMidea.%s.audible_feedback/%s" % (adress_loxone, device.id, device.prompt_tone))
+    adress_target_temperature = ("%sMidea.%s.target_temperature/%s" % (adress_loxone, device.id, device.target_temperature))
+    adress_operational_mode = ("%sMidea.%s.operational_mode/%s" % (adress_loxone, device.id, device.operational_mode))
+    adress_fan_speed = ("%sMidea.%s.fan_speed/%s" % (adress_loxone, device.id, device.fan_speed))
+    adress_swing_mode = ("%sMidea.%s.swing_mode/%s" % (adress_loxone, device.id, device.swing_mode))
+    adress_eco_mode = ("%sMidea.%s.eco_mode/%s" % (adress_loxone, device.id, device.eco_mode))
+    adress_turbo_mode = ("%sMidea.%s.turbo_mode/%s" % (adress_loxone, device.id, device.turbo_mode))
+    adress_indoor_temperature = ("%sMidea.%s.indoor_temperature/%s" % (adress_loxone, device.id, device.indoor_temperature))
+    adress_outdoor_temperature = ("%sMidea.%s.outdoor_temperature/%s" % (adress_loxone, device.id, device.outdoor_temperature))
+
+    adresses = [adress_power_state, adress_audible_feedback, adress_target_temperature, adress_operational_mode, adress_fan_speed, adress_swing_mode, adress_eco_mode, adress_turbo_mode, adress_indoor_temperature, adress_outdoor_temperature]
+    
     for eachArg in adresses:
         r = requests.get(eachArg)
         if r.status_code != 200:
             r_error = 1
             Loxinput = eachArg.replace(adress_loxone,'')
-            _LOGGER.error("Error {} on set Loxone Input '{}', please Check User,PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
+            _LOGGER.error("Error {} on set Loxone Input '{}', please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
     
     if r_error == 0:
-        _LOGGER.info("Set Loxone-Inputs for Midea.{} @ {} successful".format(device.id, device.ip))
-        
+        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
+
         
 # Start script
 start_server()  
