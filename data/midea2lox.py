@@ -265,30 +265,31 @@ def send_to_midea():
 def send_to_loxone(device):
     r_error = 0
     
-    adress_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))
+    address_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))
 
-    adress_power_state = ("%sMidea.%s.power_state/%s" % (adress_loxone, device.id, device.power_state))
-    adress_audible_feedback = ("%sMidea.%s.audible_feedback/%s" % (adress_loxone, device.id, device.prompt_tone))
-    adress_target_temperature = ("%sMidea.%s.target_temperature/%s" % (adress_loxone, device.id, device.target_temperature))
-    adress_operational_mode = ("%sMidea.%s.operational_mode/%s" % (adress_loxone, device.id, device.operational_mode))
-    adress_fan_speed = ("%sMidea.%s.fan_speed/%s" % (adress_loxone, device.id, device.fan_speed))
-    adress_swing_mode = ("%sMidea.%s.swing_mode/%s" % (adress_loxone, device.id, device.swing_mode))
-    adress_eco_mode = ("%sMidea.%s.eco_mode/%s" % (adress_loxone, device.id, device.eco_mode))
-    adress_turbo_mode = ("%sMidea.%s.turbo_mode/%s" % (adress_loxone, device.id, device.turbo_mode))
-    adress_indoor_temperature = ("%sMidea.%s.indoor_temperature/%s" % (adress_loxone, device.id, device.indoor_temperature))
-    adress_outdoor_temperature = ("%sMidea.%s.outdoor_temperature/%s" % (adress_loxone, device.id, device.outdoor_temperature))
+    addresses = [
+    ("%sMidea.%s.power_state/%s" % (address_loxone, device.id, device.power_state)),                #power_state
+    ("%sMidea.%s.audible_feedback/%s" % (address_loxone, device.id, device.prompt_tone)),           #prompt_tone
+    ("%sMidea.%s.target_temperature/%s" % (address_loxone, device.id, device.target_temperature)),  #target_temperature
+    ("%sMidea.%s.operational_mode/%s" % (address_loxone, device.id, device.operational_mode)),      #operational_mode
+    ("%sMidea.%s.fan_speed/%s" % (address_loxone, device.id, device.fan_speed)),                    #fan_speed
+    ("%sMidea.%s.swing_mode/%s" % (address_loxone, device.id, device.swing_mode)),                  #swing_mode
+    ("%sMidea.%s.eco_mode/%s" % (address_loxone, device.id, device.eco_mode)),                      #eco_mode
+    ("%sMidea.%s.turbo_mode/%s" % (address_loxone, device.id, device.turbo_mode)),                  #turbo_mode
+    ("%sMidea.%s.indoor_temperature/%s" % (address_loxone, device.id, device.indoor_temperature)),  #indoor_temperature
+    ("%sMidea.%s.outdoor_temperature/%s" % (address_loxone, device.id, device.outdoor_temperature)) #outdoor_temperature
+    ]
 
-    adresses = [adress_power_state, adress_audible_feedback, adress_target_temperature, adress_operational_mode, adress_fan_speed, adress_swing_mode, adress_eco_mode, adress_turbo_mode, adress_indoor_temperature, adress_outdoor_temperature]
     
-    for eachArg in adresses:
+    for eachArg in addresses:
         r = requests.get(eachArg)
         if r.status_code != 200:
             r_error = 1
-            Loxinput = eachArg.replace(adress_loxone,'')
+            Loxinput = eachArg.replace(address_loxone,'')
             _LOGGER.error("Error {} on set Loxone Input '{}', please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
     
     if r_error == 0:
-        _LOGGER.info("set Loxone inputs for Midea.{} @ {} successful".format(device.id, device.ip))
+        _LOGGER.info("sending to Loxone for Midea.{} @ {} successful".format(device.id, device.ip))
 
         
 # Start script
