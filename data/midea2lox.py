@@ -143,7 +143,7 @@ def send_to_midea():
                 device.refresh()
 
         else: # apply() AC changes
-            if len(data) == 10: #support older Midea2Lox Versions <3.x
+            if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
                 _LOGGER.info("use support Mode for Loxone Configs createt with Midea2Lox V2.x")
                 key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
                 if data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
@@ -161,6 +161,7 @@ def send_to_midea():
                             print("getting wrong Argument: ", eachArg)
                             _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
                     _LOGGER.info("allowed Arguments: {}".format(key))
+                    sys.exit()
 
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
