@@ -280,7 +280,6 @@ def send_to_loxone(device):
     ("%sMidea.%s.outdoor_temperature/%s" % (address_loxone, device.id, device.outdoor_temperature)) #outdoor_temperature
     ]
 
-    
     for eachArg in addresses:
         r = requests.get(eachArg)
         if r.status_code != 200:
