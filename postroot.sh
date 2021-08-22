@@ -65,6 +65,8 @@ pip3 install --upgrade pip setuptools wheel
 pip3 install requests
 pip3 install pycryptodomex
 pip3 install netaddr
+pip3 install paho-mqtt
+pip3 install json
 
 # Exit with Status 0
 exit 0
