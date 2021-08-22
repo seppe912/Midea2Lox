@@ -60,6 +60,150 @@ except:
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
 
+# Mainprogramm
+def start_server():
+    _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, VERSION))
+    
+    import socket
+    soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        soc.bind((LoxberryIP, UDP_Port))
+        print('Socket bind complete, listen at' , LoxberryIP, ":", UDP_Port)
+        _LOGGER.info("Socket bind complete, listen at {}:{}".format(LoxberryIP, UDP_Port))
+
+    except socket.error as msg:
+        print('Bind failed. Error : ' + str(sys.exc_info()))
+        _LOGGER.error('Bind failed. Error : ' + str(sys.exc_info()))
+        sys.exit()
+    
+    while True:
+        data, addr = soc.recvfrom(1024)
+        data = data.decode('utf-8')
+        data = data.split(' ')
+        if data[0] != '0' and data[0] != '':
+            print("Incomming Message from Loxone: ", data)
+            _LOGGER.info("Incomming Message from Loxone: {}".format(data))
+            try:
+                print("send Message to Midea Appliance")
+                _LOGGER.info("send Message to Midea Appliance")
+                send_to_midea(data)
+            except:
+                print('Error : ' + str(sys.exc_info()))
+                _LOGGER.error(str(sys.exc_info()))
+    soc.close()
+
+
+# send to Midea Appliance over LAN/WLAN
+def send_to_midea(data):
+    try: 
+        #Start, set Loxone Script to active
+        runtime = time.time()
+
+        retries = 0
+        protocol = 2
+        statusupdate = 0
+        support_mode = 0
+        
+        device_id = None
+        device_ip = None
+        device_k1 = None
+        device_token = None
+
+        for eachArg in data: # get device_id, device_ip and for V3 K1 and Token.
+            if len(eachArg) == 64:
+                device_k1 = eachArg
+                _LOGGER.debug("Device K1: '{}'".format(device_k1))
+                protocol = 3
+            elif len(eachArg) == 128:
+                device_token = eachArg
+                _LOGGER.debug("Device Token: '{}'".format(device_token))
+                protocol = 3
+            elif len(eachArg) == 14 and eachArg.isdigit():
+                device_id = eachArg
+                _LOGGER.debug("Device ID: '{}'".format(device_id))
+            elif eachArg == "status":
+                statusupdate = 1
+                _LOGGER.debug("statusupdate =: {}".format(statusupdate))
+            try:
+                if eachArg in IPNetwork('0/0') and not eachArg.isdigit():
+                    device_ip = eachArg
+                    _LOGGER.debug("Device ip: {}".format(device_ip))
+            except:
+                pass
+                
+        if device_id == None:                
+            sys.exit("missing device_id")
+        elif device_ip == None:
+            sys.exit("missing device_ip")
+        elif protocol == 3 and device_k1 == None:
+            sys.exit("missing device_k1 only token is given")
+        elif protocol == 3 and device_token == None:
+            sys.exit("missing device_token only K1 is given")
+
+        device = ac(device_ip, int(device_id), 6444)
+        
+        if protocol == 3: # support midea V3
+            # If the device is using protocol 3 (aka 8370)
+            # you must authenticate with device's k1 and token.
+            # adb logcat | grep doKeyAgree
+            # device.authenticate('YOUR_AC_K1', 'YOUR_AC_TOKEN')
+            _LOGGER.info("use Midea V3 8370")
+            _LOGGER.debug("AC token:{}; AC K1:{}".format(device_token, device_k1))
+            device.authenticate(device_k1, device_token)
+        else:
+            _LOGGER.info("use Midea V2")
+
+        if statusupdate == 1: # refresh() AC State
+            device.refresh()
+
+            while device.online == False and retries < 5: # retry 5 times on connection error
+                retries += 1
+                _LOGGER.warning("refresh retry %s/5" %(retries))
+                time.sleep(5)
+                device.refresh()
+
+        else: # apply() AC changes
+            if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
+                support_mode = 1
+                _LOGGER.info("use support Mode for Loxone Configs createt with Midea2Lox V2.x --> MQTT disabled. If you want to use MQTT you need to update your Loxoneconfig")
+                key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
+                if data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
+                    device.power_state = eval(data[0])
+                    device.prompt_tone = eval(data[1])
+                    device.target_temperature = int(data[2])
+                    device.operational_mode = eval(data[3])
+                    device.fan_speed = eval(data[3])
+                    device.swing_mode = eval(data[5])
+                    device.eco_mode = eval(data[6])
+                    device.turbo_mode = eval(data[7])
+                else:
+                    for eachArg in data:
+                        if eachArg not in key and eachArg != data[2] and eachArg != data[8] and eachArg != data[9]:
+                            print("getting wrong Argument: ", eachArg)
+                            _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
+                    _LOGGER.info("allowed Arguments: {}".format(key))
+                    sys.exit()
+
+
+            else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
+                if protocol == 3 and len(data) != 12 or protocol == 2 and len(data) != 10: #if not all settings are sent from loxone, refresh() is neccessary.
+                    device.refresh()                                # get actual state of the Device to get all settings from ac
+                    while device.online == False and retries < 5:   # retry 5 times on connection error
+                        retries += 1
+                        _LOGGER.warning("retry refresh %s/5" %(retries))
+                        time.sleep(5)
+                        device.refresh()
+                    
+                    if device.online == False:
+                        send_to_loxone(device, support_mode)
+                        sys.exit('Device is Offline')
+                    
+                #set all allowed key´s for Loxone input
+                power = ["power.True", "power.False"]
+                tone = ["tone.True", "tone.False"]
+                operation = ["ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only"] 
+                fan = ["ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent"] 
                 swing = ["ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"]
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
