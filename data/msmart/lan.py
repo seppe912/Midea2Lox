@@ -96,7 +96,8 @@ class lan:
             raise Exception('missing token key pair')
         request = self.security.encode_8370(
             self._token, MSGTYPE_HANDSHAKE_REQUEST)
-        response = self.request(request)[8:72]
+        response, _ = self.request(request)
+        response = response[8:72]
         try:
             tcp_key = self.security.tcp_key(response, self._key)
             self._tcp_key = tcp_key.hex()
