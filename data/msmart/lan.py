@@ -56,8 +56,7 @@ class lan:
             if self._socket is None:
                 _LOGGER.error("Sokcet is None: {}:{}".format(
                     self.device_ip, self.device_port))
-                self._retries += 1
-                return bytearray(0)
+                return bytearray(0), False
             _LOGGER.debug("Socket {} -> {} tcp_key: {}".format(
                 self._local, self._remote, self._tcp_key))
             # Send data
@@ -76,12 +75,12 @@ class lan:
             else:
                 _LOGGER.error("Couldn't connect with Device {}:{} retries: {} error: {}".format(
                     self.device_ip, self.device_port, self._retries, error))
-            return bytearray(0)
+            return bytearray(0), True
         except socket.timeout:
             _LOGGER.error("Connect the Device {}:{} TimeOut for 8s. don't care about a small amount of this. if many maybe not support".format(
                 self.device_ip, self.device_port))
             self._disconnect()
-            return bytearray(0)
+            return bytearray(0), True
         _LOGGER.debug("Received from {}:{} {}".format(
             self.device_ip, self.device_port, response.hex()))
         if response == bytearray(0):
@@ -89,7 +88,7 @@ class lan:
                     self.device_ip, self.device_port))
             self._disconnect()
             self._retries += 1
-        return response
+        return response, True
 
     def authenticate(self, token: bytearray, key: bytearray):
         self._token, self._key = token, key
@@ -101,7 +100,7 @@ class lan:
         try:
             tcp_key = self.security.tcp_key(response, self._key)
             self._tcp_key = tcp_key.hex()
-            _LOGGER.debug('Got TCP key for {}:{} {}'.format(
+            _LOGGER.info('Got TCP key for {}:{} {}'.format(
                 self.device_ip, self.device_port, tcp_key.hex()))
             # After authentication, don’t send data immediately, so sleep 1s.
             time.sleep(1)
@@ -125,11 +124,11 @@ class lan:
         # copy from data in order to resend data
         original_data = bytearray.copy(data)
         data = self.security.encode_8370(data, msgtype)
-        # time sleep retries second befor send data, default is 0 
+        # time sleep retries second befor send data, default is 0
         time.sleep(self._retries)
-        responses = self.request(data)
+        responses, b = self.request(data)
         _LOGGER.debug("Got responses len: {}".format(len(responses)))
-        if responses == bytearray(0) and self._retries < 2:
+        if responses == bytearray(0) and self._retries < 2 and b:
             packets = self.appliance_transparent_send_8370(original_data, msgtype)
             self._retries = 0
             return packets
@@ -143,16 +142,17 @@ class lan:
         return packets
 
     def appliance_transparent_send(self, data):
-        # time sleep retries second befor send data, default is 0 
+        # time sleep retries second befor send data, default is 0
         time.sleep(self._retries)
-        responses = self.request(data)
+        responses, b = self.request(data)
         _LOGGER.debug("Got responses len: {}".format(len(responses)))
-        if responses == bytearray(0) and self._retries < 2:
-            return self.appliance_transparent_send(data)
-        self._retries = 0
-        if responses == bytearray(0):
-            return responses
+        if responses == bytearray(0) and self._retries < 2 and b:
+            packets = self.appliance_transparent_send(data)
+            self._retries = 0
+            return packets
         packets = []
+        if responses == bytearray(0):
+            return packets
         if responses[:2].hex() == "5a5a":
             # maybe multiple response
             for response in responses.split(bytearray.fromhex('5a5a')):
