@@ -268,9 +268,16 @@ def send_to_loxone(device, support_mode):
     else: #Publish to Loxone Inputs over HTTP
         if device.online == True:
             for eachArg in addresses:
-                HTTPrequest = eachArg.replace(',' , '/')
-                if support_mode == 0: # support Loxoneconfigs created with Midea2Lox V2.x
-                    HTTPrequest = HTTPrequest.replace('Midea',  'Midea2Lox_Midea')
+                if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
+                    HTTPrequest = eachArg.replace(address_loxone , 'var')
+                    HTTPrequest = HTTPrequest.replace('/' , '.')
+                    HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+                else: 
+                    HTTPrequest = eachArg.replace('Midea',  'Midea2Lox_Midea')
+                    HTTPrequest = HTTPrequest.replace(address_loxone , 'var')
+                    HTTPrequest = HTTPrequest.replace('/', '_')
+                    HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+                HTTPrequest = HTTPrequest.replace(',' , '/')
                 r = requests.get(HTTPrequest)                
                 if r.status_code != 200:
                     r_error = 1
@@ -278,9 +285,16 @@ def send_to_loxone(device, support_mode):
                     _LOGGER.error("Error {} on set Loxone Input '{}', please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
         
         else: # Send Device Offline state to Loxone over HTTP
-            HTTPrequest = addresses[10].replace(',' , '/')
-            if support_mode == 0:
-                HTTPrequest = HTTPrequest.replace('Midea',  'Midea2Lox_Midea')
+            if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
+                HTTPrequest = addresses[10].replace(address_loxone , 'var')
+                HTTPrequest = HTTPrequest.replace('/', '.')
+                HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+            else: 
+                HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea')
+                HTTPrequest = HTTPrequest.replace(address_loxone , 'var')
+                HTTPrequest = HTTPrequest.replace('/', '_')
+                HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+            HTTPrequest = HTTPrequest.replace(',' , '/')
             r = requests.get(HTTPrequest)
             if r.status_code != 200:
                 r_error = 1
