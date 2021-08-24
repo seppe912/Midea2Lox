@@ -259,7 +259,7 @@ def send_to_loxone(device, support_mode):
                 MQTTpublish = MQTTpublish.split(',')
                 client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         else: # Send Device Offline state to Loxone over MQTT
-            MQTTpublish = addresses[10].replace('Midea','Midea2Lox/Midea')
+             MQTTpublish = 'Midea2Lox/' + addresses[10]
             MQTTpublish = MQTTpublish.split(',')
             client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         
