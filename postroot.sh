@@ -60,9 +60,6 @@ echo "<INFO> Plugin Data folder is: $PDATA"
 echo "<INFO> Plugin Log folder (on RAMDISK!) is: $PLOG"
 echo "<INFO> Plugin CONFIG folder is: $PCONFIG"
 
-python3 -m venv $PDATA/venv
-
-source $PDATA/venv/bin/activate
 
 pip3 install --upgrade pip
 pip3 install --upgrade pip setuptools wheel
@@ -72,7 +69,6 @@ pip3 install netaddr
 pip3 install paho-mqtt
 pip3 install json
 
-deactivate
 
 # Exit with Status 0
 exit 0
