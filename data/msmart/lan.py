@@ -43,7 +43,6 @@ class lan:
                 self._disconnect()
                 raise error         #add raise error to stop Midea2Lox from execute on connection error
 
-
     def _disconnect(self):
         if self._socket:
             self._socket.close()
