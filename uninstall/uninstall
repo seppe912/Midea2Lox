@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "<INFO> stoppe Midea2Lox"
 killall midea2lox.py
-sleep 5
+sleep 1
 
 exit 0
