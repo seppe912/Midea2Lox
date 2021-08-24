@@ -99,21 +99,18 @@ def send_to_midea(data):
             except Exception as error:
                 device._online = False
                 send_to_loxone(device, support_mode)
+                _LOGGER.error('get wrong Token and Key pair')
                 raise error
                 
         else:
             _LOGGER.info("use Midea V2")
         if statusupdate == 1: # refresh() AC State
-            try:
+            device.refresh()
+            while device.online == False and retries < 2: # retry 2 times on connection error
+                retries += 1
+                _LOGGER.warning("retry refresh %s/2" %(retries))
+                time.sleep(5)
                 device.refresh()
-                while device.online == False and retries < 2: # retry 2 times on connection error
-                    retries += 1
-                    _LOGGER.warning("retry refresh %s/2" %(retries))
-                    time.sleep(5)
-                    device.refresh()
-            except Exception as error:
-                device._online = False
-                _LOGGER.error(error)
 
         else: # apply() AC changes
             if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
@@ -135,22 +132,21 @@ def send_to_midea(data):
                             print("getting wrong Argument: ", eachArg)
                             _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
                     _LOGGER.info("allowed Arguments: {}".format(key))
-                    sys.exit()
+                    raise
 
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
                 if protocol == 3 and len(data) != 12 or protocol == 2 and len(data) != 10: #if not all settings are sent from loxone, refresh() is neccessary.
-                    try:
+                    device.refresh()
+                    while device.online == False and retries < 2: # retry 2 times on connection error
+                        retries += 1
+                        _LOGGER.warning("retry refresh %s/2" %(retries))
+                        time.sleep(5)
                         device.refresh()
-                        while device.online == False and retries < 2: # retry 2 times on connection error
-                            retries += 1
-                            _LOGGER.warning("retry refresh %s/2" %(retries))
-                            time.sleep(5)
-                            device.refresh()
-                    except Exception as error:
-                        device._online = False
+                        
+                    if device.online == False
                         send_to_loxone(device, support_mode)
-                        raise error
+                        raise
                     
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
@@ -209,16 +205,12 @@ def send_to_midea(data):
                 device.target_temperature = 30
 
             # commit the changes with apply()
-            try:
+            device.apply()
+            while device.online == False and retries < 2: # retry 2 times on connection error
+                retries += 1
+                _LOGGER.warning("retry apply %s/2" %(retries))
+                time.sleep(5)
                 device.apply()
-                while device.online == False and retries < 2: # retry 2 times on connection error
-                    retries += 1
-                    _LOGGER.warning("retry apply %s/2" %(retries))
-                    time.sleep(5)
-                    device.apply()
-            except Exception as error:
-                device._online = False
-                _LOGGER.error(error)
                 
         if device.online == True:
             if statusupdate == 1:
