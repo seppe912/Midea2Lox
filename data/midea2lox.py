@@ -144,7 +144,7 @@ def send_to_midea(data):
                         time.sleep(5)
                         device.refresh()
                         
-                    if device.online == False
+                    if device.online == False:
                         send_to_loxone(device, support_mode)
                         raise
                     
