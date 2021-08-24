@@ -90,10 +90,7 @@ if (param('saveanddiscover')) {
     # Save settings to config file
     $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
     if ($debug ne 1) { $debug = 0 }
-    $conf->param('MINISERVER', unquotemeta("MINISERVER$miniserver"));	
-    $conf->param('UDP_PORT', unquotemeta($udp_port));
-    $conf->param('DEBUG', unquotemeta($debug));		
-    $conf->param('LoxberryIP', unquotemeta($LoxberryIP));
+	$conf->param('DEBUG', unquotemeta($debug));		
     $conf->param('MideaUser', unquotemeta($MideaUser));	
     $conf->param('MideaPassword', unquotemeta($MideaPassword));
     $conf->param('BroadcastPakets', unquotemeta($BroadcastPakets));
