@@ -1,4 +1,4 @@
-#!REPLACELBPBINDIR/venv/bin/python3
+#!REPLACELBPDATADIR/venv/bin/python3
 # -*- coding: utf-8 -*-
 import logging
 import sys
