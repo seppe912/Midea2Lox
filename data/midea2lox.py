@@ -51,13 +51,13 @@ def send_to_midea(data):
         
         device_id = None
         device_ip = None
-        device_k1 = None
+        device_Key = None
         device_token = None
 
-        for eachArg in data: # get device_id, device_ip and for V3 K1 and Token.
+        for eachArg in data: # get device_id, device_ip and for V3 Key and Token.
             if len(eachArg) == 64:
-                device_k1 = eachArg
-                _LOGGER.debug("Device K1: '{}'".format(device_k1))
+                device_Key = eachArg
+                _LOGGER.debug("Device Key: '{}'".format(device_Key))
                 protocol = 3
             elif len(eachArg) == 128:
                 device_token = eachArg
@@ -80,22 +80,22 @@ def send_to_midea(data):
             sys.exit("missing device_id")
         elif device_ip == None:
             sys.exit("missing device_ip")
-        elif protocol == 3 and device_k1 == None:
-            sys.exit("missing device_k1 only token is given")
+        elif protocol == 3 and device_Key == None:
+            sys.exit("missing device_Key only token is given")
         elif protocol == 3 and device_token == None:
-            sys.exit("missing device_token only K1 is given")
+            sys.exit("missing device_token only Key is given")
 
         device = ac(device_ip, int(device_id), 6444)
         
         if protocol == 3: # support midea V3
             # If the device is using protocol 3 (aka 8370)
-            # you must authenticate with device's k1 and token.
+            # you must authenticate with device's Key and token.
             # adb logcat | grep doKeyAgree
-            # device.authenticate('YOUR_AC_K1', 'YOUR_AC_TOKEN')
+            # device.authenticate('YOUR_AC_Key', 'YOUR_AC_TOKEN')
             _LOGGER.info("use Midea V3 8370")
-            _LOGGER.debug("AC token:{}; AC K1:{}".format(device_token, device_k1))
+            _LOGGER.debug("AC token:{}; AC Key:{}".format(device_token, device_Key))
             try:
-                device.authenticate(device_k1, device_token)
+                device.authenticate(device_Key, device_token)
             except Exception as error:
                 device._online = False
                 send_to_loxone(device, support_mode)
@@ -188,7 +188,7 @@ def send_to_midea(data):
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
                         if protocol == 3:
-                            if eachArg != device_k1 and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
+                            if eachArg != device_Key and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
                                 _LOGGER.error("Given command '{}' is unknown".format(eachArg))
                         else:
                             if eachArg != device_id and eachArg != device_ip:
