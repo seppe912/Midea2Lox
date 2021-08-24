@@ -232,33 +232,34 @@ def send_to_midea(data):
     
     finally:
         _LOGGER.info(time.time()-runtime)
+
         
 def send_to_loxone(device, support_mode):
     r_error = 0
     
     address_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))    
     addresses = [
-        ("%sMidea/%s/power_state,%s" % (address_loxone, device.id, int(device.power_state))),                #power_state
-        ("%sMidea/%s/audible_feedback,%s" % (address_loxone, device.id, int(device.prompt_tone))),           #prompt_tone
-        ("%sMidea/%s/target_temperature,%s" % (address_loxone, device.id, device.target_temperature)),  #target_temperature
-        ("%sMidea/%s/operational_mode,%s" % (address_loxone, device.id, device.operational_mode)),      #operational_mode
-        ("%sMidea/%s/fan_speed,%s" % (address_loxone, device.id, device.fan_speed)),                    #fan_speed
-        ("%sMidea/%s/swing_mode,%s" % (address_loxone, device.id, device.swing_mode)),                  #swing_mode
-        ("%sMidea/%s/eco_mode,%s" % (address_loxone, device.id, int(device.eco_mode))),                      #eco_mode
-        ("%sMidea/%s/turbo_mode,%s" % (address_loxone, device.id, int(device.turbo_mode))),                  #turbo_mode
-        ("%sMidea/%s/indoor_temperature,%s" % (address_loxone, device.id, device.indoor_temperature)),  #indoor_temperature
-        ("%sMidea/%s/outdoor_temperature,%s" % (address_loxone, device.id, device.outdoor_temperature)), #outdoor_temperature
-        ("%sMidea/%s/online,%s" % (address_loxone, device.id, int(device.online)))                      #device.online
+        ("Midea/%s/power_state,%s" % (device.id, int(device.power_state))),                #power_state
+        ("Midea/%s/audible_feedback,%s" % (device.id, int(device.prompt_tone))),           #prompt_tone
+        ("Midea/%s/target_temperature,%s" % (device.id, device.target_temperature)),  #target_temperature
+        ("Midea/%s/operational_mode,%s" % (device.id, device.operational_mode)),      #operational_mode
+        ("Midea/%s/fan_speed,%s" % (device.id, device.fan_speed)),                    #fan_speed
+        ("Midea/%s/swing_mode,%s" % (device.id, device.swing_mode)),                  #swing_mode
+        ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco_mode))),                      #eco_mode
+        ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),                  #turbo_mode
+        ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),  #indoor_temperature
+        ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)), #outdoor_temperature
+        ("Midea/%s/online,%s" % (device.id, int(device.online)))                      #device.online
         ]
     
     if MQTT == 1 and support_mode == 0: # publish over MQTT
         if device.online == True:
             for eachArg in addresses:
-                MQTTpublish = eachArg.replace(address_loxone,'Midea2Lox/')
+                MQTTpublish = eachArg.replace('Midea','Midea2Lox/Midea')
                 MQTTpublish = MQTTpublish.split(',')
                 client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         else: # Send Device Offline state to Loxone over MQTT
-            MQTTpublish = addresses[10].replace(address_loxone,'Midea2Lox/')
+            MQTTpublish = addresses[10].replace('Midea','Midea2Lox/Midea')
             MQTTpublish = MQTTpublish.split(',')
             client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         
@@ -269,14 +270,12 @@ def send_to_loxone(device, support_mode):
         if device.online == True:
             for eachArg in addresses:
                 if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
-                    HTTPrequest = eachArg.replace(address_loxone , 'var')
-                    HTTPrequest = HTTPrequest.replace('/' , '.')
-                    HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+                    HTTPrequest = eachArg.replace('/' , '.')
+                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
                 else: 
                     HTTPrequest = eachArg.replace('Midea',  'Midea2Lox_Midea')
-                    HTTPrequest = HTTPrequest.replace(address_loxone , 'var')
-                    HTTPrequest = HTTPrequest.replace('/', '_')
-                    HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+                    HTTPrequest = HTTPrequest.replace('/' , '_')
+                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
                 HTTPrequest = HTTPrequest.replace(',' , '/')
                 r = requests.get(HTTPrequest)                
                 if r.status_code != 200:
@@ -286,14 +285,13 @@ def send_to_loxone(device, support_mode):
         
         else: # Send Device Offline state to Loxone over HTTP
             if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
-                HTTPrequest = addresses[10].replace(address_loxone , 'var')
-                HTTPrequest = HTTPrequest.replace('/', '.')
-                HTTPrequest = HTTPrequest.replace('var' , address_loxone)
-            else: 
-                HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea')
-                HTTPrequest = HTTPrequest.replace(address_loxone , 'var')
-                HTTPrequest = HTTPrequest.replace('/', '_')
-                HTTPrequest = HTTPrequest.replace('var' , address_loxone)
+                if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
+                    HTTPrequest = addresses[10].replace('/' , '.')
+                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
+                else: 
+                    HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea')
+                    HTTPrequest = HTTPrequest.replace('/' , '_')
+                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
             HTTPrequest = HTTPrequest.replace(',' , '/')
             r = requests.get(HTTPrequest)
             if r.status_code != 200:
@@ -302,7 +300,6 @@ def send_to_loxone(device, support_mode):
         
         if r_error == 0:
             _LOGGER.info("Set Loxone Inputs over HTTP for Midea.{} @ {} successful".format(device.id, device.ip))
-
 
 
 # Ist ein Callback, der ausgeführt wird, wenn sich mit dem Broker verbunden wird
