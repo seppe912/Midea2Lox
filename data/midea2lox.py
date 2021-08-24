@@ -51,13 +51,13 @@ def send_to_midea(data):
         
         device_id = None
         device_ip = None
-        device_Key = None
+        device_k1 = None
         device_token = None
 
-        for eachArg in data: # get device_id, device_ip and for V3 Key and Token.
+        for eachArg in data: # get device_id, device_ip and for V3 K1 and Token.
             if len(eachArg) == 64:
-                device_Key = eachArg
-                _LOGGER.debug("Device Key: '{}'".format(device_Key))
+                device_k1 = eachArg
+                _LOGGER.debug("Device K1: '{}'".format(device_k1))
                 protocol = 3
             elif len(eachArg) == 128:
                 device_token = eachArg
@@ -80,33 +80,40 @@ def send_to_midea(data):
             sys.exit("missing device_id")
         elif device_ip == None:
             sys.exit("missing device_ip")
-        elif protocol == 3 and device_Key == None:
-            sys.exit("missing device_Key only token is given")
+        elif protocol == 3 and device_k1 == None:
+            sys.exit("missing device_k1 only token is given")
         elif protocol == 3 and device_token == None:
-            sys.exit("missing device_token only Key is given")
+            sys.exit("missing device_token only K1 is given")
 
         device = ac(device_ip, int(device_id), 6444)
         
         if protocol == 3: # support midea V3
             # If the device is using protocol 3 (aka 8370)
-            # you must authenticate with device's Key and token.
+            # you must authenticate with device's k1 and token.
             # adb logcat | grep doKeyAgree
-            # device.authenticate('YOUR_AC_Key', 'YOUR_AC_TOKEN')
+            # device.authenticate('YOUR_AC_K1', 'YOUR_AC_TOKEN')
             _LOGGER.info("use Midea V3 8370")
-            _LOGGER.debug("AC token:{}; AC Key:{}".format(device_token, device_Key))
-
-            device.authenticate(device_Key, device_token)
+            _LOGGER.debug("AC token:{}; AC K1:{}".format(device_token, device_k1))
+            try:
+                device.authenticate(device_k1, device_token)
+            except Exception as error:
+                device._online = False
+                send_to_loxone(device, support_mode)
+                raise error
                 
         else:
             _LOGGER.info("use Midea V2")
-            
         if statusupdate == 1: # refresh() AC State
-            device.refresh()
-            while device.online == False and retries < 2: # retry 2 times on connection error
-                retries += 1
-                _LOGGER.warning("retry refresh %s/2" %(retries))
-                time.sleep(5)
+            try:
                 device.refresh()
+                while device.online == False and retries < 2: # retry 2 times on connection error
+                    retries += 1
+                    _LOGGER.warning("retry refresh %s/2" %(retries))
+                    time.sleep(5)
+                    device.refresh()
+            except Exception as error:
+                device._online = False
+                _LOGGER.error(error)
 
         else: # apply() AC changes
             if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
@@ -133,16 +140,17 @@ def send_to_midea(data):
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
                 if protocol == 3 and len(data) != 12 or protocol == 2 and len(data) != 10: #if not all settings are sent from loxone, refresh() is neccessary.
-                    device.refresh()
-                    while device.online == False and retries < 2: # retry 2 times on connection error
-                        retries += 1
-                        _LOGGER.warning("retry refresh %s/2" %(retries))
-                        time.sleep(5)
+                    try:
                         device.refresh()
-                        
-                    if device.online == False:
+                        while device.online == False and retries < 2: # retry 2 times on connection error
+                            retries += 1
+                            _LOGGER.warning("retry refresh %s/2" %(retries))
+                            time.sleep(5)
+                            device.refresh()
+                    except Exception as error:
+                        device._online = False
                         send_to_loxone(device, support_mode)
-                        sys.exit()
+                        raise error
                     
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
@@ -180,7 +188,7 @@ def send_to_midea(data):
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
                         if protocol == 3:
-                            if eachArg != device_Key and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
+                            if eachArg != device_k1 and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
                                 _LOGGER.error("Given command '{}' is unknown".format(eachArg))
                         else:
                             if eachArg != device_id and eachArg != device_ip:
@@ -201,12 +209,16 @@ def send_to_midea(data):
                 device.target_temperature = 30
 
             # commit the changes with apply()
-            device.apply()
-            while device.online == False and retries < 2: # retry 2 times on connection error
-                retries += 1
-                _LOGGER.warning("retry apply %s/2" %(retries))
-                time.sleep(5)
+            try:
                 device.apply()
+                while device.online == False and retries < 2: # retry 2 times on connection error
+                    retries += 1
+                    _LOGGER.warning("retry apply %s/2" %(retries))
+                    time.sleep(5)
+                    device.apply()
+            except Exception as error:
+                device._online = False
+                _LOGGER.error(error)
                 
         if device.online == True:
             if statusupdate == 1:
@@ -220,7 +232,7 @@ def send_to_midea(data):
     
     finally:
         _LOGGER.info(time.time()-runtime)
-
+        
 def send_to_loxone(device, support_mode):
     r_error = 0
     
