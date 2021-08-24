@@ -26,6 +26,8 @@ our $select_language;
 our $udp_port;	
 our $debug;
 our $select_debug;
+our $MideaUser;
+our $MideaPassword;
 our $LoxberryIP  = LoxBerry::System::get_localip();
 our $do;
 our $midea2loxstatus;
@@ -58,6 +60,8 @@ if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotem
 if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = "7013"; } } else { $udp_port = quotemeta($query{'udp_port'}); }
 if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = "0";  } } else { $debug = quotemeta($query{'debug'}); }
 
+if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
+if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
 
 
 # Figure out in which subfolder we are installed
@@ -72,6 +76,8 @@ if (param('savedata')) {
 	$conf->param('UDP_PORT', unquotemeta($udp_port));
 	$conf->param('DEBUG', unquotemeta($debug));		
     $conf->param('LoxberryIP', unquotemeta($LoxberryIP));
+    $conf->param('MideaUser', unquotemeta($MideaUser));	
+	$conf->param('MideaPassword', unquotemeta($MideaPassword));
     
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
@@ -83,7 +89,8 @@ $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
 $miniserver = encode_entities($conf->param('MINISERVER'));
 $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
-
+$MideaPassword = encode_entities($conf->param('MideaPassword'));
+$MideaUser = encode_entities($conf->param('MideaUser'));
 
 # Set Enabled / Disabled switch
 #
