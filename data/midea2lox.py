@@ -125,7 +125,7 @@ def send_to_midea(data):
                     device.prompt_tone = eval(data[1])
                     device.target_temperature = int(data[2])
                     device.operational_mode = eval(data[3])
-                    device.fan_speed = eval(data[3])
+                    device.fan_speed = eval(data[4])
                     device.swing_mode = eval(data[5])
                     device.eco_mode = eval(data[6])
                     device.turbo_mode = eval(data[7])
