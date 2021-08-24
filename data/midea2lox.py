@@ -1,69 +1,14 @@
-#!REPLACELBPDATADIR/venv/bin/python3
+#!/opt/loxberry/data/plugins/Midea2Lox/venv/bin/python3
 # -*- coding: utf-8 -*-
 import logging
 import sys
 
 Midea2Lox_Version = '3.0.1'
-    
-try:
-    from msmart.device import air_conditioning_device as ac
-    from msmart.device import VERSION
-    import requests
-    import configparser
-    import time
-    from netaddr import IPNetwork
-    import paho.mqtt.client as mqtt
-    import json
-
-    # Miniserver Daten Laden
-    cfg = configparser.RawConfigParser()
-    cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
-    UDP_Port = int(cfg.get('default','UDP_PORT'))
-    LoxberryIP = cfg.get('default','LoxberryIP')
-    DEBUG = cfg.get('default','DEBUG')
-    Miniserver = cfg.get('default','MINISERVER')
-    
-    #MQTT
-    with open('REPLACELBHOMEDIR/config/system/general.json') as jsonFile:
-        jsonObject = json.load(jsonFile)
-        jsonFile.close()
-    try: # check if MQTTgateway is installed or not
-        MQTTuser = jsonObject["Mqtt"]["Brokeruser"]
-        MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
-        MQTTport = jsonObject["Mqtt"]["Brokerport"]
-        MQTThost = jsonObject["Mqtt"]["Brokerhost"]
-        client =mqtt.Client(client_id='Midea2Lox')
-        client.username_pw_set(MQTTuser, MQTTpass)
-        MQTT = 1
-    except:
-        MQTT = 0
-    
-    # Credentials to set Loxone Inputs over HTTP
-    cfg.read('/opt/loxberry/config/system/general.cfg')
-    LoxIP = cfg.get(Miniserver,'IPADDRESS')
-    LoxPort = cfg.get(Miniserver,'PORT')
-    LoxPassword = cfg.get(Miniserver,'PASS')
-    LoxUser = cfg.get(Miniserver,'ADMIN')
-    
-    _LOGGER = logging.getLogger("Midea2Lox.py")
-    if DEBUG == "1":
-       logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-       print("Debug is True")
-       _LOGGER.debug("Debug is True")
-    else:
-       logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-
-except:
-    _LOGGER = logging.getLogger("Midea2Lox.py")
-    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-    print('Error : ' + str(sys.exc_info()))
-    _LOGGER.error(str(sys.exc_info()))
-    sys.exit()
+  
 
 # Mainprogramm
 def start_server():
     _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, VERSION))
-    
     import socket
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -92,7 +37,6 @@ def start_server():
                 print('Error : ' + str(sys.exc_info()))
                 _LOGGER.error(str(sys.exc_info()))
     soc.close()
-
 
 # send to Midea Appliance over LAN/WLAN
 def send_to_midea(data):
@@ -150,18 +94,26 @@ def send_to_midea(data):
             # device.authenticate('YOUR_AC_K1', 'YOUR_AC_TOKEN')
             _LOGGER.info("use Midea V3 8370")
             _LOGGER.debug("AC token:{}; AC K1:{}".format(device_token, device_k1))
-            device.authenticate(device_k1, device_token)
+            try:
+                device.authenticate(device_k1, device_token)
+            except Exception as error:
+                device._online = False
+                send_to_loxone(device, support_mode)
+                raise error
+                
         else:
             _LOGGER.info("use Midea V2")
-
         if statusupdate == 1: # refresh() AC State
-            device.refresh()
-
-            while device.online == False and retries < 5: # retry 5 times on connection error
-                retries += 1
-                _LOGGER.warning("refresh retry %s/5" %(retries))
-                time.sleep(5)
+            try:
                 device.refresh()
+                while device.online == False and retries < 2: # retry 2 times on connection error
+                    retries += 1
+                    _LOGGER.warning("retry refresh %s/2" %(retries))
+                    time.sleep(5)
+                    device.refresh()
+            except Exception as error:
+                device._online = False
+                _LOGGER.error(error)
 
         else: # apply() AC changes
             if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
@@ -188,16 +140,17 @@ def send_to_midea(data):
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
                 if protocol == 3 and len(data) != 12 or protocol == 2 and len(data) != 10: #if not all settings are sent from loxone, refresh() is neccessary.
-                    device.refresh()                                # get actual state of the Device to get all settings from ac
-                    while device.online == False and retries < 5:   # retry 5 times on connection error
-                        retries += 1
-                        _LOGGER.warning("retry refresh %s/5" %(retries))
-                        time.sleep(5)
+                    try:
                         device.refresh()
-                    
-                    if device.online == False:
+                        while device.online == False and retries < 2: # retry 2 times on connection error
+                            retries += 1
+                            _LOGGER.warning("retry refresh %s/2" %(retries))
+                            time.sleep(5)
+                            device.refresh()
+                    except Exception as error:
+                        device._online = False
                         send_to_loxone(device, support_mode)
-                        sys.exit('Device is Offline')
+                        raise error
                     
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
@@ -256,13 +209,17 @@ def send_to_midea(data):
                 device.target_temperature = 30
 
             # commit the changes with apply()
-            device.apply()
-            while device.online == False and retries < 5: # retry 5 times on connection error
-                retries += 1
-                _LOGGER.warning("apply retry %s/5" %(retries))
-                time.sleep(5)
+            try:
                 device.apply()
-
+                while device.online == False and retries < 2: # retry 2 times on connection error
+                    retries += 1
+                    _LOGGER.warning("retry apply %s/2" %(retries))
+                    time.sleep(5)
+                    device.apply()
+            except Exception as error:
+                device._online = False
+                _LOGGER.error(error)
+                
         if device.online == True:
             if statusupdate == 1:
                 _LOGGER.info("Statusupdate for Midea.{} @ {} successful".format(device.id, device.ip))
@@ -276,10 +233,9 @@ def send_to_midea(data):
     finally:
         _LOGGER.info(time.time()-runtime)
 
-
 def send_to_loxone(device, support_mode):
     r_error = 0
-
+    
     address_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))    
     addresses = [
         ("%sMidea.%s.power_state,%s" % (address_loxone, device.id, int(device.power_state))),                #power_state
@@ -295,14 +251,23 @@ def send_to_loxone(device, support_mode):
         ("%sMidea.%s.online,%s" % (address_loxone, device.id, int(device.online)))                      #device.online
         ]
     
-    if device.online == True: # send all states to Loxone / MQTT
-        for eachArg in addresses:
-            if MQTT == 1 and support_mode == 0: # Publish over MQTTGateway
+    if MQTT == 1 and support_mode == 0: # publish over MQTT
+        if device.online == True:
+            for eachArg in addresses:
                 MQTTpublish = eachArg.replace(address_loxone,'Midea2Lox/')
                 MQTTpublish = MQTTpublish.split(',')
-                client.connect(host=MQTThost, port=int(MQTTport), keepalive=60)
-                client.publish(MQTTpublish[0],MQTTpublish[1])#publish
-            else: #Publish over HTTP Loxoneinputs
+                client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
+        else: # Send Device Offline state to Loxone over MQTT
+            MQTTpublish = addresses[10].replace(address_loxone,'Midea2Lox/')
+            MQTTpublish = MQTTpublish.split(',')
+            client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
+        
+        if mqtt_error == 0:
+            _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
+            
+    else: #Publish to Loxone Inputs over HTTP
+        if device.online == True:
+            for eachArg in addresses:
                 HTTPrequest = eachArg.replace(',' , '/')
                 if support_mode == 0: # support Loxoneconfigs created with Midea2Lox V2.x
                     HTTPrequest = HTTPrequest.replace('Midea',  'Midea2Lox_Midea')
@@ -311,13 +276,8 @@ def send_to_loxone(device, support_mode):
                     r_error = 1
                     Loxinput = HTTPrequest.replace(address_loxone,'')
                     _LOGGER.error("Error {} on set Loxone Input '{}', please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, Loxinput.split("/")[0]))
-    else: # Send Device Offline state to Loxone or MQTT
-        if MQTT == 1 and support_mode == 0:
-            MQTTpublish = addresses[10].replace(address_loxone,'Midea2Lox/')
-            MQTTpublish = MQTTpublish.split(',')
-            client.connect(host=MQTThost, port=int(MQTTport), keepalive=60)
-            client.publish(MQTTpublish[0],MQTTpublish[1])#publish
-        else:
+        
+        else: # Send Device Offline state to Loxone over HTTP
             HTTPrequest = addresses[10].replace(',' , '/')
             if support_mode == 0:
                 HTTPrequest = HTTPrequest.replace('Midea',  'Midea2Lox_Midea')
@@ -325,13 +285,110 @@ def send_to_loxone(device, support_mode):
             if r.status_code != 200:
                 r_error = 1
                 _LOGGER.error("Error {} on set Loxone Input Midea.{}.online, please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, device.id))
+        
+        if r_error == 0:
+            _LOGGER.info("Set Loxone Inputs over HTTP for Midea.{} @ {} successful".format(device.id, device.ip))
 
-    if r_error == 0:
-        if MQTT == 1 and support_mode == 0:
-            _LOGGER.info("send status to MQTTGateway for Midea.{} @ {}".format(device.id, device.ip))
-        else:
-            _LOGGER.info("Set Loxone Inputs for Midea.{} @ {} successful".format(device.id, device.ip))
 
+
+# Ist ein Callback, der ausgeführt wird, wenn sich mit dem Broker verbunden wird
+def on_connect(client, userdata, flags, rc):
+    global mqtt_error
+    if rc == 0:
+        _LOGGER.debug("MQTT: Verbindung akzeptiert")
+        mqtt_error = 0
+        client.publish('Midea2Lox/connection/status','connected',qos=2, retain=True)
+    elif rc == 1:
+        _LOGGER.error("MQTT: Falsche Protokollversion")
+        mqtt_error = 1
+    elif rc == 2:
+        _LOGGER.error("MQTT: Identifizierung fehlgeschlagen")
+        mqtt_error = 1
+    elif rc == 3:
+        _LOGGER.error("MQTT: Server nicht erreichbar")
+        mqtt_error = 1
+    elif rc == 4:
+        _LOGGER.error("MQTT: Falscher benutzername oder Passwort")
+        mqtt_error = 1
+    elif rc == 5:
+        _LOGGER.error("MQTT: Nicht autorisiert")
+        mqtt_error = 1
+    else:
+        _LOGGER.error("MQTT: Ungültiger Returncode")
+        mqtt_error = 1
+
+def on_disconnect(client, userdata, flags, rc):
+    client.publish('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
+
+# Ist ein Callback, der ausgeführt wird, wenn gesendet wird
+def on_publish(client, userdata, mid):
+    _LOGGER.debug("on_publish, mid {}".format(mid))
+
+
+##########
+
+try:
+    from msmart.device import air_conditioning_device as ac
+    from msmart.device import VERSION
+    import requests
+    import configparser
+    import time
+    from netaddr import IPNetwork
+    import paho.mqtt.client as mqtt
+    import json
+
+    # Miniserver Daten Laden
+    cfg = configparser.RawConfigParser()
+    cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
+    UDP_Port = int(cfg.get('default','UDP_PORT'))
+    LoxberryIP = cfg.get('default','LoxberryIP')
+    DEBUG = cfg.get('default','DEBUG')
+    Miniserver = cfg.get('default','MINISERVER')
+
+    # Credentials to set Loxone Inputs over HTTP
+    cfg.read('/opt/loxberry/config/system/general.cfg')
+    LoxIP = cfg.get(Miniserver,'IPADDRESS')
+    LoxPort = cfg.get(Miniserver,'PORT')
+    LoxPassword = cfg.get(Miniserver,'PASS')
+    LoxUser = cfg.get(Miniserver,'ADMIN')
+
+    _LOGGER = logging.getLogger("Midea2Lox.py")
+    if DEBUG == "1":
+       logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       print("Debug is True")
+       _LOGGER.debug("Debug is True")
+    else:
+       logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    
+    #MQTT
+    with open('REPLACELBHOMEDIR/config/system/general.json') as jsonFile:
+        jsonObject = json.load(jsonFile)
+        jsonFile.close()
+    try: # check if MQTTgateway is installed or not and set MQTT Client settings
+        MQTTuser = jsonObject["Mqtt"]["Brokeruser"]
+        MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
+        MQTTport = jsonObject["Mqtt"]["Brokerport"]
+        MQTThost = jsonObject["Mqtt"]["Brokerhost"]
+        client = mqtt.Client(client_id='Midea2Lox')
+        client.username_pw_set(MQTTuser, MQTTpass)
+        client.on_connect = on_connect
+        client.on_disconnect = on_disconnect
+        client.on_publish = on_publish
+        client.will_set('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
+        _LOGGER.debug('found MQTT Gateway Plugin')
+        client.connect(MQTThost, int(MQTTport))
+        client.loop_start()
+        MQTT = 1
+    except:
+        _LOGGER.debug('cant find MQTT Gateway use HTTP requests to set Loxone inputs')
+        MQTT = 0
+
+except:
+    _LOGGER = logging.getLogger("Midea2Lox.py")
+    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    print('Error : ' + str(sys.exc_info()))
+    _LOGGER.error(str(sys.exc_info()))
+    sys.exit()
 
 # Start script
-start_server()  
+start_server()
