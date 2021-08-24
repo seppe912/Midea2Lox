@@ -61,14 +61,35 @@
 </td>
 </tr>
 
+<tr>
+<td height="25px"></td>
+</tr>
+<tr>
+<td><h2> Midea2Lox - Entdecke Geräte</h2></td>
+<td><label>Midea User und Passwort werden nur zur Abfrage von Key und Token für die neuen V3 OSK-103 Sticks von der MideaCloud benötigt. Geräte müssen in diesem Account angemeldet und über Lokales Netzwerk verbunden sein.</label></td>
+</tr>
+
+<tr>
+<td width="25%"><label>Midea User</label></td>
+<td width="50%"><input name="MideaUser" type="email" value="<!--$MideaUser-->" data-validation-error-msg="* Please enter the User from Midea" /></td>
+</tr>
+<tr>
+<td width="25%"><label>Midea Passwort</label></td>
+<td width="50%"><input name="MideaPassword" type="password" autocomplete="off" value="<!--$MideaPassword-->" data-validation-error-msg="* Please enter the Password from Midea" /></td>
+</tr>
+<tr>
+<td width="25%"><b><label>Broadcast Pakets, Standard:1</b>wenn mehrere Geräte verfügbar sind muss die Anzahl eventuell erhöht werden</label></td>
+<td width="50%"><input name="BroadcastPakets" type="number" autocomplete="off" value="<!--$BroadcastPakets-->" data-validation-error-msg="* Please enter the Broadcastpakets" /></td>
+</tr>
 
 <tr>
 <td>
 <b>Entdecke Midea Geräte</b> Bitte 10 Sekunden abwarten! Für details siehe Logdatei.
-</td>
 <td>
-<a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=discover">discover</a>
+<input id="saveanddiscover" name="saveanddiscover" type="submit" value="Discover">
 <a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="/admin/system/tools/logfile.cgi?logfile=plugins/<!--$psubfolder-->/midea2lox.log&header=html&format=template&only=once" target="_blank">Logfile</a>
+</td>
+</tr>
 </td>
 </tr>
 

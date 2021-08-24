@@ -46,7 +46,7 @@
 
 <tr>
 <td width="25%"><label>Save settings and restart Midea2Lox</label>
-<td width="50%"><input id="savedata" name="savedata" type="submit" value="Save and restart"></td>
+<td width="50%"><input id="savedata" name="savedata" type="submit" value="Speichern und Neustarten"></td>
 </tr>
 
 
@@ -61,14 +61,35 @@
 </td>
 </tr>
 
+<tr>
+<td height="25px"></td>
+</tr>
+<tr>
+<td><h2> Midea2Lox - discover Devices</h2></td>
+<td><label>Midea User and Passwort are required to get Key and Token for the new V3 OSK-103 Sticks. Devices have to be in this MideaAccount and connected to the local Wifi.</label></td>
+</tr>
+
+<tr>
+<td width="25%"><label>Midea User</label></td>
+<td width="50%"><input name="MideaUser" type="email" value="<!--$MideaUser-->" data-validation-error-msg="* Please enter the User from Midea" /></td>
+</tr>
+<tr>
+<td width="25%"><label>Midea Passwort</label></td>
+<td width="50%"><input name="MideaPassword" type="password" autocomplete="off" value="<!--$MideaPassword-->" data-validation-error-msg="* Please enter the Password from Midea" /></td>
+</tr>
+<tr>
+<td width="25%"><b><label>Broadcast Pakets, Standard:1</b>if you have many devices, you may change this vaule</label></td>
+<td width="50%"><input name="MideaPassword" type="number" autocomplete="off" value="<!--$BroadcastPakets-->" data-validation-error-msg="* Please enter the Password from Midea" /></td>
+</tr>
 
 <tr>
 <td>
-<b>Discover Midea Devices</b> Please wait 10 sec. For Details see log.
-</td>
+<b>Discover Midea Devices</b> Please wait, see Log for details.
 <td>
-<a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="./index.cgi?do=discover">discover</a>
+<input id="saveanddiscover" name="saveanddiscover" type="submit" value="Discover">
 <a id="button" data-icon="info" data-role="button" data-inline="true" data-mini="false" href="/admin/system/tools/logfile.cgi?logfile=plugins/<!--$psubfolder-->/midea2lox.log&header=html&format=template&only=once" target="_blank">Logfile</a>
+</td>
+</tr>
 </td>
 </tr>
 
@@ -84,14 +105,14 @@
 
 </div>
 </form>
-<!--$restartMsg-->
-<script>
-var $messages = $('#form-error-message');
-$.validate({
-modules : 'security',
-errorMessagePosition : $messages,
-});
-</script>
-</div>
-</div>
+      <!--$restartMsg-->
+      <script>
+         var $messages = $('#form-error-message');
+         $.validate({
+         	modules : 'security',
+         	errorMessagePosition : $messages,
+         });
+      </script>
+      </div>
+   </div>
 </div>

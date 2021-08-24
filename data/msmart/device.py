@@ -9,7 +9,7 @@ from msmart.command import base_command as request_status_command
 from msmart.command import set_command
 from msmart.packet_builder import packet_builder
 
-VERSION = '0.1.29'
+VERSION = '0.1.30'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class device:
         self._defer_update = False
         self._half_temp_step = False
         self._support = False
-        self._online = False
+        self._online = True
         self._active = True
         self._protocol_version = 2
 
@@ -46,10 +46,10 @@ class device:
             self._protocol_version = 3
             self._token = bytearray.fromhex(token)
             self._key = bytearray.fromhex(key)
-            self._authenticate()
-
+            return self._authenticate()
+        return False
     def _authenticate(self):
-        self._lan_service.authenticate(self._token, self._key)
+        return self._lan_service.authenticate(self._token, self._key)
 
     def set_device_detail(self, device_detail: dict):
         self._id = device_detail['id']
@@ -76,7 +76,7 @@ class device:
 
     @property
     def port(self):
-        return self._ip
+        return self._port
 
     @property
     def name(self):
@@ -185,7 +185,7 @@ class air_conditioning_device(device):
 
         self._on_timer = None
         self._off_timer = None
-        self._online = False # set to False for Midea2Lox support (send retries on offline Device)
+        self._online = True
         self._active = True
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
@@ -206,6 +206,10 @@ class air_conditioning_device(device):
             responses = self._lan_service.appliance_transparent_send(data)
         _LOGGER.debug(
             "Got responses from {}:{} Version: {} Count: {}".format(self.ip, self.port, self._protocol_version, len(responses)))
+        if len(responses) == 0:
+            if not self._keep_last_known_online_state:
+                self._online = False
+            self._support = False
         for response in responses:
             self._process_response(response)
 
@@ -215,9 +219,11 @@ class air_conditioning_device(device):
         if len(data) > 0:
             self._online = True
             if data == b'ERROR':
-                _LOGGER.debug(
+                self._support = False
+                _LOGGER.warn(
                     "Got ERROR from {}, {}".format(self.ip, self.id))
-                # self._authenticate()
+                if not self._keep_last_known_online_state:
+                    self._online = False
                 return
             response = appliance_response(data)
             self._defer_update = False

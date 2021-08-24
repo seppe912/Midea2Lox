@@ -26,12 +26,16 @@ our $select_language;
 our $udp_port;	
 our $debug;
 our $select_debug;
+our $MideaUser;
+our $MideaPassword;
+our $BroadcastPakets;
 our $LoxberryIP  = LoxBerry::System::get_localip();
 our $do;
 our $midea2loxstatus;
 our $miniserver;
 our $select_ms;
 our $savedata;
+our $saveanddiscover;
 
 # Read Settings
 $cfg             = new Config::Simple("$lbsconfigdir/general.cfg");
@@ -58,7 +62,9 @@ if ( !$query{'miniserver'} ) { if ( param('miniserver') ) { $miniserver = quotem
 if ( !$query{'udp_port'} ) { if ( param('udp_port') ) { $udp_port = quotemeta(param('udp_port')); } else { $udp_port = "7013"; } } else { $udp_port = quotemeta($query{'udp_port'}); }
 if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debug')); } else { $debug = "0";  } } else { $debug = quotemeta($query{'debug'}); }
 
-
+if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
+if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
+if ( !$query{'BroadcastPakets'} ) { if ( param('BroadcastPakets') ) { $BroadcastPakets = quotemeta(param('BroadcastPakets')); } else { $BroadcastPakets = "1"; } } else { $BroadcastPakets = quotemeta($query{'BroadcastPakets'}); }
 
 # Figure out in which subfolder we are installed
 $psubfolder = abs_path($0);
@@ -72,10 +78,28 @@ if (param('savedata')) {
 	$conf->param('UDP_PORT', unquotemeta($udp_port));
 	$conf->param('DEBUG', unquotemeta($debug));		
     $conf->param('LoxberryIP', unquotemeta($LoxberryIP));
+    $conf->param('MideaUser', unquotemeta($MideaUser));	
+	$conf->param('MideaPassword', unquotemeta($MideaPassword));
+    $conf->param('BroadcastPakets', unquotemeta($BroadcastPakets));
     
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
 }
+
+if (param('saveanddiscover')) {
+    # Save settings to config file
+    $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
+    if ($debug ne 1) { $debug = 0 }
+	$conf->param('DEBUG', unquotemeta($debug));		
+    $conf->param('MideaUser', unquotemeta($MideaUser));	
+    $conf->param('MideaPassword', unquotemeta($MideaPassword));
+    $conf->param('BroadcastPakets', unquotemeta($BroadcastPakets));
+    
+    $conf->save();
+
+    system ("$installfolder/data/plugins/$psubfolder/discover.py &");
+}
+
 
 
 # Parse config file
@@ -83,7 +107,9 @@ $conf = new Config::Simple("$lbpconfigdir/midea2lox.cfg");
 $miniserver = encode_entities($conf->param('MINISERVER'));
 $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
-
+$MideaPassword = encode_entities($conf->param('MideaPassword'));
+$MideaUser = encode_entities($conf->param('MideaUser'));
+$BroadcastPakets = encode_entities($conf->param('BroadcastPakets'));
 
 # Set Enabled / Disabled switch
 #
@@ -122,9 +148,6 @@ if ( param('do') ) {
 	}
 	if ( $do eq "restart") {
 		system ("$installfolder/system/daemons/plugins/$psubfolder restart");
-	}
-	if ( $do eq "discover") {
-        system ("$installfolder/data/plugins/$psubfolder/discover.py &");
 	}
 }
 
