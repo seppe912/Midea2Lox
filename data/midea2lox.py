@@ -259,7 +259,7 @@ def send_to_loxone(device, support_mode):
                 MQTTpublish = MQTTpublish.split(',')
                 client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         else: # Send Device Offline state to Loxone over MQTT
-             MQTTpublish = 'Midea2Lox/' + addresses[10]
+            MQTTpublish = 'Midea2Lox/' + addresses[10]
             MQTTpublish = MQTTpublish.split(',')
             client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         
@@ -272,7 +272,7 @@ def send_to_loxone(device, support_mode):
                 if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
                     HTTPrequest = eachArg.replace('/' , '.')
                 else: 
-                    HTTPrequest = eachArg.replace('Midea',  'Midea2Lox_Midea').replace('/' , '_')
+                    HTTPrequest = 'Midea2Lox_' + eachArg.replace('/' , '_')
                 HTTPrequest = address_loxone + HTTPrequest.replace(',' , '/')
                 r = requests.get(HTTPrequest)                
                 if r.status_code != 200:
@@ -284,7 +284,7 @@ def send_to_loxone(device, support_mode):
             if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
                 HTTPrequest = addresses[10].replace('/' , '.')
             else: 
-                HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea').replace('/' , '_')
+                HTTPrequest = 'Midea2Lox_' + addresses[10].replace('/' , '_')
             HTTPrequest = address_loxone + HTTPrequest.replace(',' , '/')
             r = requests.get(HTTPrequest)
             if r.status_code != 200:
