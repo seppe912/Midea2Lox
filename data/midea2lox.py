@@ -271,11 +271,10 @@ def send_to_loxone(device, support_mode):
             for eachArg in addresses:
                 if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
                     HTTPrequest = eachArg.replace('/' , '.')
-                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
                 else: 
                     HTTPrequest = eachArg.replace('Midea',  'Midea2Lox_Midea')
                     HTTPrequest = HTTPrequest.replace('/' , '_')
-                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
+                HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
                 HTTPrequest = HTTPrequest.replace(',' , '/')
                 r = requests.get(HTTPrequest)                
                 if r.status_code != 200:
@@ -285,13 +284,11 @@ def send_to_loxone(device, support_mode):
         
         else: # Send Device Offline state to Loxone over HTTP
             if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
-                if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
-                    HTTPrequest = addresses[10].replace('/' , '.')
-                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
-                else: 
-                    HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea')
-                    HTTPrequest = HTTPrequest.replace('/' , '_')
-                    HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
+                HTTPrequest = addresses[10].replace('/' , '.')
+            else: 
+                HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea')
+                HTTPrequest = HTTPrequest.replace('/' , '_')
+            HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
             HTTPrequest = HTTPrequest.replace(',' , '/')
             r = requests.get(HTTPrequest)
             if r.status_code != 200:
