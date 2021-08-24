@@ -255,7 +255,7 @@ def send_to_loxone(device, support_mode):
     if MQTT == 1 and support_mode == 0: # publish over MQTT
         if device.online == True:
             for eachArg in addresses:
-                MQTTpublish = eachArg.replace('Midea','Midea2Lox/Midea')
+                MQTTpublish = 'Midea2Lox/' + eachArg
                 MQTTpublish = MQTTpublish.split(',')
                 client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
         else: # Send Device Offline state to Loxone over MQTT
@@ -272,10 +272,8 @@ def send_to_loxone(device, support_mode):
                 if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
                     HTTPrequest = eachArg.replace('/' , '.')
                 else: 
-                    HTTPrequest = eachArg.replace('Midea',  'Midea2Lox_Midea')
-                    HTTPrequest = HTTPrequest.replace('/' , '_')
-                HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
-                HTTPrequest = HTTPrequest.replace(',' , '/')
+                    HTTPrequest = eachArg.replace('Midea',  'Midea2Lox_Midea').replace('/' , '_')
+                HTTPrequest = address_loxone + HTTPrequest.replace(',' , '/')
                 r = requests.get(HTTPrequest)                
                 if r.status_code != 200:
                     r_error = 1
@@ -286,14 +284,12 @@ def send_to_loxone(device, support_mode):
             if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
                 HTTPrequest = addresses[10].replace('/' , '.')
             else: 
-                HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea')
-                HTTPrequest = HTTPrequest.replace('/' , '_')
-            HTTPrequest = ("%s%s" % (address_loxone, HTTPrequest))
-            HTTPrequest = HTTPrequest.replace(',' , '/')
+                HTTPrequest = addresses[10].replace('Midea',  'Midea2Lox_Midea').replace('/' , '_')
+            HTTPrequest = address_loxone + HTTPrequest.replace(',' , '/')
             r = requests.get(HTTPrequest)
             if r.status_code != 200:
                 r_error = 1
-                _LOGGER.error("Error {} on set Loxone Input Midea.{}.online, please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, device.id))
+                _LOGGER.error("Error {} on set Loxone Input Midea_{}_online, please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, device.id))
         
         if r_error == 0:
             _LOGGER.info("Set Loxone Inputs over HTTP for Midea.{} @ {} successful".format(device.id, device.ip))
