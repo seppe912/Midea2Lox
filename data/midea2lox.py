@@ -255,13 +255,11 @@ def send_to_loxone(device, support_mode):
     if MQTT == 1 and support_mode == 0: # publish over MQTT
         if device.online == True:
             for eachArg in addresses:
-                MQTTpublish = 'Midea2Lox/' + eachArg
-                MQTTpublish = MQTTpublish.split(',')
-                client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
+                MQTTpublish = eachArg.split(',')
+                client.publish('Midea2Lox/' + MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish eachArg
         else: # Send Device Offline state to Loxone over MQTT
-            MQTTpublish = 'Midea2Lox/' + addresses[10]
-            MQTTpublish = MQTTpublish.split(',')
-            client.publish(MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish
+            MQTTpublish = addresses[10].split(',')
+            client.publish('Midea2Lox/' + MQTTpublish[0],MQTTpublish[1],qos=2, retain=True)#publish device offline
         
         if mqtt_error == 0:
             _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
