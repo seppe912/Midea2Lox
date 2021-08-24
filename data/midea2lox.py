@@ -94,13 +94,8 @@ def send_to_midea(data):
             # device.authenticate('YOUR_AC_Key', 'YOUR_AC_TOKEN')
             _LOGGER.info("use Midea V3 8370")
             _LOGGER.debug("AC token:{}; AC Key:{}".format(device_token, device_Key))
-            try:
-                device.authenticate(device_Key, device_token)
-            except Exception as error:
-                device._online = False
-                send_to_loxone(device, support_mode)
-                _LOGGER.error('get wrong Token and Key pair')
-                raise error
+
+            device.authenticate(device_Key, device_token)
                 
         else:
             _LOGGER.info("use Midea V2")
@@ -132,7 +127,7 @@ def send_to_midea(data):
                             print("getting wrong Argument: ", eachArg)
                             _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
                     _LOGGER.info("allowed Arguments: {}".format(key))
-                    raise
+                    sys.exit()
 
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
@@ -146,7 +141,7 @@ def send_to_midea(data):
                         
                     if device.online == False:
                         send_to_loxone(device, support_mode)
-                        raise
+                        sys.exit()
                     
                 #set all allowed key´s for Loxone input
                 power = ["power.True", "power.False"]
