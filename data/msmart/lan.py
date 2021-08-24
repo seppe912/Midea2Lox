@@ -42,7 +42,6 @@ class lan:
                 _LOGGER.error("Connect Error: {}:{} {}".format(
                     self.device_ip, self.device_port, error))
                 self._disconnect()
-                raise error   #add raise error to stop Midea2Lox.py on connection error
 
     def _disconnect(self):
         if self._socket:
