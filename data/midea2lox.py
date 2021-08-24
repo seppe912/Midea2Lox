@@ -99,6 +99,7 @@ def send_to_midea(data):
                 
         else:
             _LOGGER.info("use Midea V2")
+            
         if statusupdate == 1: # refresh() AC State
             device.refresh()
             while device.online == False and retries < 2: # retry 2 times on connection error
