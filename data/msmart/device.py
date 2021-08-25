@@ -9,7 +9,7 @@ from msmart.command import base_command as request_status_command
 from msmart.command import set_command
 from msmart.packet_builder import packet_builder
 
-VERSION = '0.1.30'
+VERSION = '0.1.31'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -190,6 +190,9 @@ class air_conditioning_device(device):
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
 
+    def __str__(self):
+        return str(self.__dict__)
+        
     def refresh(self):
         cmd = request_status_command(self.type)
         self._send_cmd(cmd)

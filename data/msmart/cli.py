@@ -24,7 +24,7 @@ if sys.version_info < (3, 5):
     )
     sys.exit(1)
 
-VERSION = '0.1.30'
+VERSION = '0.1.31'
 
 Client = None
 Account = ''
@@ -217,6 +217,7 @@ def support_test(device: scandevice):
         _device = ac(device.ip, device.id, device.port)
     if device.type == 'ac':
         _device.refresh()
+        _LOGGER.debug("{}".format(_device))
         device.support = _device.support
 
 def support_testv3(device: scandevice):
