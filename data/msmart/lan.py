@@ -103,7 +103,7 @@ class lan:
         tcp_key, success = self.security.tcp_key(response, self._key)
         if success:
             self._tcp_key = tcp_key.hex()
-            _LOGGER.info('Got TCP key for {}:{} {}'.format(
+            _LOGGER.debug('Got TCP key for {}:{} {}'.format(
             self.device_ip, self.device_port, tcp_key.hex()))
             # After authentication, don’t send data immediately, so sleep 1s.
             time.sleep(1)
