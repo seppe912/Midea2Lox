@@ -161,7 +161,7 @@ def discover(debug: int, count: int, account:str, password:str):
                         "*** Found a {} device - type: '0x{}' - version: {} - ip: {} - port: {} - id: {} - sn: {} - ssid: {} ".format(m_support, m_type, m_version, m_ip, m_port, m_id, m_sn, m_ssid))
                     print(
                         "*** Found a {} device - type: '0x{}' - version: {} - ip: {} - port: {} - id: {} - sn: {} - ssid: {} ".format(m_support, m_type, m_version, m_ip, m_port, m_id, m_sn, m_ssid))
-                    device = {"type": m_type, "support": m_support, "version": m_version, "ip": m_ip, "id": m_id, "port": m_port, "ip": m_ip}
+                    device = {'type': m_type, 'support': m_support, 'version': m_version, 'ip': m_ip, 'id': m_id, 'port': m_port, 'ip': m_ip}
                     device_list.append(str(device))
                     discover_time = 6 + (datetime.now()-t1).seconds
                         
