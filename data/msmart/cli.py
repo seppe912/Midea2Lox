@@ -105,6 +105,7 @@ def discover(debug: int, count: int, account:str, password:str):
     sock.settimeout(5)
     found_devices = {}
     discover_time = 10
+    device_list = []
     _LOGGER.info("msmart version: {} Currently only supports ac devices.".format(VERSION))
     _LOGGER.info(
         "Sending Device Scan Broadcast...")
@@ -143,6 +144,8 @@ def discover(debug: int, count: int, account:str, password:str):
                     _LOGGER.info("*** Found a device: {} ".format(device))
                     print("*** Found a device: {} ".format(device))
                     discover_time = 10 + (datetime.now()-t1).seconds
+                    device_list.append(str(device))
+
 
                 if data[:6].hex() == '3c3f786d6c20':
                     m_version = 'V1'
@@ -165,7 +168,7 @@ def discover(debug: int, count: int, account:str, password:str):
             continue
         except KeyboardInterrupt:
             sys.exit(0)
-
+    return device_list
 
 def get_id_from_response(response):
     if response[64:-16][:6].hex() == '3c3f786d6c20':
