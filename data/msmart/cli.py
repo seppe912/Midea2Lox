@@ -104,7 +104,7 @@ def discover(debug: int, count: int, account:str, password:str):
 
     sock.settimeout(5)
     found_devices = {}
-    discover_time = 10
+    discover_time = 6
     device_list = []
     _LOGGER.info("msmart version: {} Currently only supports ac devices.".format(VERSION))
     _LOGGER.info(
@@ -143,9 +143,8 @@ def discover(debug: int, count: int, account:str, password:str):
                     support_test(device)
                     _LOGGER.info("*** Found a device: {} ".format(device))
                     print("*** Found a device: {} ".format(device))
-                    discover_time = 10 + (datetime.now()-t1).seconds
                     device_list.append(str(device))
-
+                    discover_time = 6 + (datetime.now()-t1).seconds
 
                 if data[:6].hex() == '3c3f786d6c20':
                     m_version = 'V1'
@@ -162,7 +161,9 @@ def discover(debug: int, count: int, account:str, password:str):
                         "*** Found a {} device - type: '0x{}' - version: {} - ip: {} - port: {} - id: {} - sn: {} - ssid: {} ".format(m_support, m_type, m_version, m_ip, m_port, m_id, m_sn, m_ssid))
                     print(
                         "*** Found a {} device - type: '0x{}' - version: {} - ip: {} - port: {} - id: {} - sn: {} - ssid: {} ".format(m_support, m_type, m_version, m_ip, m_port, m_id, m_sn, m_ssid))
-                    discover_time = 10 + (datetime.now()-t1).seconds
+                    device = {"type": m_type, "support": m_support, "version": m_version, "ip": m_ip, "id": m_id, "port": m_port, "ip": m_ip}
+                    device_list.append(str(device))
+                    discover_time = 6 + (datetime.now()-t1).seconds
                         
         except socket.timeout:
             continue
