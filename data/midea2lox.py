@@ -98,7 +98,7 @@ def send_to_midea(data):
             a = device.authenticate(device_Key, device_token)
             if a == False:
                 device._online = False
-                _LOGGER.info('Authenticate failed')
+                _LOGGER.error('Authenticate failed')
                 send_to_loxone(device, support_mode)
                 
         else:
