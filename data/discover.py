@@ -38,8 +38,9 @@ try:
         cfg2.set('Midea_' + str(device['id']),"id", str(device['id']))
         cfg2.set('Midea_' + str(device['id']),"ip", str(device['ip']))
         cfg2.set('Midea_' + str(device['id']),"port", str(device['port']))
-        cfg2.set('Midea_' + str(device['id']),"token", str(device['token']))
-        cfg2.set('Midea_' + str(device['id']),"key", str(device['key']))
+        if device['version'] == 3:
+            cfg2.set('Midea_' + str(device['id']),"token", str(device['token']))
+            cfg2.set('Midea_' + str(device['id']),"key", str(device['key']))
             
         cfg2.write(open("REPLACELBPLOGDIR/devices.log","w"))
         
