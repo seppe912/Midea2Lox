@@ -94,12 +94,12 @@ def send_to_midea(data):
             # device.authenticate('YOUR_AC_Key', 'YOUR_AC_TOKEN')
             _LOGGER.info("use Midea V3 8370")
             _LOGGER.debug("AC token:{}; AC Key:{}".format(device_token, device_Key))
-            try:
-                device.authenticate(device_Key, device_token)
-            except Exception as error:
+            
+            a = device.authenticate(device_Key, device_token)
+            if a == False:
                 device._online = False
+                _LOGGER.info('Authenticate failed')
                 send_to_loxone(device, support_mode)
-                raise error
                 
         else:
             _LOGGER.info("use Midea V2")
