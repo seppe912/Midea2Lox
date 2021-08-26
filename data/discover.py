@@ -41,8 +41,8 @@ try:
             cfg2.set('Midea_' + str(device['id']),"token", str(device['token']))
             cfg2.set('Midea_' + str(device['id']),"key", str(device['key']))
             
-        cfg2.write(open("REPLACELBPLOGDIR/devices.log","w"))
-        cfg2.write(open('REPLACELBPCONFIGDIR/devices.cfg'))
+        cfg2.write(open('REPLACELBPLOGDIR/devices.log','w'))
+        cfg2.write(open('REPLACELBPCONFIGDIR/devices.cfg','w'))
         
 except:
     _LOGGER = logging.getLogger("discover.py")
