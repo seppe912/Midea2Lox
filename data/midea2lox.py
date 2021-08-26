@@ -97,22 +97,22 @@ def send_to_midea(data):
             
             a = device.authenticate(device_Key, device_token)
             if a == False:
-                device._online = False
-                _LOGGER.error('Authenticate failed')
+                device._active = False
                 send_to_loxone(device, support_mode)
+                sys.exit(0)
                 
         else:
             _LOGGER.info("use Midea V2")
         if statusupdate == 1: # refresh() AC State
             try:
                 device.refresh()
-                while device.online == False and retries < 2: # retry 2 times on connection error
+                while device.active == False and retries < 2: # retry 2 times on connection error
                     retries += 1
                     _LOGGER.warning("retry refresh %s/2" %(retries))
                     time.sleep(5)
                     device.refresh()
             except Exception as error:
-                device._online = False
+                device._active = False
                 _LOGGER.error(error)
 
         else: # apply() AC changes
@@ -142,13 +142,13 @@ def send_to_midea(data):
                 if protocol == 3 and len(data) != 12 or protocol == 2 and len(data) != 10: #if not all settings are sent from loxone, refresh() is neccessary.
                     try:
                         device.refresh()
-                        while device.online == False and retries < 2: # retry 2 times on connection error
+                        while device.active == False and retries < 2: # retry 2 times on connection error
                             retries += 1
                             _LOGGER.warning("retry refresh %s/2" %(retries))
                             time.sleep(5)
                             device.refresh()
                     except Exception as error:
-                        device._online = False
+                        device._active = False
                         send_to_loxone(device, support_mode)
                         raise error
                     
@@ -211,16 +211,16 @@ def send_to_midea(data):
             # commit the changes with apply()
             try:
                 device.apply()
-                while device.online == False and retries < 2: # retry 2 times on connection error
+                while device.active == False and retries < 2: # retry 2 times on connection error
                     retries += 1
                     _LOGGER.warning("retry apply %s/2" %(retries))
                     time.sleep(5)
                     device.apply()
             except Exception as error:
-                device._online = False
+                device._active = False
                 _LOGGER.error(error)
                 
-        if device.online == True:
+        if device.active == True:
             if statusupdate == 1:
                 _LOGGER.info("Statusupdate for Midea.{} @ {} successful".format(device.id, device.ip))
             else:
@@ -231,7 +231,7 @@ def send_to_midea(data):
         send_to_loxone(device, support_mode)
     
     finally:
-        _LOGGER.debug(time.time()-runtime)
+        _LOGGER.info(time.time()-runtime)
 
         
 def send_to_loxone(device, support_mode):
@@ -249,11 +249,11 @@ def send_to_loxone(device, support_mode):
         ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),             #turbo_mode
         ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),  #indoor_temperature
         ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)),#outdoor_temperature
-        ("Midea/%s/online,%s" % (device.id, int(device.online)))                      #device.online
+        ("Midea/%s/online,%s" % (device.id, int(device.active)))                      #device.online --> device.active since msmart 0.1.32
         ]
     
     if MQTT == 1 and support_mode == 0: # publish over MQTT
-        if device.online == True:
+        if device.active == True:
             for eachArg in addresses:
                 MQTTpublish = eachArg.split(',')
                 client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish eachArg
@@ -265,7 +265,7 @@ def send_to_loxone(device, support_mode):
             _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
             
     else: #Publish to Loxone Inputs over HTTP
-        if device.online == True:
+        if device.active == True:
             for eachArg in addresses:
                 if support_mode == 1: # support Loxoneconfigs created with Midea2Lox V2.x
                     HTTPrequest = eachArg.replace('/' , '.')
