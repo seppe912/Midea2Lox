@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use File::HomeDir;
+use File::Copy;
 use CGI qw/:standard/;
 use Config::Simple;
 use HTML::Entities;
@@ -161,6 +162,11 @@ $helptext = $helptext . "<br><a href='https://www.loxwiki.eu/display/LOXBERRY/Mi
 $helptext = $helptext . "<br><br><b>Debug/Log</b><br>Um Debug zu starten, den Schalter auf on stellen und speichern.<br>Die Log-Datei kann hier eingesehen werden. ";
 $helptext = $helptext . "<a href='/admin/system/tools/logfile.cgi?logfile=plugins/$psubfolder/midea2lox.log&header=html&format=template&only=once' target='_blank'>Log-File - Midea2Lox</a>";
 $helptext = $helptext . "<br><br><b>Achtung!</b> Wenn Debug aktiv ist werden sehr viele Daten ins Log geschrieben. Bitte nur bei Problemen nutzen.";
+
+
+# set back discovered Devices
+copy("$lbpconfigdir/devices.cfg","$lbplogdir/devices.log");
+
 
 
 # Currently only german is supported - so overwrite user language settings:
