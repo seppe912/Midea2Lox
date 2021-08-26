@@ -297,7 +297,7 @@ def send_to_loxone(device, support_mode):
 def on_connect(client, userdata, flags, rc):
     global mqtt_error
     if rc == 0:
-        _LOGGER.debug("MQTT: Verbindung akzeptiert")
+        _LOGGER.info("MQTT: Verbindung akzeptiert")
         mqtt_error = 0
         client.publish('Midea2Lox/connection/status','connected',qos=2, retain=True)
     elif rc == 1:
@@ -377,7 +377,7 @@ try:
         client.on_disconnect = on_disconnect
         client.on_publish = on_publish
         client.will_set('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
-        _LOGGER.debug('found MQTT Gateway Plugin')
+        _LOGGER.info('found MQTT Gateway Plugin - publish over MQTT except on support_mode')
         client.connect(MQTThost, int(MQTTport))
         client.loop_start()
         MQTT = 1
