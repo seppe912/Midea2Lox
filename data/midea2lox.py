@@ -252,7 +252,7 @@ def send_to_loxone(device, support_mode):
         ("Midea/%s/online,%s" % (device.id, int(device.active)))                      #device.online --> device.active since msmart 0.1.32
         ]
     
-    if MQTT == 1 and support_mode == 0: # publish over MQTT
+    if MQTT == 1 and support_mode == 0 and mqtt_error == 0: # publish over MQTT
         if device.active == True:
             for eachArg in addresses:
                 MQTTpublish = eachArg.split(',')
@@ -261,8 +261,7 @@ def send_to_loxone(device, support_mode):
             MQTTpublish = addresses[10].split(',')
             client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish device offline
         
-        if mqtt_error == 0:
-            _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
+        _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
             
     else: #Publish to Loxone Inputs over HTTP
         if device.active == True:
