@@ -1,5 +1,9 @@
 # Midea2Lox
-Integration von Midea in Loxone
+
+Integration von Mideagroup Klimaanlagen in Loxone.
+----- mit Loxone nicht getestet, folgende Hersteller können aber funktionieren----
+Custom Integration for Midea Group(Hualing, Senville, Klimaire, AirCon, Century, Pridiom, Thermocore, Comfee, Alpine Home Air, Artel, Beko, Electrolux, Galactic, Idea, Inventor, Kaisai, Mitsui, Mr. Cool, Neoclima, Olimpia Splendid, Pioneer, QLIMA, Royal Clima, Qzen, Toshiba, Carrier, Goodman, Friedrich, Samsung, Kenmore, Trane, Lennox, LG and much more) Air Conditioners via LAN.
+----- nicht getestet----
 
 Dieses Loxberry Plugin ermöglicht eine kommunikation zwischen dem Loxberry/Loxone zu Midea Klimaanlagen.
 
