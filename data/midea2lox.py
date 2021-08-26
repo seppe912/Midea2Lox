@@ -231,7 +231,7 @@ def send_to_midea(data):
         send_to_loxone(device, support_mode)
     
     finally:
-        _LOGGER.info(time.time()-runtime)
+        _LOGGER.debug(time.time()-runtime)
 
         
 def send_to_loxone(device, support_mode):
