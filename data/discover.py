@@ -33,6 +33,7 @@ try:
             cfg2.add_section('Midea_' + str(device['id']))            
         cfg2.set('Midea_' + str(device['id']),"type", str(device['type']))
         cfg2.set('Midea_' + str(device['id']),"version", str(device['version']))
+        cfg2.set('Midea_' + str(device['id']),"support", str(device['support']))
         cfg2.set('Midea_' + str(device['id']),"id", str(device['id']))
         cfg2.set('Midea_' + str(device['id']),"ip", str(device['ip']))
         cfg2.set('Midea_' + str(device['id']),"port", str(device['port']))
