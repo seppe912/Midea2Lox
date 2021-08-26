@@ -12,7 +12,7 @@ MideaPW = cfg.get('default','MideaPassword')
 BroadcastPakets = cfg.get('default','BroadcastPakets')
 
 cfg2 = configparser.RawConfigParser()
-cfg2.read('REPLACELBPLOGDIR/devices.log')
+cfg2.read('REPLACELBPCONFIGDIR/devices.cfg')
 
 try:
     from msmart.cli import discover
@@ -42,6 +42,7 @@ try:
             cfg2.set('Midea_' + str(device['id']),"key", str(device['key']))
             
         cfg2.write(open("REPLACELBPLOGDIR/devices.log","w"))
+        cfg2.write(open('REPLACELBPCONFIGDIR/devices.cfg'))
         
 except:
     _LOGGER = logging.getLogger("discover.py")
