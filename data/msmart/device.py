@@ -1,5 +1,7 @@
 
 import logging
+from mysocket import request
+import time
 from enum import Enum
 
 import msmart.crc8 as crc8
@@ -9,7 +11,7 @@ from msmart.command import base_command as request_status_command
 from msmart.command import set_command
 from msmart.packet_builder import packet_builder
 
-VERSION = '0.1.31'
+VERSION = '0.1.32'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +50,7 @@ class device:
             self._key = bytearray.fromhex(key)
             return self._authenticate()
         return False
+        
     def _authenticate(self):
         return self._lan_service.authenticate(self._token, self._key)
 
@@ -181,7 +184,7 @@ class air_conditioning_device(device):
         self._swing_mode = air_conditioning_device.swing_mode_enum.Off
         self._eco_mode = False
         self._turbo_mode = False
-        self.farenheit_unit = False  # default unit is Celcius. this is just to control the temperatue unit of the AC's display. the target_temperature setter always expects a celcius temperature (resolution of 0.5C), as does the midea API
+        self.fahrenheit_unit = False  # default unit is Celcius. this is just to control the temperatue unit of the AC's display. the target_temperature setter always expects a celcius temperature (resolution of 0.5C), as does the midea API
 
         self._on_timer = None
         self._off_timer = None
@@ -189,10 +192,10 @@ class air_conditioning_device(device):
         self._active = True
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
-
+    
     def __str__(self):
         return str(self.__dict__)
-        
+
     def refresh(self):
         cmd = request_status_command(self.type)
         self._send_cmd(cmd)
@@ -203,15 +206,18 @@ class air_conditioning_device(device):
         data = pkt_builder.finalize()
         _LOGGER.debug(
             "pkt_builder: {}:{} len: {} data: {}".format(self.ip, self.port, len(data), data.hex()))
+        send_time = time.time()
         if self._protocol_version == 3:
             responses = self._lan_service.appliance_transparent_send_8370(data)
         else:
             responses = self._lan_service.appliance_transparent_send(data)
+        request_time = round(time.time() - send_time, 2)
         _LOGGER.debug(
-            "Got responses from {}:{} Version: {} Count: {}".format(self.ip, self.port, self._protocol_version, len(responses)))
+            "Got responses from {}:{} Version: {} Count: {} Time(s): {}".format(self.ip, self.port, self._protocol_version, len(responses), request_time))
         if len(responses) == 0:
-            if not self._keep_last_known_online_state:
-                self._online = False
+            _LOGGER.warn(
+            "Got Null from {}:{} Version: {} Count: {} Time(s): {}".format(self.ip, self.port, self._protocol_version, len(responses), request_time))
+            self._active = False
             self._support = False
         for response in responses:
             self._process_response(response)
@@ -221,12 +227,11 @@ class air_conditioning_device(device):
             "Update from {}:{} {}".format(self.ip, self.port, data.hex()))
         if len(data) > 0:
             self._online = True
+            self._active = True
             if data == b'ERROR':
                 self._support = False
                 _LOGGER.warn(
                     "Got ERROR from {}, {}".format(self.ip, self.id))
-                if not self._keep_last_known_online_state:
-                    self._online = False
                 return
             response = appliance_response(data)
             self._defer_update = False
@@ -258,7 +263,7 @@ class air_conditioning_device(device):
             cmd.turbo_mode = self._turbo_mode
             # pkt_builder = packet_builder(self.id)
 #            cmd.night_light = False
-            cmd.fahrenheit = self.farenheit_unit
+            cmd.fahrenheit = self.fahrenheit_unit
             self._send_cmd(cmd)
         finally:
             self._updating = False
