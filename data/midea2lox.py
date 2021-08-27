@@ -90,10 +90,6 @@ def send_to_midea(data):
         if protocol == 3: # support midea V3
             # If the device is using protocol 3 (aka 8370)
             # you must authenticate with device's Key and token.
-            # adb logcat | grep doKeyAgree
-            # device.authenticate('YOUR_AC_Key', 'YOUR_AC_TOKEN')
-            _LOGGER.info("use Midea V3 8370")
-            _LOGGER.debug("AC token:{}; AC Key:{}".format(device_token, device_Key))
             
             a = device.authenticate(device_Key, device_token)
             if a == False:
