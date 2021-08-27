@@ -29,7 +29,6 @@ try:
     for eachArg in device_list:
         device = eval(eachArg)        
         if cfg2.has_section('Midea_' + str(device['id'])) == False:
-            _LOGGER.info(cfg2.has_section(str(device['id'])))
             cfg2.add_section('Midea_' + str(device['id']))            
         cfg2.set('Midea_' + str(device['id']),"type", str(device['type']))
         cfg2.set('Midea_' + str(device['id']),"version", str(device['version']))
