@@ -36,7 +36,7 @@ try:
         cfg2.set('Midea_' + str(device['id']),"id", str(device['id']))
         cfg2.set('Midea_' + str(device['id']),"ip", str(device['ip']))
         cfg2.set('Midea_' + str(device['id']),"port", str(device['port']))
-        if device['version'] == 3:
+        if device['version'] == 3 and device['token'] is not None:
             cfg2.set('Midea_' + str(device['id']),"token", str(device['token']))
             cfg2.set('Midea_' + str(device['id']),"key", str(device['key']))
             
