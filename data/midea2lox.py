@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/opt/loxberry/bin/plugins/Midea2Lox/venv/bin/python3
 # -*- coding: utf-8 -*-
 import logging
 import sys
@@ -337,10 +337,13 @@ try:
     # Miniserver Daten Laden
     cfg = configparser.RawConfigParser()
     cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
-    UDP_Port = int(cfg.get('default','UDP_PORT'))
-    LoxberryIP = cfg.get('default','LoxberryIP')
-    DEBUG = cfg.get('default','DEBUG')
-    Miniserver = cfg.get('default','MINISERVER')
+    try:
+        UDP_Port = int(cfg.get('default','UDP_PORT'))
+        LoxberryIP = cfg.get('default','LoxberryIP')
+        DEBUG = cfg.get('default','DEBUG')
+        Miniserver = cfg.get('default','MINISERVER')
+    except:
+        sys.exit('wrong configuration, please set Miniserver and UDP-Port on Midea2Lox Webpage and click "save and restart"')
 
     # Credentials to set Loxone Inputs over HTTP
     cfg.read('/opt/loxberry/config/system/general.cfg')
