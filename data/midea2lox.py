@@ -1,4 +1,4 @@
-#!/opt/loxberry/bin/plugins/Midea2Lox/venv/bin/python3
+#!REPLACELBPBINDIR/venv/bin/python3
 # -*- coding: utf-8 -*-
 import logging
 import sys
