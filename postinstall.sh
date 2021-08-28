@@ -51,6 +51,20 @@ ARGV5=$5 # Fifth argument is Base folder of LoxBerry
 chmod +x $PDATA/midea2lox.py
 chmod +x $PDATA/discover.py
 
+# Installing Python requirements in Virtual enviroment
+python3 -m venv $PBIN/venv
+
+source $PBIN/venv/bin/activate
+
+pip3 install --upgrade pip
+pip3 install --upgrade pip setuptools wheel
+pip3 install requests
+pip3 install pycryptodomex
+pip3 install netaddr
+pip3 install paho-mqtt
+pip3 install json
+
+deactivate
 
 /bin/echo "#############################################################################################"
 /bin/echo "#  Nach der Installation bitte die Einstellungen zu allen MiniServern anpassen und speichern."
