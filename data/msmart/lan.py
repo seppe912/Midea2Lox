@@ -2,9 +2,10 @@
 import logging
 import socket
 import time
-from msmart.security import security, MSGTYPE_HANDSHAKE_REQUEST, MSGTYPE_ENCRYPTED_REQUEST
+from msmart.const import MSGTYPE_ENCRYPTED_REQUEST, MSGTYPE_HANDSHAKE_REQUEST
+from msmart.security import security
 
-VERSION = '0.1.33'
+VERSION = '0.1.35'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class lan:
             self._tcp_key = None
     
     def get_socket_info(self):
-        socket_time = time.time() - self._timestamp
+        socket_time = round(time.time() - self._timestamp, 2)
         return "{} -> {} retries: {} time: {}".format(self._local, self._remote, self._retries, socket_time)
 
     def request(self, message):
@@ -66,25 +67,28 @@ class lan:
                 "Sending {} message: {}".format(self.get_socket_info(), message.hex()))
             self._socket.sendall(message)
         except Exception as error:
-            self._retries += 1
             _LOGGER.error("Send {} Error: {}".format(self.get_socket_info(), error))
+            self._disconnect()
+            self._retries += 1
+            return bytearray(0), True
 
         # Received data
         try:
             response = self._socket.recv(1024)
         except socket.timeout as error:
-            self._retries += 1
             if error.args[0] == 'timed out':
                 _LOGGER.debug("Recv {}, timed out".format(self.get_socket_info()))
+                self._retries += 1
                 return bytearray(0), True
             else:
                 _LOGGER.debug("Recv {} TimeOut: {}".format(self.get_socket_info(), error))
                 self._disconnect()
+                self._retries += 1
                 return bytearray(0), True
         except socket.error as error:
+            _LOGGER.debug("Recv {} Error: {}".format(self.get_socket_info(), error))
             self._disconnect()
             self._retries += 1
-            _LOGGER.debug("Recv {} Error: {}".format(self.get_socket_info(), error))
             return bytearray(0), True
         else:
             _LOGGER.debug("Recv {} Response: {}".format(self.get_socket_info(), response.hex()))
@@ -94,6 +98,7 @@ class lan:
                 self._retries += 1
                 return bytearray(0), True
             else:
+                self._retries = 0
                 return response, True
 
     def authenticate(self, token: bytearray, key: bytearray):
@@ -108,7 +113,7 @@ class lan:
         tcp_key, success = self.security.tcp_key(response, self._key)
         if success:
             self._tcp_key = tcp_key.hex()
-            _LOGGER.debug('Got TCP key for {} {}'.format(self.get_socket_info(), tcp_key.hex()))
+            _LOGGER.info('Got TCP key for {} {}'.format(self.get_socket_info(), tcp_key.hex()))
             # After authentication, don’t send data immediately, so sleep 1s.
             time.sleep(1)
         return success
@@ -121,7 +126,7 @@ class lan:
     def appliance_transparent_send_8370(self, data, msgtype=MSGTYPE_ENCRYPTED_REQUEST):
         # socket_time = time.time() - self._timestamp
         # _LOGGER.debug("Data: {} msgtype: {} len: {} socket time: {}".format(data.hex(), msgtype, len(data), socket_time))
-        if self._socket is None:
+        if self._socket is None or self._tcp_key is None:
             _LOGGER.debug(
                 "Socket {} Closed, Create New Socket".format(self.get_socket_info()))
             self._disconnect()

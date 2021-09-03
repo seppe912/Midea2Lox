@@ -2,15 +2,13 @@
 import logging
 import time
 from enum import Enum
-
-import msmart.crc8 as crc8
-from msmart.lan import lan
 from msmart.command import appliance_response
 from msmart.command import base_command as request_status_command
 from msmart.command import set_command
+from msmart.lan import lan
 from msmart.packet_builder import packet_builder
 
-VERSION = '0.1.33'
+VERSION = '0.1.35'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -212,10 +210,10 @@ class air_conditioning_device(device):
             responses = self._lan_service.appliance_transparent_send(data)
         request_time = round(time.time() - send_time, 2)
         _LOGGER.debug(
-            "Got responses from {}:{} Version: {} Count: {} Time(s): {}".format(self.ip, self.port, self._protocol_version, len(responses), request_time))
+            "Got responses from {}:{} Version: {} Count: {} Spend time: {}".format(self.ip, self.port, self._protocol_version, len(responses), request_time))
         if len(responses) == 0:
             _LOGGER.warn(
-            "Got Null from {}:{} Version: {} Count: {} Time(s): {}".format(self.ip, self.port, self._protocol_version, len(responses), request_time))
+            "Got Null from {}:{} Version: {} Count: {} Spend time: {}".format(self.ip, self.port, self._protocol_version, len(responses), request_time))
             self._active = False
             self._support = False
         for response in responses:
