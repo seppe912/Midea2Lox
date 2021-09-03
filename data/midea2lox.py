@@ -70,7 +70,7 @@ def send_to_midea(data):
                 statusupdate = 1
                 _LOGGER.debug("statusupdate =: {}".format(statusupdate))
             try:
-                if eachArg in IPNetwork('0/0') and not eachArg.isdigit():
+                if type(ip_address(eachArg)) is IPv4Address and not eachArg.isdigit():
                     device_ip = eachArg
                     _LOGGER.debug("Device ip: {}".format(device_ip))
             except:
@@ -330,7 +330,7 @@ try:
     import requests
     import configparser
     import time
-    from netaddr import IPNetwork
+    from ipaddress import ip_address, IPv4Address
     import paho.mqtt.client as mqtt
     import json
 
