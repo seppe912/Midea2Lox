@@ -346,7 +346,7 @@ try:
         sys.exit('wrong configuration, please set Miniserver and UDP-Port on Midea2Lox Webpage and click "save and restart"')
 
     # Credentials to set Loxone Inputs over HTTP
-    cfg.read('/opt/loxberry/config/system/general.cfg')
+    cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
     LoxIP = cfg.get(Miniserver,'IPADDRESS')
     LoxPort = cfg.get(Miniserver,'PORT')
     LoxPassword = cfg.get(Miniserver,'PASS')
