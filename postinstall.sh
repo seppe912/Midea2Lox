@@ -62,7 +62,7 @@ pip3 install requests
 pip3 install pycryptodomex
 pip3 install netaddr
 pip3 install paho-mqtt
-pip3 install json
+pip3 install ifaddr
 
 deactivate
 
