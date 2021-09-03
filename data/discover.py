@@ -19,11 +19,11 @@ try:
 
     if DEBUG == "1":
         _LOGGER = logging.getLogger("discover.py")
-        logging.basicConfig(level=logging.DEBUG, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+        logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
         device_list = discover(1,int(BroadcastPakets), MideaUser, MideaPW)
     else:
         _LOGGER = logging.getLogger("discover.py")
-        logging.basicConfig(level=logging.INFO, filename='/opt/loxberry/log/plugins/Midea2Lox/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')    
+        logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')    
         device_list = discover(0,int(BroadcastPakets), MideaUser, MideaPW)
 
     for eachArg in device_list:
