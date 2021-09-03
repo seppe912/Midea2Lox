@@ -51,6 +51,9 @@ ARGV5=$5 # Fifth argument is Base folder of LoxBerry
 chmod +x $PDATA/midea2lox.py
 chmod +x $PDATA/discover.py
 
+# Installing Python requirements in Virtual enviroment
+python3 -m venv $PBIN/venv
+
 source $PBIN/venv/bin/activate
 
 pip3 install --upgrade pip
