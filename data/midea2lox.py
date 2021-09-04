@@ -52,10 +52,6 @@ def send_to_midea(data):
         device_Key = None
         device_token = None
 
-        if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
-            support_mode = 1
-            _LOGGER.debug("support Mode enabled")
-
         for eachArg in data: # get device_id
             if len(eachArg) == 14 and eachArg.isdigit():
                 device_id = eachArg
@@ -79,7 +75,9 @@ def send_to_midea(data):
             except:
                 pass
                 
-        if support_mode == 1:
+        if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
+            support_mode = 1
+            _LOGGER.debug("support Mode enabled")
             if device_id == None:                
                 sys.exit("missing device_id")
             elif device_ip == None:
