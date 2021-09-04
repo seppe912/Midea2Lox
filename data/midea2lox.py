@@ -92,7 +92,7 @@ def send_to_midea(data):
             try:
                 _LOGGER.debug('get device informations')
                 cfgdevices = configparser.RawConfigParser()
-                cfgdevices.read('/opt/loxberry/config/plugins/Midea2Lox/devices.cfg')   
+                cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')   
                 if device_ip == None:
                     device_ip = cfgdevices.get('Midea_' + device_id,'ip')
                     device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
