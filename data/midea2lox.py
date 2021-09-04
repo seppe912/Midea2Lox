@@ -45,6 +45,7 @@ def send_to_midea(data):
         runtime = time.time()
         
         protocol = 2
+        device_port = 6444
         retries = 0
         statusupdate = 0
         support_mode = 0
@@ -85,8 +86,6 @@ def send_to_midea(data):
                 sys.exit("missing device_id")
             elif device_ip == None:
                 sys.exit("missing device_ip")
-            device_port = 6444
-            protocol = 2
         else:
             if device_id == None:                
                 sys.exit("missing device_id, please check your Loxone config")
