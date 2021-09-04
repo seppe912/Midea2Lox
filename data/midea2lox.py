@@ -43,7 +43,7 @@ def send_to_midea(data):
     try: 
         #Start, set Loxone Script to active
         runtime = time.time()
-        
+        oldLox = 0
         protocol = 2
         device_port = 6444
         retries = 0
