@@ -92,13 +92,15 @@ def send_to_midea(data):
             try:
                 _LOGGER.debug('get device informations')
                 cfgdevices = configparser.RawConfigParser()
-                cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')        
-                device_ip = cfgdevices.get('Midea_' + device_id,'ip')
-                device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
+                cfgdevices.read('/opt/loxberry/config/plugins/Midea2Lox/devices.cfg')   
+                if device_ip == None:
+                    device_ip = cfgdevices.get('Midea_' + device_id,'ip')
+                    device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
                 protocol = int(cfgdevices.get('Midea_' + device_id,'version'))
                 if protocol == 3:
-                    device_Key = cfgdevices.get('Midea_' + device_id,'key')
-                    device_token = cfgdevices.get('Midea_' + device_id,'token')
+                    if device_Key == None or device_token == None:
+                        device_Key = cfgdevices.get('Midea_' + device_id,'key')
+                        device_token = cfgdevices.get('Midea_' + device_id,'token')
             except:
                 _LOGGER.warning('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
                 
