@@ -90,6 +90,7 @@ def send_to_midea(data):
             if device_id == None:                
                 sys.exit("missing device_id, please check your Loxone config")
             try:
+                _LOGGER.debug('get device informations')
                 cfgdevices = configparser.RawConfigParser()
                 cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')        
                 device_ip = cfgdevices.get('Midea_' + device_id,'ip')
