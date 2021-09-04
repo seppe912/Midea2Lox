@@ -3,7 +3,7 @@
 import logging
 import sys
 
-Midea2Lox_Version = '3.1.1'
+Midea2Lox_Version = '3.1.3'
   
 
 # Mainprogramm
