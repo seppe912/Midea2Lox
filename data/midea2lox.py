@@ -45,27 +45,26 @@ def send_to_midea(data):
         runtime = time.time()
 
         retries = 0
-        protocol = 2
         statusupdate = 0
         support_mode = 0
-        
         device_id = None
         device_ip = None
         device_Key = None
         device_token = None
 
-        for eachArg in data: # get device_id, device_ip and for V3 Key and Token.
-            if len(eachArg) == 64:
-                device_Key = eachArg
-                _LOGGER.debug("Device Key: '{}'".format(device_Key))
-                protocol = 3
-            elif len(eachArg) == 128:
-                device_token = eachArg
-                _LOGGER.debug("Device Token: '{}'".format(device_token))
-                protocol = 3
-            elif len(eachArg) == 14 and eachArg.isdigit():
+
+        for eachArg in data: # get device_id
+            if len(eachArg) == 14 and eachArg.isdigit():
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
+            elif len(eachArg) == 64:
+                device_Key_Lox = eachArg
+                _LOGGER.debug("Device Key: '{}'".format(device_Key_Lox))
+                oldLox = 1
+            elif len(eachArg) == 128:
+                device_token_Lox = eachArg
+                _LOGGER.debug("Device Token: '{}'".format(device_token_Lox))
+                oldLox = 1
             elif eachArg == "status":
                 statusupdate = 1
                 _LOGGER.debug("statusupdate =: {}".format(statusupdate))
@@ -73,19 +72,26 @@ def send_to_midea(data):
                 if type(ip_address(eachArg)) is IPv4Address and not eachArg.isdigit():
                     device_ip = eachArg
                     _LOGGER.debug("Device ip: {}".format(device_ip))
+                    oldLox = 1
             except:
                 pass
                 
         if device_id == None:                
-            sys.exit("missing device_id")
-        elif device_ip == None:
-            sys.exit("missing device_ip")
-        elif protocol == 3 and device_Key == None:
-            sys.exit("missing device_Key only token is given")
-        elif protocol == 3 and device_token == None:
-            sys.exit("missing device_token only Key is given")
-
-        device = ac(device_ip, int(device_id), 6444)
+            sys.exit("missing device_id, please check your Loxone config")
+        
+        try:
+            cfgdevices = configparser.RawConfigParser()
+            cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')        
+            device_ip = cfgdevices.get('Midea_' + device_id,'ip')
+            device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
+            protocol = int(cfgdevices.get('Midea_' + device_id,'version'))
+            if protocol == 3:
+                device_Key = cfgdevices.get('Midea_' + device_id,'key')
+                device_token = cfgdevices.get('Midea_' + device_id,'token')
+        except:
+            sys.exit('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
+            
+        device = ac(device_ip, int(device_id), device_port)
         
         if protocol == 3: # support midea V3
             # If the device is using protocol 3 (aka 8370)
@@ -135,6 +141,8 @@ def send_to_midea(data):
 
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
+                if oldLox == 1:
+                    _LOGGER.warning("you dont need to send IP, Key and Token anymore, just do a discover and send your DeviceID")
                 if protocol == 3 and len(data) != 12 or protocol == 2 and len(data) != 10: #if not all settings are sent from loxone, refresh() is neccessary.
                     try:
                         device.refresh()
@@ -184,7 +192,7 @@ def send_to_midea(data):
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
                         if protocol == 3:
-                            if eachArg != device_Key and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
+                            if eachArg != device_Key_Lox and eachArg != device_token_Lox and eachArg != device_id and eachArg != device_ip:
                                 _LOGGER.error("Given command '{}' is unknown".format(eachArg))
                         else:
                             if eachArg != device_id and eachArg != device_ip:
