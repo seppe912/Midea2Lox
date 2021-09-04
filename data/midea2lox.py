@@ -52,18 +52,21 @@ def send_to_midea(data):
         device_Key = None
         device_token = None
 
+        if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
+            support_mode = 1
+            _LOGGER.debug("support Mode enabled")
 
         for eachArg in data: # get device_id
             if len(eachArg) == 14 and eachArg.isdigit():
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
             elif len(eachArg) == 64:
-                device_Key_Lox = eachArg
-                _LOGGER.debug("Device Key: '{}'".format(device_Key_Lox))
+                device_Key = eachArg
+                _LOGGER.debug("Device Key: '{}'".format(device_Key))
                 oldLox = 1
             elif len(eachArg) == 128:
-                device_token_Lox = eachArg
-                _LOGGER.debug("Device Token: '{}'".format(device_token_Lox))
+                device_token = eachArg
+                _LOGGER.debug("Device Token: '{}'".format(device_token))
                 oldLox = 1
             elif eachArg == "status":
                 statusupdate = 1
@@ -76,20 +79,27 @@ def send_to_midea(data):
             except:
                 pass
                 
-        if device_id == None:                
-            sys.exit("missing device_id, please check your Loxone config")
-        
-        try:
-            cfgdevices = configparser.RawConfigParser()
-            cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')        
-            device_ip = cfgdevices.get('Midea_' + device_id,'ip')
-            device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
-            protocol = int(cfgdevices.get('Midea_' + device_id,'version'))
-            if protocol == 3:
-                device_Key = cfgdevices.get('Midea_' + device_id,'key')
-                device_token = cfgdevices.get('Midea_' + device_id,'token')
-        except:
-            sys.exit('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
+        if support_mode == 1:
+            if device_id == None:                
+                sys.exit("missing device_id")
+            elif device_ip == None:
+                sys.exit("missing device_ip")
+            device_port = 6444
+            protocol = 2
+        else:
+            if device_id == None:                
+                sys.exit("missing device_id, please check your Loxone config")
+            try:
+                cfgdevices = configparser.RawConfigParser()
+                cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')        
+                device_ip = cfgdevices.get('Midea_' + device_id,'ip')
+                device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
+                protocol = int(cfgdevices.get('Midea_' + device_id,'version'))
+                if protocol == 3:
+                    device_Key = cfgdevices.get('Midea_' + device_id,'key')
+                    device_token = cfgdevices.get('Midea_' + device_id,'token')
+            except:
+                sys.exit('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
             
         device = ac(device_ip, int(device_id), device_port)
         
@@ -118,9 +128,8 @@ def send_to_midea(data):
                 _LOGGER.error(error)
 
         else: # apply() AC changes
-            if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
-                support_mode = 1
-                _LOGGER.info("use support Mode for Loxone Configs createt with Midea2Lox V2.x --> MQTT disabled. If you want to use MQTT you need to update your Loxoneconfig")
+            if support_mode == 1:
+                _LOGGER.info("apply() on support Mode for Loxone Configs createt with Midea2Lox V2.x --> MQTT disabled. If you want to use MQTT you need to update your Loxoneconfig")
                 key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
                 if data[0] in key and data[1] in key and data[3] in key and data[4] in key and data[5] in key and data[6] in key and data[7] in key:
                     device.power_state = eval(data[0])
@@ -138,7 +147,6 @@ def send_to_midea(data):
                             _LOGGER.error("getting wrong Argument: '{}'. Please check your Loxone config.".format(eachArg))                        
                     _LOGGER.info("allowed Arguments: {}".format(key))
                     sys.exit()
-
 
             else: # new find command logic. Need new Loxone config (power.True, tone.True, eco.True, turbo.True -- and False of each)
                 if oldLox == 1:
@@ -192,7 +200,7 @@ def send_to_midea(data):
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
                         if protocol == 3:
-                            if eachArg != device_Key_Lox and eachArg != device_token_Lox and eachArg != device_id and eachArg != device_ip:
+                            if eachArg != device_Key and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
                                 _LOGGER.error("Given command '{}' is unknown".format(eachArg))
                         else:
                             if eachArg != device_id and eachArg != device_ip:
@@ -236,7 +244,7 @@ def send_to_midea(data):
     
     finally:
         _LOGGER.debug(time.time()-runtime)
-
+        
         
 def send_to_loxone(device, support_mode):
     r_error = 0
