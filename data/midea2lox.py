@@ -43,7 +43,8 @@ def send_to_midea(data):
     try: 
         #Start, set Loxone Script to active
         runtime = time.time()
-
+        
+        protocol = 2
         retries = 0
         statusupdate = 0
         support_mode = 0
@@ -59,10 +60,12 @@ def send_to_midea(data):
             elif len(eachArg) == 64:
                 device_Key = eachArg
                 _LOGGER.debug("Device Key: '{}'".format(device_Key))
+                protocol = 3
                 oldLox = 1
             elif len(eachArg) == 128:
                 device_token = eachArg
                 _LOGGER.debug("Device Token: '{}'".format(device_token))
+                protocol = 3
                 oldLox = 1
             elif eachArg == "status":
                 statusupdate = 1
@@ -97,7 +100,19 @@ def send_to_midea(data):
                     device_Key = cfgdevices.get('Midea_' + device_id,'key')
                     device_token = cfgdevices.get('Midea_' + device_id,'token')
             except:
-                sys.exit('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
+                _LOGGER.warning('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
+                
+        if device_id == None:
+            sys.exit('device ID unknown')
+        elif device_ip == None:
+            sys.exit('device IP unknown')
+            
+        if protocol == 3:
+            if device_Key == None:
+                sys.exit('device Key unknown')
+            elif device_token == None:
+                sys.exit('device Token unknown')
+            
             
         device = ac(device_ip, int(device_id), device_port)
         
@@ -197,12 +212,9 @@ def send_to_midea(data):
                         device.target_temperature = int(eachArg)
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
-                        if protocol == 3:
-                            if eachArg != device_Key and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
-                                _LOGGER.error("Given command '{}' is unknown".format(eachArg))
-                        else:
-                            if eachArg != device_id and eachArg != device_ip:
-                                _LOGGER.error("Given command '{}' is unknown".format(eachArg))
+                        if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
+                            _LOGGER.error("Given command '{}' is unknown".format(eachArg))
+
                                 
             # Errorhandling
             # Midea AC only supports auto Fanspeed in auto-Operationalmode.
