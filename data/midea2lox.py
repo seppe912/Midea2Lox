@@ -51,7 +51,7 @@ def send_to_midea(data):
         support_mode = 0
         device_id = None
         device_ip = None
-        device_Key = None
+        device_key = None
         device_token = None
 
         for eachArg in data: # get device_id
@@ -59,8 +59,8 @@ def send_to_midea(data):
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
             elif len(eachArg) == 64:
-                device_Key = eachArg
-                _LOGGER.debug("Device Key: '{}'".format(device_Key))
+                device_key = eachArg
+                _LOGGER.debug("Device Key: '{}'".format(device_key))
                 protocol = 3
                 oldLox = 1
             elif len(eachArg) == 128:
@@ -98,8 +98,8 @@ def send_to_midea(data):
                     device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
                 protocol = int(cfgdevices.get('Midea_' + device_id,'version'))
                 if protocol == 3:
-                    if device_Key == None or device_token == None:
-                        device_Key = cfgdevices.get('Midea_' + device_id,'key')
+                    if device_key == None or device_token == None:
+                        device_key = cfgdevices.get('Midea_' + device_id,'key')
                         device_token = cfgdevices.get('Midea_' + device_id,'token')
             except:
                 _LOGGER.warning('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
@@ -110,7 +110,7 @@ def send_to_midea(data):
             sys.exit('device IP unknown')
             
         if protocol == 3:
-            if device_Key == None:
+            if device_key == None:
                 sys.exit('device Key unknown')
             elif device_token == None:
                 sys.exit('device Token unknown')
@@ -122,7 +122,7 @@ def send_to_midea(data):
             # If the device is using protocol 3 (aka 8370)
             # you must authenticate with device's Key and token.
             
-            a = device.authenticate(device_Key, device_token)
+            a = device.authenticate(device_key, device_token)
             if a == False:
                 device._active = False
                 send_to_loxone(device, support_mode)
