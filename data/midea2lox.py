@@ -96,16 +96,16 @@ def send_to_midea(data):
                 sys.exit("missing device_id, please check your Loxone config")
             try:
                 _LOGGER.debug('get device informations')
-                cfgdevices = configparser.RawConfigParser()
-                cfgdevices.read(cfg_path + '/devices.cfg')   
+                cfg_devices = configparser.RawConfigParser()
+                cfg_devices.read(cfg_path + '/devices.cfg')   
                 if device_ip == None:
-                    device_ip = cfgdevices.get('Midea_' + device_id,'ip')
-                    device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
-                protocol = int(cfgdevices.get('Midea_' + device_id,'version'))
+                    device_ip = cfg_devices.get('Midea_' + device_id,'ip')
+                    device_port = int(cfg_devices.get('Midea_' + device_id,'port'))
+                protocol = int(cfg_devices.get('Midea_' + device_id,'version'))
                 if protocol == 3:
                     if device_key == None or device_token == None:
-                        device_key = cfgdevices.get('Midea_' + device_id,'key')
-                        device_token = cfgdevices.get('Midea_' + device_id,'token')
+                        device_key = cfg_devices.get('Midea_' + device_id,'key')
+                        device_token = cfg_devices.get('Midea_' + device_id,'token')
             except:
                 _LOGGER.warning('couldn´t find Device ID "%s", please do Discover or Check your Loxone config to send the right ID' % (device_id))
                 
