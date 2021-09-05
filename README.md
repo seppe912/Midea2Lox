@@ -23,8 +23,6 @@ Ab Midea2Lox V2.0 findet die kommunikation direkt über LAN ohne Cloud statt.
 
 # Midea 8370 Protocol / V3, bspw. EU-OSK103
 Ab Midea2Lox V3.0 werden die neueren Sticks mit Protokoll Version 3 über LAN unterstützt.
-Diese benötigen einen Token und K1 Key, der über die Android-App ausgelesen werden kann. Details dazu auch bei https://github.com/mac-zhou/midea-ac-py#how-to-get-token-and-k1 zu finden.
-Es wird kein Android Handy benötigt, man kann die Key´s auch über einen Emulator entnehmen. Die Klimaanlagen mit V3 USB Stick müssen vorher mit der Midea App registriert werden, anschließend wird die App nicht mehr benötigt.
 
 # Token und Key
 Token und Key können ab V3.1 über die Cloud extrahiert werden. Dazu wird der Midea App zugang benötigt, bei dem die Klimaanlagen registriert sind. 
