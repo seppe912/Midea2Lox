@@ -76,7 +76,7 @@ def discover(debug: int, amount: int, account:str, password:str):
     except KeyboardInterrupt:
         sys.exit(0)
 
-########
+######## get devices and save to devices.cfg
 try:
     device_list = discover(int(DEBUG),int(BroadcastPakets), MideaUser, MideaPW)
     for eachArg in device_list:
