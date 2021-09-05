@@ -353,8 +353,7 @@ def on_publish(client, userdata, mid):
 ##########
 
 try:
-    from msmart.device import air_conditioning_device as ac
-    from msmart.device import VERSION
+    from msmart.device import air_conditioning_device as ac, VERSION
     import requests
     import configparser
     import time
