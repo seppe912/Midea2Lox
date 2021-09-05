@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import asyncio
 from msmart.const import OPEN_MIDEA_APP_ACCOUNT, OPEN_MIDEA_APP_PASSWORD
+import click
 import logging
 import sys
 from msmart.scanner import MideaDiscovery
@@ -17,12 +18,12 @@ VERSION = '0.1.35'
 
 _LOGGER = logging.getLogger(__name__)
 
-# @click.command()
-# @click.option("-d", "--debug", default=False, count=True)
-# @click.option("-c", "--amount", default=1, help='Number of broadcast paktes, default is 1.\
-                                                # if you have many devices, you may change this vaule.')
-# @click.option("-a", "--account", default=OPEN_MIDEA_APP_ACCOUNT, help='Your email address for your Midea account.')
-# @click.option("-p", "--password", default=OPEN_MIDEA_APP_PASSWORD, help='Your password for your Midea account.')
+@click.command()
+@click.option("-d", "--debug", default=False, count=True)
+@click.option("-c", "--amount", default=1, help='Number of broadcast paktes, default is 1.\
+                                                if you have many devices, you may change this vaule.')
+@click.option("-a", "--account", default=OPEN_MIDEA_APP_ACCOUNT, help='Your email address for your Midea account.')
+@click.option("-p", "--password", default=OPEN_MIDEA_APP_PASSWORD, help='Your password for your Midea account.')
 # @click.pass_context
 def discover(debug: int, amount: int, account:str, password:str):
     """Send Device Scan Broadcast"""
@@ -37,17 +38,13 @@ def discover(debug: int, amount: int, account:str, password:str):
         "Sending Device Scan Broadcast...")
     
     try:
-        device_list =[]
         discovery = MideaDiscovery(account=account, password=password, amount=amount)
         loop = asyncio.new_event_loop()
         found_devices = loop.run_until_complete(discovery.get_all())
         loop.close()
         
         for device in found_devices:
-            _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device))
-            print("*** Found a device: {} ".format(device))
-            device_list.append(str(device))
-        return device_list
+            _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device)) 
     except KeyboardInterrupt:
         sys.exit(0)
 
