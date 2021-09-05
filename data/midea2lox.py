@@ -127,9 +127,9 @@ def send_to_midea(data):
                 device._active = False
                 send_to_loxone(device, support_mode)
                 sys.exit(0)
-                
         else:
             _LOGGER.info("use Midea V2")
+            
         if statusupdate == 1: # refresh() AC State
             try:
                 device.refresh()
