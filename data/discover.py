@@ -16,10 +16,6 @@ MideaUser = cfg.get('default','MideaUser')
 MideaPW = cfg.get('default','MideaPassword')
 BroadcastPakets = cfg.get('default','BroadcastPakets')
 
-cfg_devices = configparser.RawConfigParser()
-cfg_devices.read(cfg_path + '/devices.cfg')
-
-
 ## Logging
 _LOGGER = logging.getLogger("discover.py")
 try:
@@ -79,7 +75,9 @@ def discover(debug: int, amount: int, account:str, password:str):
 try:
     device_list = discover(int(DEBUG),int(BroadcastPakets), MideaUser, MideaPW)
     for eachArg in device_list:
-        device = eval(eachArg)        
+        device = eval(eachArg)
+        cfg_devices = configparser.RawConfigParser()
+        cfg_devices.read(cfg_path + '/devices.cfg')
         if cfg_devices.has_section('Midea_' + str(device['id'])) == False:
             cfg_devices.add_section('Midea_' + str(device['id']))            
         cfg_devices.set('Midea_' + str(device['id']),"type", str(device['type']))
