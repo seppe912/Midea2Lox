@@ -41,16 +41,11 @@ if sys.version_info < (3, 5):
     sys.exit(1)
 
 
-def discover(debug: int, amount: int, account:str, password:str):
+def discover(amount: int, account:str, password:str):
     import asyncio
     from msmart.const import OPEN_MIDEA_APP_ACCOUNT, OPEN_MIDEA_APP_PASSWORD
     from msmart.scanner import MideaDiscovery, VERSION
     """Send Device Scan Broadcast"""
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-        _LOGGER.info("Debug mode active")
-    else:
-        logging.basicConfig(level=logging.INFO)
 
     _LOGGER.info("msmart version: {} Currently only supports ac devices.".format(VERSION))
     _LOGGER.info(
@@ -74,7 +69,7 @@ def discover(debug: int, amount: int, account:str, password:str):
 
 ######## get devices and save to devices.cfg
 try:
-    device_list = discover(int(DEBUG),int(BroadcastPakets), MideaUser, MideaPW)
+    device_list = discover(int(BroadcastPakets), MideaUser, MideaPW)
     for eachArg in device_list:
         device = eval(eachArg)
         cfg_devices = configparser.RawConfigParser()
