@@ -68,8 +68,9 @@ def discover(debug: int, amount: int, account:str, password:str):
             print("*** Found a device: {} ".format(device))
             device_list.append(str(device))
         return device_list
-    except KeyboardInterrupt:
-        sys.exit(0)
+    except:
+        _LOGGER.error(str(sys.exc_info()))
+        sys.exit()
 
 ######## get devices and save to devices.cfg
 try:
