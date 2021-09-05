@@ -4,7 +4,12 @@ import logging
 import sys
 
 Midea2Lox_Version = '3.1.3'
-  
+
+#set path
+cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
+log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
+home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
+
 
 # Mainprogramm
 def start_server():
@@ -92,7 +97,7 @@ def send_to_midea(data):
             try:
                 _LOGGER.debug('get device informations')
                 cfgdevices = configparser.RawConfigParser()
-                cfgdevices.read('REPLACELBPCONFIGDIR/devices.cfg')   
+                cfgdevices.read(cfg_path + 'devices.cfg')   
                 if device_ip == None:
                     device_ip = cfgdevices.get('Midea_' + device_id,'ip')
                     device_port = int(cfgdevices.get('Midea_' + device_id,'port'))
@@ -362,9 +367,10 @@ try:
     import paho.mqtt.client as mqtt
     import json
 
+
     # Miniserver Daten Laden
     cfg = configparser.RawConfigParser()
-    cfg.read('REPLACELBPCONFIGDIR/midea2lox.cfg')
+    cfg.read(cfg_path + 'midea2lox.cfg')
     try:
         UDP_Port = int(cfg.get('default','UDP_PORT'))
         LoxberryIP = cfg.get('default','LoxberryIP')
@@ -374,7 +380,7 @@ try:
         sys.exit('wrong configuration, please set Miniserver and UDP-Port on Midea2Lox Webpage and click "save and restart"')
 
     # Credentials to set Loxone Inputs over HTTP
-    cfg.read('REPLACELBHOMEDIR/config/system/general.cfg')
+    cfg.read(home_path + 'config/system/general.cfg')
     LoxIP = cfg.get(Miniserver,'IPADDRESS')
     LoxPort = cfg.get(Miniserver,'PORT')
     LoxPassword = cfg.get(Miniserver,'PASS')
@@ -382,14 +388,14 @@ try:
 
     _LOGGER = logging.getLogger("Midea2Lox.py")
     if DEBUG == "1":
-       logging.basicConfig(level=logging.DEBUG, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       logging.basicConfig(level=logging.DEBUG, filename= log_path + 'midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
        print("Debug is True")
        _LOGGER.debug("Debug is True")
     else:
-       logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       logging.basicConfig(level=logging.INFO, filename= log_path + 'midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     
     #MQTT
-    with open('REPLACELBHOMEDIR/config/system/general.json') as jsonFile:
+    with open(home_path + '/config/system/general.json') as jsonFile:
         jsonObject = json.load(jsonFile)
         jsonFile.close()
     try: # check if MQTTgateway is installed or not and set MQTT Client settings
@@ -413,7 +419,7 @@ try:
 
 except:
     _LOGGER = logging.getLogger("Midea2Lox.py")
-    logging.basicConfig(level=logging.INFO, filename='REPLACELBPLOGDIR/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    logging.basicConfig(level=logging.INFO, filename= log_path + 'midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
