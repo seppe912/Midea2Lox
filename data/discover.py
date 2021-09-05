@@ -19,18 +19,66 @@ BroadcastPakets = cfg.get('default','BroadcastPakets')
 cfg_devices = configparser.RawConfigParser()
 cfg_devices.read(cfg_path + '/devices.cfg')
 
+
+## Logging
+_LOGGER = logging.getLogger("discover.py")
 try:
-    from msmart.cli import discover
-
     if DEBUG == "1":
-        _LOGGER = logging.getLogger("discover.py")
         logging.basicConfig(level=logging.DEBUG, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-        device_list = discover(1,int(BroadcastPakets), MideaUser, MideaPW)
     else:
-        _LOGGER = logging.getLogger("discover.py")
         logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')    
-        device_list = discover(0,int(BroadcastPakets), MideaUser, MideaPW)
+except:
+    logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    print('Error : ' + str(sys.exc_info()))
+    _LOGGER.error(str(sys.exc_info()))
+    sys.exit()
 
+if sys.version_info < (3, 5):
+    print(
+        "To use this script you need python 3.5 or newer, got %s" % (
+            sys.version_info,)
+    )
+    _LOGGER.error(
+        "To use this script you need python 3.5 or newer, got %s" % (
+            sys.version_info,)
+    )
+    sys.exit(1)
+
+
+def discover(debug: int, amount: int, account:str, password:str):
+    import asyncio
+    from msmart.const import OPEN_MIDEA_APP_ACCOUNT, OPEN_MIDEA_APP_PASSWORD
+    from msmart.const import VERSION
+    from msmart.scanner import MideaDiscovery
+    """Send Device Scan Broadcast"""
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+        _LOGGER.info("Debug mode active")
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    _LOGGER.info("msmart version: {} Currently only supports ac devices.".format(VERSION))
+    _LOGGER.info(
+        "Sending Device Scan Broadcast...")
+    
+    try:
+        device_list =[]
+        discovery = MideaDiscovery(account=account, password=password, amount=amount)
+        loop = asyncio.new_event_loop()
+        found_devices = loop.run_until_complete(discovery.get_all())
+        loop.close()
+        
+        for device in found_devices:
+            _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device))
+            print("*** Found a device: {} ".format(device))
+            device_list.append(str(device))
+        return device_list
+    except KeyboardInterrupt:
+        sys.exit(0)
+
+########
+try:
+    device_list = discover(int(DEBUG),int(BroadcastPakets), MideaUser, MideaPW)
     for eachArg in device_list:
         device = eval(eachArg)        
         if cfg_devices.has_section('Midea_' + str(device['id'])) == False:
@@ -49,8 +97,6 @@ try:
         cfg_devices.write(open(cfg_path + '/devices.cfg','w'))
         
 except:
-    _LOGGER = logging.getLogger("discover.py")
-    logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     print('Error : ' + str(sys.exc_info()))
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
