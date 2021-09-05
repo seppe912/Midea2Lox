@@ -324,28 +324,23 @@ def send_to_loxone(device, support_mode):
 # Ist ein Callback, der ausgeführt wird, wenn sich mit dem Broker verbunden wird
 def on_connect(client, userdata, flags, rc):
     global mqtt_error
+    mqtt_error = 1
     if rc == 0:
         _LOGGER.info("MQTT: Verbindung akzeptiert")
         mqtt_error = 0
         client.publish('Midea2Lox/connection/status','connected',qos=2, retain=True)
     elif rc == 1:
         _LOGGER.error("MQTT: Falsche Protokollversion")
-        mqtt_error = 1
     elif rc == 2:
         _LOGGER.error("MQTT: Identifizierung fehlgeschlagen")
-        mqtt_error = 1
     elif rc == 3:
         _LOGGER.error("MQTT: Server nicht erreichbar")
-        mqtt_error = 1
     elif rc == 4:
         _LOGGER.error("MQTT: Falscher benutzername oder Passwort")
-        mqtt_error = 1
     elif rc == 5:
         _LOGGER.error("MQTT: Nicht autorisiert")
-        mqtt_error = 1
     else:
         _LOGGER.error("MQTT: Ungültiger Returncode")
-        mqtt_error = 1
 
 def on_disconnect(client, userdata, flags, rc):
     client.publish('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
