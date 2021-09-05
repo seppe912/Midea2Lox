@@ -44,7 +44,8 @@ def discover(debug: int, amount: int, account:str, password:str):
         loop.close()
         
         for device in found_devices:
-            _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device)) 
+            _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device))
+            print("*** Found a device: {} ".format(device))
             device_list.append(str(device))
         return device_list
     except KeyboardInterrupt:
