@@ -219,7 +219,7 @@ def send_to_midea(data):
                         device.target_temperature = int(eachArg)
                         _LOGGER.debug(device.target_temperature)
                     else: #unknown key´s
-                        if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_token and eachArg != device_id and eachArg != device_ip:
+                        if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
                             _LOGGER.error("Given command '{}' is unknown".format(eachArg))
 
                                 
