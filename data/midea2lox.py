@@ -285,11 +285,13 @@ def send_to_loxone(device, support_mode):
         if device.active == True:
             for eachArg in addresses:
                 MQTTpublish = eachArg.split(',')
-                client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish eachArg
+                publish = client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish eachArg
+                _LOGGER.debug("Publishing: MsgNum:%s: %s" % (publish[1], eachArg))
         else: # Send Device Offline state to Loxone over MQTT
             MQTTpublish = addresses[10].split(',')
-            client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish device offline
-        
+            publish = client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish device offline
+            _LOGGER.debug("Publishing: MsgNum:%s: %s" % (publish[1], addresses[10]))
+        publish.wait_for_publish()
         _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
             
     else: #Publish to Loxone Inputs over HTTP
@@ -328,7 +330,8 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         _LOGGER.info("MQTT: Verbindung akzeptiert")
         mqtt_error = 0
-        client.publish('Midea2Lox/connection/status','connected',qos=2, retain=True)
+        publish = client.publish('Midea2Lox/connection/status','connected',qos=2, retain=True)
+        _LOGGER.debug("Publishing: MsgNum:%s: 'Midea2Lox/connection/status','connected'" % (publish[1]))
     elif rc == 1:
         _LOGGER.error("MQTT: Falsche Protokollversion")
     elif rc == 2:
@@ -343,12 +346,9 @@ def on_connect(client, userdata, flags, rc):
         _LOGGER.error("MQTT: Ungültiger Returncode")
 
 def on_disconnect(client, userdata, flags, rc):
-    client.publish('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
-
-# Ist ein Callback, der ausgeführt wird, wenn gesendet wird
-def on_publish(client, userdata, mid):
-    _LOGGER.debug("on_publish, mid {}".format(mid))
-
+    publish = client.publish('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
+    _LOGGER.debug("Publishing: MsgNum:%s: 'Midea2Lox/connection/status','disconnected'" % (publish[1]))
+    
 
 ##########
 
@@ -397,11 +397,11 @@ try:
         MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
         MQTTport = jsonObject["Mqtt"]["Brokerport"]
         MQTThost = jsonObject["Mqtt"]["Brokerhost"]
+        MQTTpsk = jsonObject["Mqtt"]["Brokerpsk"]
         client = mqtt.Client(client_id='Midea2Lox')
         client.username_pw_set(MQTTuser, MQTTpass)
         client.on_connect = on_connect
         client.on_disconnect = on_disconnect
-        client.on_publish = on_publish
         client.will_set('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
         _LOGGER.info('found MQTT Gateway Plugin - publish over MQTT except on support_mode')
         client.connect(MQTThost, int(MQTTport))
