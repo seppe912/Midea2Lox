@@ -390,10 +390,10 @@ try:
        logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
     
     #MQTT
-    with open(home_path + '/config/system/general.json') as jsonFile:
-        jsonObject = json.load(jsonFile)
-        jsonFile.close()
     try: # check if MQTTgateway is installed or not and set MQTT Client settings
+        with open(home_path + '/config/system/general.json') as jsonFile:
+            jsonObject = json.load(jsonFile)
+            jsonFile.close()
         MQTTuser = jsonObject["Mqtt"]["Brokeruser"]
         MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
         MQTTport = jsonObject["Mqtt"]["Brokerport"]
