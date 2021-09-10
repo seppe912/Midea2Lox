@@ -10,7 +10,6 @@ cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
 log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
 home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 
-
 ##########
 try:
     from msmart.device import air_conditioning_device as ac, VERSION
