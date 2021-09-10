@@ -87,10 +87,7 @@ def send_to_midea(data):
         if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
             support_mode = 1
             _LOGGER.debug("support Mode enabled")
-            if device_id == None:                
-                sys.exit("missing device_id")
-            elif device_ip == None:
-                sys.exit("missing device_ip")
+
         else:
             if device_id == None:                
                 sys.exit("missing device_id, please check your Loxone config")
