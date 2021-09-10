@@ -11,7 +11,74 @@ log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
 home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 
 
-# TCP Socket
+##########
+try:
+    from msmart.device import air_conditioning_device as ac, VERSION
+    import requests
+    import configparser
+    import time
+    from ipaddress import ip_address, IPv4Address
+    import paho.mqtt.client as mqtt
+    import json
+
+
+    # Miniserver Daten Laden
+    cfg = configparser.RawConfigParser()
+    cfg.read(cfg_path + '/midea2lox.cfg')
+    try:
+        UDP_Port = int(cfg.get('default','UDP_PORT'))
+        LoxberryIP = cfg.get('default','LoxberryIP')
+        DEBUG = cfg.get('default','DEBUG')
+        Miniserver = cfg.get('default','MINISERVER')
+    except:
+        sys.exit('wrong configuration, please set Miniserver and UDP-Port on Midea2Lox Webpage and click "save and restart"')
+
+    # Credentials to set Loxone Inputs over HTTP
+    cfg.read(home_path + '/config/system/general.cfg')
+    LoxIP = cfg.get(Miniserver,'IPADDRESS')
+    LoxPort = cfg.get(Miniserver,'PORT')
+    LoxPassword = cfg.get(Miniserver,'PASS')
+    LoxUser = cfg.get(Miniserver,'ADMIN')
+
+    _LOGGER = logging.getLogger("Midea2Lox.py")
+    if DEBUG == "1":
+       logging.basicConfig(level=logging.DEBUG, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       print("Debug is True")
+       _LOGGER.debug("Debug is True")
+    else:
+       logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    
+    #MQTT
+    try: # check if MQTTgateway is installed or not and set MQTT Client settings
+        with open(home_path + '/config/system/general.json') as jsonFile:
+            jsonObject = json.load(jsonFile)
+            jsonFile.close()
+        MQTTuser = jsonObject["Mqtt"]["Brokeruser"]
+        MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
+        MQTTport = jsonObject["Mqtt"]["Brokerport"]
+        MQTThost = jsonObject["Mqtt"]["Brokerhost"]
+        MQTTpsk = jsonObject["Mqtt"]["Brokerpsk"]
+        client = mqtt.Client(client_id='Midea2Lox')
+        client.username_pw_set(MQTTuser, MQTTpass)
+        client.on_connect = on_connect
+        client.on_disconnect = on_disconnect
+        client.will_set('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
+        _LOGGER.info('found MQTT Gateway Plugin - publish over MQTT except on support_mode')
+        client.connect(MQTThost, int(MQTTport))
+        client.loop_start()
+        MQTT = 1
+    except:
+        _LOGGER.debug('cant find MQTT Gateway use HTTP requests to set Loxone inputs')
+        MQTT = 0
+
+except:
+    _LOGGER = logging.getLogger("Midea2Lox.py")
+    logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    print('Error : ' + str(sys.exc_info()))
+    _LOGGER.error(str(sys.exc_info()))
+    sys.exit()
+
+# TCP Server
 def start_server():
     _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, VERSION))
     import socket
@@ -259,7 +326,7 @@ def send_to_midea(data):
     finally:
         _LOGGER.debug("{}s".format(round(time.time()-runtime,2)))
         
-        
+# set VI @ Loxone
 def send_to_loxone(device, support_mode):
     r_error = 0
     
@@ -348,73 +415,5 @@ def on_disconnect(client, userdata, flags, rc):
     _LOGGER.debug("Publishing: MsgNum:%s: 'Midea2Lox/connection/status','disconnected'" % (publish[1]))
     
 
-##########
-
-try:
-    from msmart.device import air_conditioning_device as ac, VERSION
-    import requests
-    import configparser
-    import time
-    from ipaddress import ip_address, IPv4Address
-    import paho.mqtt.client as mqtt
-    import json
-
-
-    # Miniserver Daten Laden
-    cfg = configparser.RawConfigParser()
-    cfg.read(cfg_path + '/midea2lox.cfg')
-    try:
-        UDP_Port = int(cfg.get('default','UDP_PORT'))
-        LoxberryIP = cfg.get('default','LoxberryIP')
-        DEBUG = cfg.get('default','DEBUG')
-        Miniserver = cfg.get('default','MINISERVER')
-    except:
-        sys.exit('wrong configuration, please set Miniserver and UDP-Port on Midea2Lox Webpage and click "save and restart"')
-
-    # Credentials to set Loxone Inputs over HTTP
-    cfg.read(home_path + '/config/system/general.cfg')
-    LoxIP = cfg.get(Miniserver,'IPADDRESS')
-    LoxPort = cfg.get(Miniserver,'PORT')
-    LoxPassword = cfg.get(Miniserver,'PASS')
-    LoxUser = cfg.get(Miniserver,'ADMIN')
-
-    _LOGGER = logging.getLogger("Midea2Lox.py")
-    if DEBUG == "1":
-       logging.basicConfig(level=logging.DEBUG, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-       print("Debug is True")
-       _LOGGER.debug("Debug is True")
-    else:
-       logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-    
-    #MQTT
-    try: # check if MQTTgateway is installed or not and set MQTT Client settings
-        with open(home_path + '/config/system/general.json') as jsonFile:
-            jsonObject = json.load(jsonFile)
-            jsonFile.close()
-        MQTTuser = jsonObject["Mqtt"]["Brokeruser"]
-        MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
-        MQTTport = jsonObject["Mqtt"]["Brokerport"]
-        MQTThost = jsonObject["Mqtt"]["Brokerhost"]
-        MQTTpsk = jsonObject["Mqtt"]["Brokerpsk"]
-        client = mqtt.Client(client_id='Midea2Lox')
-        client.username_pw_set(MQTTuser, MQTTpass)
-        client.on_connect = on_connect
-        client.on_disconnect = on_disconnect
-        client.will_set('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
-        _LOGGER.info('found MQTT Gateway Plugin - publish over MQTT except on support_mode')
-        client.connect(MQTThost, int(MQTTport))
-        client.loop_start()
-        MQTT = 1
-    except:
-        _LOGGER.debug('cant find MQTT Gateway use HTTP requests to set Loxone inputs')
-        MQTT = 0
-
-except:
-    _LOGGER = logging.getLogger("Midea2Lox.py")
-    logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
-    print('Error : ' + str(sys.exc_info()))
-    _LOGGER.error(str(sys.exc_info()))
-    sys.exit()
-
-# Start script
+#### Start script
 start_server()
