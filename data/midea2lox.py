@@ -11,7 +11,7 @@ log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
 home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 
 
-# Mainprogramm
+# TCP Socket
 def start_server():
     _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, VERSION))
     import socket
