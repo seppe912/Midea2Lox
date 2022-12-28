@@ -390,17 +390,20 @@ try:
         with open(home_path + '/config/system/general.json') as jsonFile:
             jsonObject = json.load(jsonFile)
             jsonFile.close()
+        LoxberryVersion = int(str(jsonObject["Base"]["Version"])[:1])
         MQTTuser = jsonObject["Mqtt"]["Brokeruser"]
         MQTTpass = jsonObject["Mqtt"]["Brokerpass"]
         MQTTport = jsonObject["Mqtt"]["Brokerport"]
         MQTThost = jsonObject["Mqtt"]["Brokerhost"]
-        MQTTpsk = jsonObject["Mqtt"]["Brokerpsk"]
         client = mqtt.Client(client_id='Midea2Lox')
         client.username_pw_set(MQTTuser, MQTTpass)
         client.on_connect = on_connect
         client.on_disconnect = on_disconnect
         client.will_set('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
-        _LOGGER.info('found MQTT Gateway Plugin - publish over MQTT except on support_mode')
+        if LoxberryVersion <= 2:
+            _LOGGER.info('found MQTT Gateway Plugin - publish over MQTT except on Midea2Lox support_mode')
+        else:
+            _LOGGER.info('got MQTT Settings - publish over MQTT except on Midea2Lox support_mode')
         client.connect(MQTThost, int(MQTTport))
         client.loop_start()
         MQTT = 1
