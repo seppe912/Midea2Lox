@@ -47,6 +47,10 @@ def discover(amount: int, account:str, password:str):
     from msmart.scanner import MideaDiscovery, VERSION
     """Send Device Scan Broadcast"""
 
+    if account == "":
+        account = OPEN_MIDEA_APP_ACCOUNT
+        password = OPEN_MIDEA_APP_PASSWORD
+
     _LOGGER.info("msmart version: {} Currently only supports ac devices.".format(VERSION))
     _LOGGER.info(
         "Sending Device Scan Broadcast...")
