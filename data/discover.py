@@ -51,7 +51,6 @@ def discover(amount: int, account:str, password:str):
         account = OPEN_MIDEA_APP_ACCOUNT
         password = OPEN_MIDEA_APP_PASSWORD
 
-    _LOGGER.info("msmart version: {} Currently only supports ac devices.".format(VERSION))
     _LOGGER.info(
         "Sending Device Scan Broadcast...")
     
