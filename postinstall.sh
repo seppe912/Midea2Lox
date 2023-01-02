@@ -58,10 +58,10 @@ source $PBIN/venv/bin/activate
 
 pip3 install --upgrade pip
 pip3 install --upgrade pip setuptools wheel
-pip3 install requests==2.28.1 --no-cache-dir
-pip3 install pycryptodome==3.16.0 --no-cache-dir
-pip3 install paho-mqtt==1.6.1 --no-cache-dir
-pip3 install ifaddr==0.2.0 --no-cache-dir
+pip3 install requests --extra-index-url https://www.piwheels.org/simple --prefer-binary
+pip3 install pycryptodome --extra-index-url https://www.piwheels.org/simple --prefer-binary
+pip3 install paho-mqtt --extra-index-url https://www.piwheels.org/simple --prefer-binary
+pip3 install ifaddr --extra-index-url https://www.piwheels.org/simple --prefer-binary
 
 deactivate
 
