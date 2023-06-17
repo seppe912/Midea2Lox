@@ -3,7 +3,7 @@
 import logging
 import sys
 
-Midea2Lox_Version = '3.1.4'
+Midea2Lox_Version = '3.2.1'
 
 #set path
 cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
