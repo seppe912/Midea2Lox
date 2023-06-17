@@ -92,8 +92,8 @@ class air_conditioning(device):
 
         self._on_timer = None
         self._off_timer = None
-        self._online = True
-        self._active = True
+        self._online = False #support Midea2Lox
+        self._active = False #support Midea2Lox
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
 
