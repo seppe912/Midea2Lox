@@ -3,8 +3,6 @@
 import logging
 import sys
 
-Midea2Lox_Version = '3.2.1'
-
 #set path
 cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
 log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
@@ -386,6 +384,16 @@ try:
        _LOGGER.debug("Debug is True")
     else:
        logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+    
+    ###Version
+    try: # check if MQTTgateway is installed or not and set MQTT Client settings
+        with open(home_path + '/data/system/plugindatabase.json') as jsonFile:
+            jsonObject = json.load(jsonFile)
+            jsonFile.close()
+        Midea2Lox_Version = str(jsonObject["plugins"]["ef8d4aab121cb54f6379fff540319792"]["version"])
+    except:
+        _LOGGER.debug('cant find Midea2Lox Version')
+        Midea2Lox_Version = 'Unknown'
     
     #MQTT
     try: # check if MQTTgateway is installed or not and set MQTT Client settings
