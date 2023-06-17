@@ -131,6 +131,8 @@ def send_to_midea(data):
         else:
             _LOGGER.info("use Midea V2")
             
+        device.get_capabilities()
+            
         if statusupdate == 1: # refresh() AC State
             try:
                 device.refresh()
@@ -351,6 +353,7 @@ def on_disconnect(client, userdata, flags, rc):
 
 try:
     from msmart.device import air_conditioning as ac, VERSION
+    from msmart.device.base import device
     import requests
     import configparser
     import time
