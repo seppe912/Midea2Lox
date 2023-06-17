@@ -353,7 +353,6 @@ def on_disconnect(client, userdata, flags, rc):
 
 try:
     from msmart.device import air_conditioning as ac, VERSION
-    from msmart.device.base import device
     import requests
     import configparser
     import time
