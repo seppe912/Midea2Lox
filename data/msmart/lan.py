@@ -113,7 +113,7 @@ class lan:
         tcp_key, success = self.security.tcp_key(response, self._key)
         if success:
             self._tcp_key = tcp_key.hex()
-            _LOGGER.debug('Got TCP key for {} tcp_key: {}'.format(self.get_socket_info(), tcp_key.hex()))
+            _LOGGER.debug('Got TCP key for {} tcp_key: {}'.format(self.get_socket_info(), tcp_key.hex())) #Midea2Lox änderung: Loglevel debug
             # After authentication, don’t send data immediately, so sleep 1s.
             time.sleep(1)
         else:
