@@ -92,8 +92,8 @@ class air_conditioning(device):
 
         self._on_timer = None
         self._off_timer = None
-        self._online = False #support Midea2Lox
-        self._active = False #support Midea2Lox
+        self._online = False # set to False for Midea2Lox support
+        self._active = False # set to False for Midea2Lox support (send retries on offline Device)
         self._indoor_temperature = 0.0
         self._outdoor_temperature = 0.0
 
