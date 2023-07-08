@@ -324,7 +324,7 @@ def send_to_loxone(device, support_mode):
                 _LOGGER.error("Error {} on set Loxone Input Midea_{}_online, please Check User PW and IP from Miniserver in Loxberry config and the Names of Loxone Inputs.".format(r.status_code, device.id))
         
         if r_error == 0:
-            _LOGGER.info("Set Loxone Inputs over HTTP for Midea.{} @ {} successful".format(device.id, device.ip))
+            _LOGGER.info("Device is {}! Set Loxone Inputs over HTTP for Midea.{} @ {} successful".format("Online" if device.active else "Offline",device.id, device.ip))
 
 
 # Ist ein Callback, der ausgeführt wird, wenn sich mit dem Broker verbunden wird
