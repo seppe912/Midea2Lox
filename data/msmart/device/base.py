@@ -24,8 +24,8 @@ class device:
         self._defer_update = False
         self._half_temp_step = False
         self._support = False
-        self._online = False # set to False for Midea2Lox support 
-        self._active = False # set to False for Midea2Lox support (send retries on offline Device)
+        self._online = True
+        self._active = True
         self._protocol_version = 2
         self._token = None
         self._key = None
