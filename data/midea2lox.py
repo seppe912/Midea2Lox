@@ -122,10 +122,17 @@ def send_to_midea(data):
             # you must authenticate with device's Key and token.
             
             a = device.authenticate(device_key, device_token)
+            while a == False and retries < 5:
+                retries += 1
+                _LOGGER.warning("wait 10 seconds and retry authenticate (%s/5)" %(retries))
+                time.sleep(10)
+                a = device.authenticate(device_key, device_token)
             if a == False:
                 device._active = False
                 send_to_loxone(device, support_mode)
-                sys.exit(0)
+                sys.exit("Error on Authenticate")
+            retries = 0
+            
         else:
             _LOGGER.info("use Midea V2")
             
@@ -289,7 +296,7 @@ def send_to_loxone(device, support_mode):
             publish = client.publish('Midea2Lox/' + MQTTpublish[0], MQTTpublish[1], qos=2, retain=True)#publish device offline
             _LOGGER.debug("Publishing: MsgNum:%s: %s" % (publish[1], addresses[10]))
             publish.wait_for_publish()
-        _LOGGER.info("send status to MQTTGateway for Midea.{} @ {} succesful".format(device.id, device.ip))
+        _LOGGER.info("Device is {}. Send status to MQTTGateway for Midea.{} @ {} succesful".format("Online" if device.active else "Offline",device.id, device.ip))
             
     else: #Publish to Loxone Inputs over HTTP
         if device.active == True:
