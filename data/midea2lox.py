@@ -57,7 +57,7 @@ def send_to_midea(data):
         device_token = None
 
         for eachArg in data: # get device_id
-            if len(eachArg) == 14 and eachArg.isdigit():
+            if len(eachArg) in range(10,20) and eachArg.isdigit():
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
             elif len(eachArg) == 64:
