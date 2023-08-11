@@ -44,7 +44,8 @@ if sys.version_info < (3, 5):
 def discover(amount: int, account:str, password:str):
     import asyncio
     from msmart.const import OPEN_MIDEA_APP_ACCOUNT, OPEN_MIDEA_APP_PASSWORD
-    from msmart.scanner import MideaDiscovery, VERSION
+    from msmart.scanner import MideaDiscovery
+    from msmart import VERSION
     """Send Device Scan Broadcast"""
 
     if account == "":
