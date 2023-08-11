@@ -357,7 +357,8 @@ def on_disconnect(client, userdata, flags, rc):
 ##########
 
 try:
-    from msmart.device import air_conditioning as ac, VERSION
+    from msmart.device import air_conditioning as ac
+    from msmart import VERSION
     import requests
     import configparser
     import time
