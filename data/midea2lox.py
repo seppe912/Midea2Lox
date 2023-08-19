@@ -10,7 +10,7 @@ home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 
 # TCP Socket
 def start_server():
-    _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, VERSION))
+    _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, __version__))
     import socket
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -358,7 +358,7 @@ def on_disconnect(client, userdata, flags, rc):
 
 try:
     from msmart.device import air_conditioning as ac
-    from msmart import VERSION
+    from msmart import __version__
     import requests
     import configparser
     import time
