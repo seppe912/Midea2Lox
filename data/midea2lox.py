@@ -137,6 +137,11 @@ def send_to_midea(data):
             _LOGGER.info("use Midea V2")
             
         device.get_capabilities()
+        _LOGGER.debug('op-modes: %s' % (device.supported_operation_modes))
+        _LOGGER.debug('swingmodes: %s' % (device.supported_swing_modes))
+        _LOGGER.debug('min Temp: %s' % (device.min_target_temperature))
+        _LOGGER.debug('max Temp: %s' % (device.max_target_temperature))
+        _LOGGER.debug('support freeze-protection: %s' % (device.supports_freeze_protection_mode))
             
         if statusupdate == 1: # refresh() AC State
             try:
@@ -226,19 +231,19 @@ def send_to_midea(data):
                             _LOGGER.error("Given command '{}' is unknown".format(eachArg))
 
                                 
-            # Errorhandling
+            ### Errorhandling
             # Midea AC only supports auto Fanspeed in auto-Operationalmode.
             if device.operational_mode == ac.operational_mode_enum.auto:                    
                 device.fan_speed = ac.fan_speed_enum.Auto
                 _LOGGER.warning("set auto-Fanspeed because of Auto-Operational Mode")
 
-            #Midea AC only supports Temperature from 17 to 30 °C
-            if int(device.target_temperature) < 17:
-                _LOGGER.warning("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 17°C".format(device.target_temperature))
-                device.target_temperature = 17
-            elif int(device.target_temperature) > 30:
-                _LOGGER.warning("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 30°C".format(device.target_temperature))
-                device.target_temperature = 30
+            #set Temp in Range of supported Capability
+            if int(device.target_temperature) < device.min_target_temperature:
+                _LOGGER.warning("Get Temperature '{}'. Allowed Temperature: {}°C-{}°C, set target Temperature to {}°C".format(device.target_temperature,device.min_target_temperature,device.max_target_temperature,device.min_target_temperature))
+                device.target_temperature = device.min_target_temperature
+            elif int(device.target_temperature) > device.max_target_temperature:
+                _LOGGER.warning("Get Temperature '{}'. Allowed Temperature: {}°C-{}°C, set target Temperature to {}°C".format(device.target_temperature,device.min_target_temperature,device.max_target_temperature,device.max_target_temperature))
+                device.target_temperature = device.max_target_temperature
 
             # commit the changes with apply()
             try:
