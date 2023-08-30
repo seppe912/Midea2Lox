@@ -3,6 +3,8 @@
 import logging
 import sys
 import configparser
+import asyncio
+from msmart.discover import Discover
 
 #set path
 cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
