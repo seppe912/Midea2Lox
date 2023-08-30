@@ -62,7 +62,7 @@ pip3 install requests --extra-index-url https://www.piwheels.org/simple --prefer
 pip3 install pycryptodome --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install paho-mqtt --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install ifaddr --extra-index-url https://www.piwheels.org/simple --prefer-binary
-pip3 install msmart-ng==2023.8.0 --extra-index-url https://www.piwheels.org/simple --prefer-binary
+pip3 install msmart-ng==2023.9.1 --extra-index-url https://www.piwheels.org/simple --prefer-binary
 
 deactivate
 
