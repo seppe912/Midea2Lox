@@ -64,9 +64,11 @@ async def discovery():
             cfg_devices.set('Midea_' + str(device.id),"id", device.id)
             cfg_devices.set('Midea_' + str(device.id),"ip", device.ip)
             cfg_devices.set('Midea_' + str(device.id),"port", device.port)
-            #if device.token is not None: ### toDo: keep last known Key/Token pair
-            cfg_devices.set('Midea_' + str(device.id),"token", device.token)
-            cfg_devices.set('Midea_' + str(device.id),"key", device.key)
+            if device.token is None and cfg_devices.get('Midea_' + str(device.id),"token"): ###keep last known Key/Token pair if cloud connection gets an error and sends None.
+                pass
+            else:
+                cfg_devices.set('Midea_' + str(device.id),"token", device.token)
+                cfg_devices.set('Midea_' + str(device.id),"key", device.key)
             cfg_devices.write(open(log_path + '/devices.log','w'))
             cfg_devices.write(open(cfg_path + '/devices.cfg','w'))
     except:
