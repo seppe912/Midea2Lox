@@ -212,7 +212,7 @@ async def send_to_midea(data):
                 power = ["power.True", "power.False"]
                 tone = ["tone.True", "tone.False"]
                 operation = ["ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only"] 
-                fan = ["ac.fan_speed_enum.Full,""ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent"] 
+                fan = ["ac.fan_speed_enum.Full","ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent"] 
                 swing = ["ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"]
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
