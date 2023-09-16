@@ -14,9 +14,6 @@ home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 cfg = configparser.RawConfigParser()
 cfg.read(cfg_path + '/midea2lox.cfg')
 DEBUG = cfg.get('default','DEBUG')
-MideaUser = cfg.get('default','MideaUser')
-MideaPW = cfg.get('default','MideaPassword')
-BroadcastPakets = cfg.get('default','BroadcastPakets')
 
 ## Logging
 _LOGGER = logging.getLogger("discover.py")
