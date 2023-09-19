@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
-import asyncio
 
 #set path
 cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
