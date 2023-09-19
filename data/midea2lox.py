@@ -4,13 +4,9 @@ import logging
 import sys
 import asyncio
 
-#set path
-cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
-log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
-home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
-
 # TCP Socket
 async def start_server():
+    script_runtime = datetime.now()
     _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, __version__))
     import socket
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,8 +20,15 @@ async def start_server():
         print('Bind failed. Error : ' + str(sys.exc_info()))
         _LOGGER.error('Bind failed. Error : ' + str(sys.exc_info()))
         sys.exit()
-    
+
     while True:
+        #while datetime.now().hour in range(2,10) or datetime.now().weekday() == 5:
+        if datetime.now() >= script_runtime + timedelta(days = 7):
+        #while datetime.now().weekday() == 5:
+            #### clean log
+            open(log_path + '/midea2lox.log', 'w+')
+            _LOGGER.info('Debuglog cleaned')
+            script_runtime = datetime.now()
         data, addr = soc.recvfrom(1024)
         data = data.decode('utf-8')
         data = data.split(' ')
@@ -44,6 +47,19 @@ async def start_server():
 # send to Midea Appliance over LAN/WLAN
 async def send_to_midea(data):
     try: 
+        #Start, set Loxone Script to online
+        runtime = time.time()
+        oldLox = 0
+        #protocol = 2
+        device_port = 6444
+        retries = 0
+        statusupdate = 0
+        support_mode = 0
+        device_id = None
+        device_ip = None
+        device_key = None
+        device_token = None
+        
         support_msmart_ng = {
             'ac.operational_mode_enum.auto' : 'ac.OperationalMode.AUTO', 
             'ac.operational_mode_enum.cool' : 'ac.OperationalMode.COOL', 
@@ -61,23 +77,8 @@ async def send_to_midea(data):
             'ac.swing_mode_enum.Vertical' : 'ac.SwingMode.VERTICAL',
             'ac.swing_mode_enum.Both' : 'ac.SwingMode.BOTH',
             }
-        
-        #Start, set Loxone Script to online
-        runtime = time.time()
-        oldLox = 0
-        #protocol = 2
-        device_port = 6444
-        retries = 0
-        statusupdate = 0
-        support_mode = 0
-        device_id = None
-        device_ip = None
-        device_key = None
-        device_token = None
-        
-        
 
-        for eachArg in data: # get device_id
+        for eachArg in data: ### get device_id
             if len(eachArg) in range(10,20) and eachArg.isdigit():
                 device_id = eachArg
                 _LOGGER.debug("Device ID: '{}'".format(device_id))
@@ -102,7 +103,7 @@ async def send_to_midea(data):
             except:
                 pass
                 
-        if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': #support older Midea2Lox Versions <3.x
+        if len(data) == 10 and data[0] == 'True' or len(data) == 10 and data[0] == 'False': ### support older Midea2Lox Versions <3.x
             support_mode = 1
             _LOGGER.debug("support Mode enabled")
 
@@ -130,40 +131,45 @@ async def send_to_midea(data):
         elif device_ip == None:
             sys.exit('device IP unknown')
             
-        # if protocol == 3:
-            # if device_key == None:
-                # sys.exit('device Key unknown')
-            # elif device_token == None:
-                # sys.exit('device Token unknown')
-            
-            
-        device = ac(ip=device_ip, device_id=int(device_id), port=device_port)
         
-        if device_key and device_token: # support midea V3
-            # If the device is using protocol 3 (aka 8370)
-            # you must authenticate with device's Key and token.
-            
-            a = await device.authenticate(device_token, device_key)
-            while a == False and retries < 5:
-                retries += 1
-                _LOGGER.warning("wait 10 seconds and retry authenticate (%s/5)" %(retries))
-                time.sleep(10)
+        if int(device_id) not in device_id_list: ### Init nur von neuen Devices
+            _LOGGER.debug('Init eines neuen Devices')
+            device = ac(ip=device_ip, device_id=int(device_id), port=device_port)
+            try: ### support old configs without max_connection_lifetime
+                device.set_max_connection_lifetime(int(cfg.get('default','maxConnectionLifetime')))
+            except:
+                _LOGGER.error('set maxConnectionLifetime to 90s. Please set maxConnectionLifetime and click "save and restart"')
+                device.set_max_connection_lifetime(90)
+            if device_key and device_token: ### support midea V3
                 a = await device.authenticate(device_token, device_key)
-            if a == False:
-                device._online = False
-                await send_to_loxone(device, support_mode)
-                sys.exit("Error on Authenticate")
-            retries = 0
+                retries = 0
+                while a == False and retries < 5:
+                    retries += 1
+                    _LOGGER.warning("wait 10 seconds and retry authenticate (%s/5)" %(retries))
+                    time.sleep(10)
+                    a = await device.authenticate(device_token, device_key)
+                if a == False:
+                    device._online = False
+                    await send_to_loxone(device, 0)
+                    sys.exit("Error on Authenticate")
+                retries = 0
+                
+            else:
+                _LOGGER.debug("use Midea V2")
+                
+            await device.get_capabilities()
+            device_id_list.append(device.id)
+            device_list.append(device)
             
         else:
-            _LOGGER.info("use Midea V2")
+            for devices in device_list:
+                if int(device_id) == devices.id:
+                    device = devices
             
-        await device.get_capabilities()
-            
-        if statusupdate == 1: # refresh() AC State
+        if statusupdate == 1: ### refresh() AC State
             try:
                 await device.refresh()
-                while device.online == False and retries < 2: # retry 2 times on connection error
+                while device.online == False and retries < 2: ### retry 2 times on connection error
                     retries += 1
                     _LOGGER.warning("retry refresh %s/2" %(retries))
                     time.sleep(5)
@@ -171,7 +177,8 @@ async def send_to_midea(data):
             except Exception as error:
                 device._online = False
                 _LOGGER.error(error)
-        else: # apply() AC changes
+
+        else: ### apply() AC changes
             if support_mode == 1:
                 _LOGGER.info("apply() on support Mode for Loxone Configs createt with Midea2Lox V2.x --> MQTT disabled. If you want to use MQTT you need to update your Loxoneconfig")
                 key = ["True", "False", "ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only", "ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent", "ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"] 
@@ -257,13 +264,13 @@ async def send_to_midea(data):
                 device.fan_speed = support_msmart_ng['ac.fan_speed_enum.Auto']
                 _LOGGER.warning("set auto-Fanspeed because of Auto-Operational Mode")
 
-            #Midea AC only supports Temperature from 17 to 30 °C
-            if int(device.target_temperature) < 17:
-                _LOGGER.warning("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 17°C".format(device.target_temperature))
-                device.target_temperature = 17
-            elif int(device.target_temperature) > 30:
-                _LOGGER.warning("Get Temperature '{}'. Allowed Temperature: 17-30, set target Temperature to 30°C".format(device.target_temperature))
-                device.target_temperature = 30
+            #set only accepted temperatures
+            if int(device.target_temperature) < device.min_target_temperature:
+                _LOGGER.warning("Get Temperature {}. Allowed Temperature: {}-{}, set target Temperature to {}".format(device.target_temperature,device.min_target_temperature,device.max_target_temperature,device.min_target_temperature))
+                device.target_temperature = device.min_target_temperature
+            elif int(device.target_temperature) > device.max_target_temperature:
+                _LOGGER.warning("Get Temperature {}. Allowed Temperature: {}-{}, set target Temperature to {}".format(device.target_temperature,device.min_target_temperature,device.max_target_temperature,device.max_target_temperature))
+                device.target_temperature = device.max_target_temperature
 
             # commit the changes with apply()
             try:
@@ -279,13 +286,16 @@ async def send_to_midea(data):
                 
         if device.online == True:
             if statusupdate == 1:
-                _LOGGER.info("Statusupdate for Midea.{} @ {} successful".format(device.id, device.ip))
+                _LOGGER.info("Statusupdate for Midea.{} @ {} successful. Runtime: {}s".format(device.id, device.ip,round(time.time()-runtime,2)))
             else:
-                _LOGGER.info("Set new state for Midea.{} @ {} successful".format(device.id, device.ip))
+                _LOGGER.info("Set new state for Midea.{} @ {} successful. Runtime: {}s".format(device.id, device.ip,round(time.time()-runtime,2)))
         else:
             _LOGGER.error("Device is offline")
   
         await send_to_loxone(device, support_mode)
+
+    except Exception as e:
+        _LOGGER.error(e)
     
     finally:
         _LOGGER.debug("{}s".format(round(time.time()-runtime,2)))
@@ -312,7 +322,7 @@ async def send_to_loxone(device, support_mode):
         }
         
     r_error = 0
-    
+
     address_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))    
     addresses = [
         ("Midea/%s/power_state,%s" % (device.id, int(device.power_state))),                                         #power_state
@@ -325,10 +335,10 @@ async def send_to_loxone(device, support_mode):
         ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),                                           #turbo_mode
         ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                #indoor_temperature
         ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)),                              #outdoor_temperature
-        ("Midea/%s/display,%s" % (device.id, int(device.display_on))),                                              #display_on
+        ("Midea/%s/display_on,%s" % (device.id, int(device.display_on))),                                           #display_on
         ("Midea/%s/online,%s" % (device.id, int(device.online)))                                                    #device.online --> device.online since msmart 0.1.32
         ]
-    
+
     if MQTT == 1 and support_mode == 0 and mqtt_error == 0: # publish over MQTT
         if device.online == True:
             for eachArg in addresses:
@@ -411,6 +421,7 @@ try:
     import paho.mqtt.client as mqtt
     import json
     import asyncio
+    from datetime import datetime, timedelta
 
     # Miniserver Daten Laden
     cfg = configparser.RawConfigParser()
@@ -473,6 +484,7 @@ try:
     except:
         _LOGGER.debug('cant find MQTT Gateway use HTTP requests to set Loxone inputs')
         MQTT = 0
+    
         
 except:
     _LOGGER = logging.getLogger("Midea2Lox.py")
@@ -482,4 +494,6 @@ except:
     sys.exit()
 
 # Start script
+device_list = []
+device_id_list = []
 asyncio.run(start_server())
