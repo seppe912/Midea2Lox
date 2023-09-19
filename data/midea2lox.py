@@ -5,9 +5,9 @@ import sys
 import asyncio
 
 #set path
-cfg_path = '/opt/loxberry/config/plugins/Midea2Lox' #### REPLACE LBPCONFIGDIR ####
-log_path = '/opt/loxberry/log/plugins/Midea2Lox' #### REPLACE LBPLOGDIR ####
-home_path = '/opt/loxberry' #### REPLACE LBHOMEDIR ####
+cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
+log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
+home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 
 # TCP Socket
 async def start_server():
