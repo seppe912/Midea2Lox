@@ -29,7 +29,7 @@ our $debug;
 our $select_debug;
 our $MideaUser;
 our $MideaPassword;
-our $BroadcastPakets;
+our $maxConnectionLifetime;
 our $LoxberryIP  = LoxBerry::System::get_localip();
 our $do;
 our $midea2loxstatus;
@@ -65,7 +65,7 @@ if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debu
 
 if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
 if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
-if ( !$query{'BroadcastPakets'} ) { if ( param('BroadcastPakets') ) { $BroadcastPakets = quotemeta(param('BroadcastPakets')); } else { $BroadcastPakets = "1"; } } else { $BroadcastPakets = quotemeta($query{'BroadcastPakets'}); }
+if ( !$query{'maxConnectionLifetime'} ) { if ( param('maxConnectionLifetime') ) { $maxConnectionLifetime = quotemeta(param('maxConnectionLifetime')); } else { $maxConnectionLifetime = "90"; } } else { $maxConnectionLifetime = quotemeta($query{'maxConnectionLifetime'}); }
 
 # Figure out in which subfolder we are installed
 $psubfolder = abs_path($0);
@@ -81,7 +81,7 @@ if (param('savedata')) {
     $conf->param('LoxberryIP', unquotemeta($LoxberryIP));
     $conf->param('MideaUser', unquotemeta($MideaUser));	
 	$conf->param('MideaPassword', unquotemeta($MideaPassword));
-    $conf->param('BroadcastPakets', unquotemeta($BroadcastPakets));
+    $conf->param('maxConnectionLifetime', unquotemeta($maxConnectionLifetime));
     
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
@@ -94,7 +94,7 @@ if (param('saveanddiscover')) {
 	$conf->param('DEBUG', unquotemeta($debug));		
     $conf->param('MideaUser', unquotemeta($MideaUser));	
     $conf->param('MideaPassword', unquotemeta($MideaPassword));
-    $conf->param('BroadcastPakets', unquotemeta($BroadcastPakets));
+    $conf->param('maxConnectionLifetime', unquotemeta($maxConnectionLifetime));
     
     $conf->save();
 
@@ -110,7 +110,7 @@ $udp_port = encode_entities($conf->param('UDP_PORT'));
 $debug = encode_entities($conf->param('DEBUG'));
 $MideaPassword = encode_entities($conf->param('MideaPassword'));
 $MideaUser = encode_entities($conf->param('MideaUser'));
-$BroadcastPakets = encode_entities($conf->param('BroadcastPakets'));
+$maxConnectionLifetime = encode_entities($conf->param('maxConnectionLifetime'));
 
 # Set Enabled / Disabled switch
 #

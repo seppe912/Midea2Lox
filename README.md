@@ -9,6 +9,7 @@ Dieses Loxberry Plugin ermöglicht eine kommunikation zwischen dem Loxberry/Loxo
 
 Der Hauptpart, das Python3 Midea Script, stammt im Ursprung von NeoAcheron https://github.com/NeoAcheron/midea-ac-py (Cloud Version bis Midea2Lox 1.1) . Vielen Dank dafür, ohne dieses Plugin hätte das nicht funktioniert.
 Für die Steuerung über LAN (ab Midea2Lox V2.0) hat mac_zhou mit msmart https://github.com/mac-zhou/midea-msmart großartige leistung geleistet. Danke dafür! (Thanks mac-zhou!)
+msmart wird nun weiterentwickelt von mill1000 --> https://github.com/mill1000/midea-msmart
 
 # Installation:
 Plugin herunterladen und im Pluginmanager des Loxberry installieren.
@@ -23,8 +24,3 @@ Ab Midea2Lox V2.0 findet die kommunikation direkt über LAN ohne Cloud statt.
 
 # Midea 8370 Protocol / V3, bspw. EU-OSK103
 Ab Midea2Lox V3.0 werden die neueren Sticks mit Protokoll Version 3 über LAN unterstützt.
-
-# Token und Key
-Token und Key können ab V3.1 über die Cloud extrahiert werden. Dazu wird der Midea App zugang benötigt, bei dem die Klimaanlagen registriert sind. 
-Es wird nur Token und Key abgefragt, die steuerung erfolgt dann lokal über LAN/Wlan
-Details zur Loxone Konfig und weitere Infos sind im [LoxWiki](https://www.loxwiki.eu/display/LOXBERRY/Midea2Lox) zu finden
