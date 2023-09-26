@@ -28,7 +28,7 @@ except:
     _LOGGER.error(str(sys.exc_info()))
     sys.exit()
 
-if sys.version_info < (3, 8):
+if sys.version_info <= (3, 8):
     print(
         "To use this script you need python 3.8 or newer, got %s" % (
             sys.version_info,)
