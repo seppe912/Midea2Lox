@@ -68,7 +68,7 @@ PYTHON_MINOR=9
 PYTHON3_REF=$(which python$PYTHON_MAJOR.$PYTHON_MINOR | grep "/python$PYTHON_MAJOR.$PYTHON_MINOR")
 
 install_python(){
-    echo "NoPython 3.9, start installing..."
+    echo "No Python 3.9, start installing..."
 	
 	OPENSSL_VER=1.1.1w
 	mkdir openssl
