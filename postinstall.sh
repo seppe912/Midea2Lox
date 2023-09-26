@@ -52,14 +52,13 @@ chmod +x $PDATA/midea2lox.py
 chmod +x $PDATA/discover.py
 
 # Installing Python requirements in Virtual enviroment
-python3 -m venv $PBIN/venv
+python3.9 -m venv $PBIN/venv
 
 source $PBIN/venv/bin/activate
 
 pip3 install --upgrade pip
 pip3 install --upgrade pip setuptools wheel
 pip3 install requests --extra-index-url https://www.piwheels.org/simple --prefer-binary
-pip3 install pycryptodome --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install paho-mqtt --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install ifaddr --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install msmart-ng==2023.9.5 --extra-index-url https://www.piwheels.org/simple --prefer-binary
