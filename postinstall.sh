@@ -52,7 +52,7 @@ chmod +x $PDATA/midea2lox.py
 chmod +x $PDATA/discover.py
 
 # Installing Python requirements in Virtual enviroment
-python3 -m venv $PBIN/venv
+python3.9 -m venv $PBIN/venv
 
 source $PBIN/venv/bin/activate
 
