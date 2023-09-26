@@ -119,13 +119,5 @@ else
     install_python
 fi
 
-
-
-
-/bin/echo "#############################################################################################"
-/bin/echo "#  Nach der Installation bitte die Einstellungen zu allen MiniServern anpassen und speichern."
-/bin/echo "#  Danach den Service starten."
-/bin/echo "#############################################################################################"
-
 # Exit with Status 0
 exit 0
