@@ -145,14 +145,9 @@ async def send_to_midea(data):
                 _LOGGER.error('set maxConnectionLifetime to 90s. Please set maxConnectionLifetime and click "save and restart"')
                 device.set_max_connection_lifetime(90)
             if device_key and device_token: ### support midea V3
-                a = await device.authenticate(device_token, device_key)
-                retries = 0
-                while a == False and retries < 5:
-                    retries += 1
-                    _LOGGER.warning("wait 10 seconds and retry authenticate (%s/5)" %(retries))
-                    time.sleep(10)
-                    a = await device.authenticate(device_token, device_key)
-                if a == False:
+                try:
+                    await device.authenticate(device_token, device_key)
+                except:
                     device._online = False
                     await send_to_loxone(device, 0)
                     sys.exit("Error on Authenticate")
@@ -162,6 +157,20 @@ async def send_to_midea(data):
                 _LOGGER.debug("use Midea V2")
                 
             await device.get_capabilities()
+            _LOGGER.info("%s", str({
+                "device-id": device.id,
+                "supported_modes": device.supported_operation_modes,
+                "supported_swing_modes": device.supported_swing_modes,
+                "supported_fan_speeds": device.supported_fan_speeds,
+                "supports_custom_fan_speed": device.supports_custom_fan_speed,
+                "supports_eco_mode": device.supports_eco_mode,
+                "supports_turbo_mode": device.supports_turbo_mode,
+                "supports_freeze_protection_mode": device.supports_freeze_protection_mode,
+                "supports_display_control": device.supports_display_control,
+                "supports_filter_reminder": device.supports_filter_reminder,
+                "max_target_temperature": device.max_target_temperature,
+                "min_target_temperature": device.min_target_temperature,
+            }))
             device_id_list.append(device.id)
             device_list.append(device)
             
