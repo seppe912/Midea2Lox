@@ -51,6 +51,7 @@ async def discovery():
         for device in discovered_devices:
             _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device))
             print("*** Found a device: {} ".format(device))
+            await device.get_capabilities()
             cfg_devices = configparser.RawConfigParser()
             cfg_devices.read(cfg_path + '/devices.cfg')
             if cfg_devices.has_section('Midea_' + str(device.id)) == False:
@@ -61,6 +62,19 @@ async def discovery():
             cfg_devices.set('Midea_' + str(device.id),"id", device.id)
             cfg_devices.set('Midea_' + str(device.id),"ip", device.ip)
             cfg_devices.set('Midea_' + str(device.id),"port", device.port)
+            cfg_devices.set('Midea_' + str(device.id),"modes", [str(mode) for mode in device.supported_operation_modes])
+            cfg_devices.set('Midea_' + str(device.id),"swingmodes", [str(swingmode) for swingmode in device.supported_swing_modes])
+            cfg_devices.set('Midea_' + str(device.id),"fanspeeds", [str(fanspeed) for fanspeed in device.supported_fan_speeds])
+            cfg_devices.set('Midea_' + str(device.id),"custom fanspeed", device.supports_custom_fan_speed)
+            cfg_devices.set('Midea_' + str(device.id),"supports EcoMode", device.supports_eco_mode)
+            cfg_devices.set('Midea_' + str(device.id),"supports TurboMode", device.supports_turbo_mode)
+            cfg_devices.set('Midea_' + str(device.id),"supports Freeze Protection", device.supports_freeze_protection_mode)
+            cfg_devices.set('Midea_' + str(device.id),"supports Display control", device.supports_display_control)
+            cfg_devices.set('Midea_' + str(device.id),"supports filter reminder", device.supports_filter_reminder)
+            cfg_devices.set('Midea_' + str(device.id),"supports pruifier", device.supports_purifier)
+            cfg_devices.set('Midea_' + str(device.id),"sdevice min temperature", device.max_target_temperature)
+            cfg_devices.set('Midea_' + str(device.id),"device max temperature", device.min_target_temperature)
+            
             if device.token is None and cfg_devices.get('Midea_' + str(device.id),"token"): ### keep last known Key/Token pair if cloud connection gets an error.
                 pass
             elif device.token and device.key:
