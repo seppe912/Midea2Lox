@@ -72,7 +72,7 @@ async def discovery():
             cfg_devices.set('Midea_' + str(device.id),"supports Display control", device.supports_display_control)
             cfg_devices.set('Midea_' + str(device.id),"supports filter reminder", device.supports_filter_reminder)
             cfg_devices.set('Midea_' + str(device.id),"supports pruifier", device.supports_purifier)
-            cfg_devices.set('Midea_' + str(device.id),"sdevice min temperature", device.max_target_temperature)
+            cfg_devices.set('Midea_' + str(device.id),"device min temperature", device.max_target_temperature)
             cfg_devices.set('Midea_' + str(device.id),"device max temperature", device.min_target_temperature)
             
             if device.token is None and cfg_devices.get('Midea_' + str(device.id),"token"): ### keep last known Key/Token pair if cloud connection gets an error.
