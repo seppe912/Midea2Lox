@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import sys
+import os
 
 #set path
 cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
@@ -14,7 +15,7 @@ async def start_server():
     _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, __version__))
     import socket
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+    
     try:
         soc.bind((LoxberryIP, UDP_Port))
         print('Socket bind complete, listen at' , LoxberryIP, ":", UDP_Port)
@@ -27,11 +28,12 @@ async def start_server():
 
     while True:
         #while datetime.now().hour in range(2,10) or datetime.now().weekday() == 5:
-        if datetime.now() >= script_runtime + timedelta(days = 7):
+        if os.path.getsize(log_path + '/midea2lox.log') > 500000:
         #while datetime.now().weekday() == 5:
             #### clean log
             open(log_path + '/midea2lox.log', 'w+')
             _LOGGER.info('Debuglog cleaned')
+            _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, __version__))
             script_runtime = datetime.now()
         data, addr = soc.recvfrom(1024)
         data = data.decode('utf-8')
