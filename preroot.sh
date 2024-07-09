@@ -60,12 +60,9 @@ echo "<INFO> Plugin Data folder is: $PDATA"
 echo "<INFO> Plugin Log folder (on RAMDISK!) is: $PLOG"
 echo "<INFO> Plugin CONFIG folder is: $PCONFIG"
 
-# Set required version
-PYTHON_MAJOR=3
-PYTHON_MINOR=9
-
-# Get python references
-PYTHON3_REF=$(which python$PYTHON_MAJOR.$PYTHON_MINOR | grep "/python$PYTHON_MAJOR.$PYTHON_MINOR")
+# Set minimum required versions
+PYTHON_MINIMUM_MAJOR=3
+PYTHON_MINIMUM_MINOR=9
 
 install_python(){
     echo "No Python 3.9, start installing..."
@@ -97,25 +94,35 @@ install_python(){
 	chown -R loxberry:loxberry *
 }
 
+
+# Get python references
+PYTHON3_REF=$(which python3 | grep "/python3")
+PYTHON_REF=$(which python | grep "/python")
+
+
 python_ref(){
     local my_ref=$1
     echo $($my_ref -c 'import platform; major, minor, patch = platform.python_version_tuple(); print(major); print(minor);')
 }
 
-# Print success_msg/install_python according to the provided minimum required versions
+# Print success_msg/error_msg according to the provided minimum required versions
 check_version(){
     local major=$1
     local minor=$2
     local python_ref=$3
-    [[ $major == $PYTHON_MAJOR && $minor == $PYTHON_MINOR ]] && echo found $python_ref || install_python
+    [[ $major -ge $PYTHON_MINIMUM_MAJOR && $minor -ge $PYTHON_MINIMUM_MINOR ]] && echo $python_ref || install_python
 }
 
 # Logic
 if [[ ! -z $PYTHON3_REF ]]; then
-    version=($(python_ref python$PYTHON_MAJOR.$PYTHON_MINOR))
+    version=($(python_ref python3))
     check_version ${version[0]} ${version[1]} $PYTHON3_REF
+elif [[ ! -z $PYTHON_REF ]]; then
+    # Didn't find python3, let's try python
+    version=($(python_ref python))
+    check_version ${version[0]} ${version[1]} $PYTHON_REF
 else
-    # required Python is not installed...
+    # Python is not installed at all
     install_python
 fi
 
