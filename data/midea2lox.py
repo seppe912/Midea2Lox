@@ -461,11 +461,11 @@ try:
 
     _LOGGER = logging.getLogger("Midea2Lox.py")
     if DEBUG == "1":
-       logging.basicConfig(level=logging.DEBUG, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       logging.basicConfig(level=logging.DEBUG, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s :%(lineno)d %(message)s', datefmt='%d.%m %H:%M')
        print("Debug is True")
        _LOGGER.debug("Debug is True")
     else:
-       logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%d.%m %H:%M')
+       logging.basicConfig(level=logging.INFO, filename= log_path + '/midea2lox.log', format='%(asctime)s %(name)-12s %(levelname)-8s :%(lineno)d %(message)s', datefmt='%d.%m %H:%M')
     
     ###Version
     try: # check if MQTTgateway is installed or not and set MQTT Client settings
