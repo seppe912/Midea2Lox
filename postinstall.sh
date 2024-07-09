@@ -51,8 +51,47 @@ ARGV5=$5 # Fifth argument is Base folder of LoxBerry
 chmod +x $PDATA/midea2lox.py
 chmod +x $PDATA/discover.py
 
+# Set minimum required versions
+PYTHON_MINIMUM_MAJOR=3
+PYTHON_MINIMUM_MINOR=9
+
+# Get python references
+PYTHON3_REF=$(which python3 | grep "/python3")
+PYTHON_REF=$(which python | grep "/python")
+
+use_installed_alt_python(){
+	echo "use installed altertnative Python3.9"
+    python3.9 -m venv $PBIN/venv
+}
+
+python_ref(){
+    local my_ref=$1
+    echo $($my_ref -c 'import platform; major, minor, patch = platform.python_version_tuple(); print(major); print(minor);')
+}
+
+# Print success_msg/error_msg according to the provided minimum required versions
+check_version(){
+    local major=$1
+    local minor=$2
+    local python_ref=$3
+    [[ $major -ge $PYTHON_MINIMUM_MAJOR && $minor -ge $PYTHON_MINIMUM_MINOR ]] && python3 -m venv $PBIN/venv || use_installed_alt_python
+}
+
+# Logic
+if [[ ! -z $PYTHON3_REF ]]; then
+    version=($(python_ref python3))
+    check_version ${version[0]} ${version[1]} $PYTHON3_REF
+elif [[ ! -z $PYTHON_REF ]]; then
+    # Didn't find python3, let's try python
+    version=($(python_ref python))
+    check_version ${version[0]} ${version[1]} $PYTHON_REF
+else
+    # Python is not installed at all !?
+    use_installed_alt_python
+fi
+
 # Installing Python requirements in Virtual enviroment
-python3.9 -m venv $PBIN/venv
+#python3.9 -m venv $PBIN/venv
 
 source $PBIN/venv/bin/activate
 
