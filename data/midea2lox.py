@@ -161,9 +161,9 @@ async def send_to_midea(data):
             await device.get_capabilities()
             _LOGGER.info("%s", str({
                 "device-id": device.id,
-                "supported_modes": [str(mode) for mode in device.supported_operation_modes],
-                "supported_swing_modes": [str(swingmode) for swingmode in device.supported_swing_modes],
-                "supported_fan_speeds": [str(fanspeed) for fanspeed in device.supported_fan_speeds],
+                "supported_modes": [str(mode.name) for mode in device.supported_operation_modes],
+                "supported_swing_modes": [str(swingmode.name) for swingmode in device.supported_swing_modes],
+                "supported_fan_speeds": [str(fanspeed.name) for fanspeed in device.supported_fan_speeds],
                 "supports_custom_fan_speed": device.supports_custom_fan_speed,
                 "supports_eco_mode": device.supports_eco_mode,
                 "supports_turbo_mode": device.supports_turbo_mode,
@@ -318,42 +318,44 @@ async def send_to_midea(data):
         
         
 async def send_to_loxone(device, support_mode):
-    
     support_msmart_ng_to_lox = {
-        'OperationalMode.AUTO': 'operational_mode_enum.auto', 
-        'OperationalMode.COOL': 'operational_mode_enum.cool', 
-        'OperationalMode.HEAT': 'operational_mode_enum.heat', 
-        'OperationalMode.DRY': 'operational_mode_enum.dry', 
-        'OperationalMode.FAN_ONLY': 'operational_mode_enum.fan_only', 
-        'FanSpeed.AUTO': 'fan_speed_enum.Auto', 
-        'FanSpeed.FULL': 'fan_speed_enum.Full',
-        'FanSpeed.HIGH': 'fan_speed_enum.High', 
-        'FanSpeed.MEDIUM': 'fan_speed_enum.Medium',
-        'FanSpeed.LOW': 'fan_speed_enum.Low',
-        'FanSpeed.SILENT': 'fan_speed_enum.Silent', 
-        'SwingMode.HORIZONTAL': 'swing_mode_enum.Horizontal',
-        'SwingMode.OFF':'swing_mode_enum.Off',
-        'SwingMode.VERTICAL': 'swing_mode_enum.Vertical', 
-        'SwingMode.BOTH': 'swing_mode_enum.Both'
+        'AUTO': 'auto', 
+        'COOL': 'cool', 
+        'HEAT': 'heat', 
+        'DRY': 'dry', 
+        'FAN_ONLY': 'fan_only', 
+        'FULL': 'Full',
+        'HIGH': 'High', 
+        'MEDIUM': 'Medium',
+        'LOW': 'Low',
+        'SILENT': 'Silent', 
+        'HORIZONTAL': 'Horizontal',
+        'OFF':'Off',
+        'VERTICAL': 'Vertical', 
+        'BOTH': 'Both'
         }
         
     r_error = 0
 
     address_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))    
-    addresses = [
-        ("Midea/%s/power_state,%s" % (device.id, int(device.power_state))),                                         #power_state
-        ("Midea/%s/audible_feedback,%s" % (device.id, int(device.beep))),                                           #prompt_tone
-        ("Midea/%s/target_temperature,%s" % (device.id, device.target_temperature)),                                #target_temperature
-        ("Midea/%s/operational_mode,%s" % (device.id, support_msmart_ng_to_lox[str(device.operational_mode)])),     #operational_mode
-        ("Midea/%s/fan_speed,%s" % (device.id, support_msmart_ng_to_lox[str(device.fan_speed)])),                   #fan_speed
-        ("Midea/%s/swing_mode,%s" % (device.id, support_msmart_ng_to_lox[str(device.swing_mode)])),                 #swing_mode
-        ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco_mode))),                                               #eco_mode
-        ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),                                           #turbo_mode
-        ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                #indoor_temperature
-        ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)),                              #outdoor_temperature
-        ("Midea/%s/display_on,%s" % (device.id, int(device.display_on))),                                           #display_on
-        ("Midea/%s/online,%s" % (device.id, int(device.online)))                                                    #device.online --> device.online since msmart 0.1.32
-        ]
+    _LOGGER.info('statusupdate')
+    try:
+        addresses = [
+            ("Midea/%s/power_state,%s" % (device.id, int(device.power_state))),                                                                     #power_state
+            ("Midea/%s/audible_feedback,%s" % (device.id, int(device.beep))),                                                                       #prompt_tone
+            ("Midea/%s/target_temperature,%s" % (device.id, device.target_temperature)),                                                            #target_temperature
+            ("Midea/%s/operational_mode,operational_mode_enum.%s" % (device.id, support_msmart_ng_to_lox[str(device.operational_mode.name)])),      #operational_mode
+            ("Midea/%s/fan_speed,fan_speed_enum.%s" % (device.id, support_msmart_ng_to_lox[str(device.fan_speed.name)])),                           #fan_speed
+            ("Midea/%s/swing_mode,swing_mode_enum.%s" % (device.id, support_msmart_ng_to_lox[str(device.swing_mode.name)])),                        #swing_mode
+            ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco_mode))),                                                                           #eco_mode
+            ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),                                                                       #turbo_mode
+            ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                                            #indoor_temperature
+            ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)),                                                          #outdoor_temperature
+            ("Midea/%s/display_on,%s" % (device.id, int(device.display_on))),                                                                       #display_on
+            ("Midea/%s/online,%s" % (device.id, int(device.online)))                                                                                #device.online --> device.online since msmart 0.1.32
+            ]
+    except Exception as e:
+        _LOGGER.error(e)
 
     if MQTT == 1 and support_mode == 0 and mqtt_error == 0: # publish over MQTT
         if device.online == True:
