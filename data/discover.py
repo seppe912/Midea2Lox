@@ -46,7 +46,6 @@ async def discovery():
         "Sending Device Scan Broadcast...")
     
     try:
-        device_list =[]
         discovered_devices = await Discover.discover()
         for device in discovered_devices:
             _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device))
@@ -89,7 +88,7 @@ async def discovery():
 
 ######## get devices and save to devices.cfg
 try:
-    device_list = asyncio.run(discovery())
+    asyncio.run(discovery())
         
 except:
     print('Error : ' + str(sys.exc_info()))
