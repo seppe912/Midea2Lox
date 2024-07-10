@@ -159,6 +159,8 @@ async def send_to_midea(data):
                 _LOGGER.debug("use Midea V2")
                 
             await device.get_capabilities()
+            device.enable_energy_usage_requests = True   ### msmart-ng: Early tests have shown that many devices report energy usage without claiming support
+            
             _LOGGER.info("%s", str({
                 "device-id": device.id,
                 "supported_modes": [str(mode.name) for mode in device.supported_operation_modes],
@@ -171,9 +173,11 @@ async def send_to_midea(data):
                 "supports_display_control": device.supports_display_control,
                 "supports_filter_reminder": device.supports_filter_reminder,
                 "supports_purifier": device.supports_purifier,
+                "supports_humidity": device._supports_humidity,
                 "max_target_temperature": device.max_target_temperature,
-                "min_target_temperature": device.min_target_temperature,
+                "min_target_temperature": device.min_target_temperature
             }))
+
             device_id_list.append(device.id)
             device_list.append(device)
             
@@ -240,6 +244,13 @@ async def send_to_midea(data):
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
                 display = ["toggle_Display"]
+                target_humidity = ["humidity"]
+                h_swing_angle = ["h_swing_angle.OFF,h_swing_angle.POS_1,h_swing_angle.POS_2,h_swing_angle.POS_3,h_swing_angle.POS_4,h_swing_angle.POS_5"]
+                v_swing_angle = ["v_swing_angle.OFF,h_swing_angle.POS_1,h_swing_angle.POS_2,h_swing_angle.POS_3,h_swing_angle.POS_4,h_swing_angle.POS_5"]
+                freeze = ["freeze.True", "freeze.False"]
+                sleep = ["sleep.True", "sleep.False"]
+                follow = ["follow.True", "follow.False"]
+                purifier = ["purifier.True", "purifier.False"]
                 
                 for eachArg in data: #find keys from Loxone to msmart
                     if eachArg in power:
@@ -269,6 +280,27 @@ async def send_to_midea(data):
                     elif eachArg in display:
                         device.toggle_display()
                         _LOGGER.debug('toggle_Display')
+                    elif eachArg.split(".")[0] in target_humidity:
+                        device.target_humidity = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.target_humidity)
+                    elif eachArg.split(".")[0] in h_swing_angle:
+                        device.horizontal_swing_angle = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.horizontal_swing_angle)
+                    elif eachArg.split(".")[0] in v_swing_angle:
+                        device.vertical_swing_angle = eval(eachArg.split(".")[1])
+                        LOGGER.debug(device.vertical_swing_angle)
+                    elif eachArg in freeze:
+                        device.freeze_protection_mode = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.freeze_protection_mode)
+                    elif eachArg in sleep:
+                        device.sleep_mode = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.sleep_mode)
+                    elif eachArg in follow:
+                        device.follow_me = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.follow_me)
+                    elif eachArg in purifier:
+                        device.purifier = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.purifier)
                     else: #unknown key´s
                         if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
                             _LOGGER.error("Given command '{}' is unknown".format(eachArg))
@@ -338,7 +370,7 @@ async def send_to_loxone(device, support_mode):
     r_error = 0
 
     address_loxone = ("http://%s:%s@%s:%s/dev/sps/io/" % (LoxUser, LoxPassword, LoxIP, LoxPort))    
-    _LOGGER.info('statusupdate')
+
     try:
         addresses = [
             ("Midea/%s/power_state,%s" % (device.id, int(device.power_state))),                                                                     #power_state
@@ -352,7 +384,19 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                                            #indoor_temperature
             ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)),                                                          #outdoor_temperature
             ("Midea/%s/display_on,%s" % (device.id, int(device.display_on))),                                                                       #display_on
-            ("Midea/%s/online,%s" % (device.id, int(device.online)))                                                                                #device.online --> device.online since msmart 0.1.32
+            ("Midea/%s/online,%s" % (device.id, int(device.online))),                                                                               #device.online --> device.online since msmart 0.1.32
+            ("Midea/%s/target_humidity,%s" % (device.id, device.target_humidity)),                                                                  #Humidity
+            ("Midea/%s/indoor_humidity,%s" % (device.id, device.indoor_humidity)),                                                                  #Humidity
+            ("Midea/%s/filter_alert,%s" % (device.id, device.filter_alert)),                                                                        #Filter Alert --untestet--
+            ("Midea/%s/horizontal_swing_angle,%s" % (device.id, device.horizontal_swing_angle.name)),                                              #Horizontal swing Angle
+            ("Midea/%s/vertical_swing_angle,%s" % (device.id, device.vertical_swing_angle.name)),                                                  #Vertical swing Angle
+            ("Midea/%s/freeze_protection_mode,%s" % (device.id, device.freeze_protection_mode)),                                                    #Freeze Protection
+            ("Midea/%s/sleep_mode,%s" % (device.id, device.sleep_mode)),                                                                            #Sleep Mode
+            ("Midea/%s/follow_me,%s" % (device.id, device.follow_me)),                                                                              #Follow Me
+            ("Midea/%s/purifier,%s" % (device.id, device.purifier)),                                                                                #Purifier
+            ("Midea/%s/total_energy_usage,%s" % (device.id, device.total_energy_usage)),                                                            #Total Energy in KWh
+            ("Midea/%s/current_energy_usage,%s" % (device.id, device.current_energy_usage)),                                                        #current Energy in KWh
+            ("Midea/%s/real_time_power_usage,%s" % (device.id, device.real_time_power_usage))                                                       #real time Power usage
             ]
     except Exception as e:
         _LOGGER.error(e)
