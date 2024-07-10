@@ -388,8 +388,8 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/target_humidity,%s" % (device.id, device.target_humidity)),                                                                  #Humidity
             ("Midea/%s/indoor_humidity,%s" % (device.id, device.indoor_humidity)),                                                                  #Humidity
             ("Midea/%s/filter_alert,%s" % (device.id, device.filter_alert)),                                                                        #Filter Alert --untestet--
-            ("Midea/%s/horizontal_swing_angle,%s" % (device.id, device.horizontal_swing_angle)),                                              #Horizontal swing Angle
-            ("Midea/%s/vertical_swing_angle,%s" % (device.id, device.vertical_swing_angle)),                                                  #Vertical swing Angle
+            ("Midea/%s/horizontal_swing_angle,%s" % (device.id, device.horizontal_swing_angle.name)),                                               #Horizontal swing Angle
+            ("Midea/%s/vertical_swing_angle,%s" % (device.id, device.vertical_swing_angle.name)),                                                   #Vertical swing Angle
             ("Midea/%s/freeze_protection_mode,%s" % (device.id, device.freeze_protection_mode)),                                                    #Freeze Protection
             ("Midea/%s/sleep_mode,%s" % (device.id, device.sleep_mode)),                                                                            #Sleep Mode
             ("Midea/%s/follow_me,%s" % (device.id, device.follow_me)),                                                                              #Follow Me
