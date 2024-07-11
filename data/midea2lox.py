@@ -262,10 +262,10 @@ async def send_to_midea(data):
                     elif eachArg in tone:
                         device.beep = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device promt Tone '{}'".format(device.beep))
-                    elif eachArg in eco:
+                    elif eachArg in eco and device.supports_eco_mode:
                         device.eco_mode = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device Eco Mode '{}'".format(device.eco_mode))
-                    elif eachArg in turbo:
+                    elif eachArg in turbo and device.supports_turbo_mode:
                         device.turbo_mode = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device Turbo Mode '{}'".format(device.turbo_mode))
                     elif eachArg in operation:
@@ -280,19 +280,19 @@ async def send_to_midea(data):
                     elif len(eachArg) == 2 and eachArg.isdigit():
                         device.target_temperature = int(eachArg)
                         _LOGGER.debug(device.target_temperature)
-                    elif eachArg in display:
+                    elif eachArg in display and device.supports_display_control:
                         device.toggle_display()
                         _LOGGER.debug('toggle_Display')
                     elif eachArg.split(".")[0] == "humidity":
                         device.target_humidity = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.target_humidity)
-                    elif eachArg.split(".")[0] == "h_swing_angle":
+                    elif eachArg.split(".")[0] == "h_swing_angle" and device.supports_horizontal_swing_angle:
                         device.horizontal_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
                         _LOGGER.debug(device.horizontal_swing_angle)
-                    elif eachArg.split(".")[0] == "v_swing_angle":
+                    elif eachArg.split(".")[0] == "v_swing_angle" and device.supports_vertical_swing_angle:
                         device.vertical_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
                         _LOGGER.debug(device.vertical_swing_angle)
-                    elif eachArg in freeze:
+                    elif eachArg in freeze and device.supports_freeze_protection_mode:
                         device.freeze_protection_mode = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.freeze_protection_mode)
                     elif eachArg in sleep:
@@ -301,12 +301,12 @@ async def send_to_midea(data):
                     elif eachArg in follow:
                         device.follow_me = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.follow_me)
-                    elif eachArg in purifier:
+                    elif eachArg in purifier and device.supports_purifier:
                         device.purifier = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.purifier)
                     else: #unknown key´s
                         if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
-                            _LOGGER.error("Given command '{}' is unknown".format(eachArg))
+                            _LOGGER.error("Given command '{}' is unknown or not supported from the Device".format(eachArg))
                                 
             # Errorhandling
             # Midea AC only supports auto Fanspeed in auto-Operationalmode.
