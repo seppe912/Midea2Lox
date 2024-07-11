@@ -268,7 +268,6 @@ async def send_to_midea(data):
                         device.operational_mode = eval(support_msmart_ng[eachArg])
                         _LOGGER.debug(device.operational_mode)
                     elif "fan_speed_enum" in eachArg:
-                        _LOGGER.info(eachArg.split(".")[2].upper())
                         if eachArg.split(".")[2].isdigit():
                             device.fan_speed = int(eachArg.split(".")[2])
                         else:
