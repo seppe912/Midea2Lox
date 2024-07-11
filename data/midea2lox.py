@@ -174,6 +174,8 @@ async def send_to_midea(data):
                 "supports_filter_reminder": device.supports_filter_reminder,
                 "supports_purifier": device.supports_purifier,
                 "supports_humidity": device._supports_humidity,
+                "supports_horizontal_swing_angle" : device.supports_horizontal_swing_angle,
+                "supports_vertical_swing_angle" : device.supports_vertical_swing_angle,
                 "max_target_temperature": device.max_target_temperature,
                 "min_target_temperature": device.min_target_temperature
             }))
@@ -244,13 +246,14 @@ async def send_to_midea(data):
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
                 display = ["toggle_Display"]
-                target_humidity = ["humidity"]
-                h_swing_angle = ["h_swing_angle.OFF,h_swing_angle.POS_1,h_swing_angle.POS_2,h_swing_angle.POS_3,h_swing_angle.POS_4,h_swing_angle.POS_5"]
-                v_swing_angle = ["v_swing_angle.OFF,h_swing_angle.POS_1,h_swing_angle.POS_2,h_swing_angle.POS_3,h_swing_angle.POS_4,h_swing_angle.POS_5"]
+                # target_humidity = ["humidity"]
+                # h_swing_angle = ["h_swing_angle.OFF,h_swing_angle.POS_1,h_swing_angle.POS_2,h_swing_angle.POS_3,h_swing_angle.POS_4,h_swing_angle.POS_5"]
+                # v_swing_angle = ["v_swing_angle.OFF,v_swing_angle.POS_1,v_swing_angle.POS_2,v_swing_angle.POS_3,v_swing_angle.POS_4,v_swing_angle.POS_5"]
                 freeze = ["freeze.True", "freeze.False"]
                 sleep = ["sleep.True", "sleep.False"]
                 follow = ["follow.True", "follow.False"]
                 purifier = ["purifier.True", "purifier.False"]
+                
                 
                 for eachArg in data: #find keys from Loxone to msmart
                     if eachArg in power:
@@ -280,15 +283,15 @@ async def send_to_midea(data):
                     elif eachArg in display:
                         device.toggle_display()
                         _LOGGER.debug('toggle_Display')
-                    elif eachArg.split(".")[0] in target_humidity:
+                    elif eachArg.split(".")[0] == "humidity":
                         device.target_humidity = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.target_humidity)
-                    elif eachArg.split(".")[0] in h_swing_angle:
-                        device.horizontal_swing_angle = eval(eachArg.split(".")[1])
+                    elif eachArg.split(".")[0] == "h_swing_angle":
+                        device.horizontal_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
                         _LOGGER.debug(device.horizontal_swing_angle)
-                    elif eachArg.split(".")[0] in v_swing_angle:
-                        device.vertical_swing_angle = eval(eachArg.split(".")[1])
-                        LOGGER.debug(device.vertical_swing_angle)
+                    elif eachArg.split(".")[0] == "v_swing_angle":
+                        device.vertical_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
+                        _LOGGER.debug(device.vertical_swing_angle)
                     elif eachArg in freeze:
                         device.freeze_protection_mode = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.freeze_protection_mode)
@@ -304,14 +307,16 @@ async def send_to_midea(data):
                     else: #unknown key´s
                         if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
                             _LOGGER.error("Given command '{}' is unknown".format(eachArg))
-
                                 
             # Errorhandling
             # Midea AC only supports auto Fanspeed in auto-Operationalmode.
-            if device.operational_mode == support_msmart_ng['ac.operational_mode_enum.auto']:                    
-                device.fan_speed = support_msmart_ng['ac.fan_speed_enum.Auto']
-                _LOGGER.warning("set auto-Fanspeed because of Auto-Operational Mode")
-
+            if (device.operational_mode.name == support_msmart_ng['ac.operational_mode_enum.auto']) and (device.fan_speed.name != support_msmart_ng['ac.fan_speed.auto']):                    
+                device.fan_speed = ac.FanSpeed.AUTO
+                _LOGGER.info("set auto-Fanspeed because of Auto-Operational Mode")
+            if (device.freeze_protection_mode == True) and (device.operational_mode.name != support_msmart_ng['ac.operational_mode_enum.heat']):
+                device.operational_mode = ac.OperationalMode.HEAT
+                _LOGGER.info("set Heatmode to get into Freezeprotection Mode")
+            
             #set only accepted temperatures
             if int(device.target_temperature) < device.min_target_temperature:
                 _LOGGER.warning("Get Temperature {}. Allowed Temperature: {}-{}, set target Temperature to {}".format(device.target_temperature,device.min_target_temperature,device.max_target_temperature,device.min_target_temperature))
