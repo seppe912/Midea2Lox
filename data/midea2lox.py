@@ -241,14 +241,10 @@ async def send_to_midea(data):
                 power = ["power.True", "power.False"]
                 tone = ["tone.True", "tone.False"]
                 operation = ["ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only"] 
-                fan = ["ac.fan_speed_enum.Full","ac.fan_speed_enum.High", "ac.fan_speed_enum.Medium", "ac.fan_speed_enum.Low", "ac.fan_speed_enum.Auto", "ac.fan_speed_enum.Silent"] 
                 swing = ["ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"]
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
                 display = ["toggle_Display"]
-                # target_humidity = ["humidity"]
-                # h_swing_angle = ["h_swing_angle.OFF,h_swing_angle.POS_1,h_swing_angle.POS_2,h_swing_angle.POS_3,h_swing_angle.POS_4,h_swing_angle.POS_5"]
-                # v_swing_angle = ["v_swing_angle.OFF,v_swing_angle.POS_1,v_swing_angle.POS_2,v_swing_angle.POS_3,v_swing_angle.POS_4,v_swing_angle.POS_5"]
                 freeze = ["freeze.True", "freeze.False"]
                 sleep = ["sleep.True", "sleep.False"]
                 follow = ["follow.True", "follow.False"]
@@ -271,8 +267,12 @@ async def send_to_midea(data):
                     elif eachArg in operation:
                         device.operational_mode = eval(support_msmart_ng[eachArg])
                         _LOGGER.debug(device.operational_mode)
-                    elif eachArg in fan:
-                        device.fan_speed = eval(support_msmart_ng[eachArg])
+                    elif "fan_speed_enum" in eachArg:
+                        _LOGGER.info(eachArg.split(".")[2].upper())
+                        if eachArg.split(".")[2].isdigit():
+                            device.fan_speed = int(eachArg.split(".")[2])
+                        else:
+                            device.fan_speed = eval('ac.FanSpeed.' + str(eachArg.split(".")[2].upper()))
                         _LOGGER.debug(device.fan_speed)
                     elif eachArg in swing:
                         device.swing_mode = eval(support_msmart_ng[eachArg])
