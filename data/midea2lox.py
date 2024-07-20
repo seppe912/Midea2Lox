@@ -173,7 +173,9 @@ async def send_to_midea(data):
                 "supports_display_control": device.supports_display_control,
                 "supports_filter_reminder": device.supports_filter_reminder,
                 "supports_purifier": device.supports_purifier,
-                "supports_humidity": device._supports_humidity,
+                "supports_humidity": device.supports_humidity,
+                "supports_target_humidity": device.supports_target_humidity,    ###
+                "supports_self_clean": device.supports_self_clean,              ###
                 "supports_horizontal_swing_angle" : device.supports_horizontal_swing_angle,
                 "supports_vertical_swing_angle" : device.supports_vertical_swing_angle,
                 "max_target_temperature": device.max_target_temperature,
@@ -249,7 +251,7 @@ async def send_to_midea(data):
                 sleep = ["sleep.True", "sleep.False"]
                 follow = ["follow.True", "follow.False"]
                 purifier = ["purifier.True", "purifier.False"]
-                
+                self_clean = ["self_clean.True", "self_clean.False"]
                 
                 for eachArg in data: #find keys from Loxone to msmart
                     if eachArg in power:
@@ -303,6 +305,9 @@ async def send_to_midea(data):
                     elif eachArg in purifier and device.supports_purifier:
                         device.purifier = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.purifier)
+                    elif eachArg in self_clean and device.supports_self_clean:
+                        device.self_clean_active = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.self_clean_active)
                     else: #unknown key´s
                         if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
                             _LOGGER.error("Given command '{}' is unknown or not supported from the Device".format(eachArg))
