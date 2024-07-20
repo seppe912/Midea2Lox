@@ -460,6 +460,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_disconnect(client, userdata, flags, rc):
     publish = client.publish('Midea2Lox/connection/status','disconnected',qos=2, retain=True)
+    _LOGGER.info("MQTT Disconnected")
     _LOGGER.debug("Publishing: MsgNum:%s: 'Midea2Lox/connection/status','disconnected'" % (publish[1]))
     
 
