@@ -370,7 +370,7 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/target_temperature,%s" % (device.id, device.target_temperature)),                                                            #target_temperature
             ("Midea/%s/operational_mode,operational_mode_enum.%s" % (device.id, device.operational_mode.name.lower())),                             #operational_mode
             ("Midea/%s/fan_speed,fan_speed_enum.%s" % (device.id, device.fan_speed.name.capitalize())),                                             #fan_speed
-            ("Midea/%s/swing_mode,swing_mode_enum.%s" % (device.id, device.swing_mode.name.capitalize())),                                          #swing_mode
+            ("Midea/%s/fan_speed,fan_speed_enum.%s" % (device.id, device.fan_speed.name.capitalize() if type(device.fan_speed) != int else device.fan_speed)),#fan_speed
             ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco_mode))),                                                                           #eco_mode
             ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),                                                                       #turbo_mode
             ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                                            #indoor_temperature
