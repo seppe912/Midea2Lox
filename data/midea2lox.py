@@ -384,7 +384,7 @@ async def send_to_midea(data):
                             _LOGGER.warning("device is not capable of property {}".format(eachArg))
                     else: #unknown key´s
                         if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
-                            _LOGGER.error("Given command '{}' is unknown or not supported from the Device".format(eachArg))
+                            _LOGGER.error("Given command '{}' is unknown".format(eachArg))
                                 
             # Errorhandling
             # Midea AC only supports auto Fanspeed in auto-Operationalmode.
