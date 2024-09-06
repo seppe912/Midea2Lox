@@ -258,7 +258,10 @@ async def send_to_midea(data):
                 purifier = ["purifier.True", "purifier.False"]
                 self_clean = ["self_clean.True", "self_clean.False"]
                 rate_select = ["rate_select.OFF", "rate_select.GEAR_50", "rate_select.GEAR_75", "rate_select.LEVEL_1", "rate_select.LEVEL_2", "rate_select.LEVEL_3", "rate_select.LEVEL_4", "rate_select.LEVEL_5"]
-                BreezeMode = ["BreezeMode.OFF","BreezeMode.BREEZE_AWAY","BreezeMode.BREEZE_MILD","BreezeMode.BREEZELESS"]
+                #BreezeModes = ["BreezeMode.OFF","BreezeMode.BREEZE_AWAY","BreezeMode.BREEZE_MILD","BreezeMode.BREEZELESS"]
+                breeze_away = ["breeze_away.True","breeze_away.False"]
+                breeze_mild = ["breeze_mild.True","breeze_mild.False"]
+                breezeless = ["breezeless.True","breezeless.False"]
                 ieco = ["ieco.True", "ieco.False"]
                 
                 for eachArg in data: #find keys from Loxone to msmart
@@ -268,10 +271,10 @@ async def send_to_midea(data):
                     elif eachArg in tone:
                         device.beep = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device promt Tone '{}'".format(device.beep))
-                    elif eachArg in eco and device.supports_eco:
+                    elif eachArg in eco:
                         device.eco = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device Eco Mode '{}'".format(device.eco))
-                    elif eachArg in turbo and device.supports_turbo:
+                    elif eachArg in turbo:
                         device.turbo = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device Turbo Mode '{}'".format(device.turbo))
                     elif eachArg in operation:
@@ -289,16 +292,16 @@ async def send_to_midea(data):
                     elif len(eachArg) == 2 and eachArg.isdigit():
                         device.target_temperature = int(eachArg)
                         _LOGGER.debug(device.target_temperature)
-                    elif eachArg in display and device.supports_display_control:
+                    elif eachArg in display:
                         device.toggle_display()
                         _LOGGER.debug('toggle_Display')
                     elif eachArg.split(".")[0] == "humidity":
                         device.target_humidity = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.target_humidity)
-                    elif eachArg.split(".")[0] == "h_swing_angle" and device.supports_horizontal_swing_angle:
+                    elif eachArg.split(".")[0] == "h_swing_angle":
                         device.horizontal_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
                         _LOGGER.debug(device.horizontal_swing_angle)
-                    elif eachArg.split(".")[0] == "v_swing_angle" and device.supports_vertical_swing_angle:
+                    elif eachArg.split(".")[0] == "v_swing_angle":
                         device.vertical_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
                         _LOGGER.debug(device.vertical_swing_angle)
                     elif eachArg in freeze and device.supports_freeze_protection:
@@ -313,15 +316,24 @@ async def send_to_midea(data):
                     elif eachArg in purifier and device.supports_purifier:
                         device.purifier = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.purifier)
-                    elif eachArg in self_clean and device.supports_self_clean:
+                    elif eachArg in self_clean:
                         device.self_clean_active = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.self_clean_active)
                     elif eachArg in rate_select: ### ToDo
                         device.rate_select = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.rate_select)
-                    elif eachArg in BreezeMode: ### ToDo
-                        device.BreezeMode = eval(eachArg.split(".")[1])
-                        _LOGGER.debug(device.BreezeMode)
+                    # elif eachArg in BreezeModes: ### ToDo
+                        # device.BreezeMode = eval(eachArg.split(".")[1])
+                        # _LOGGER.debug(device.BreezeMode)
+                    elif eachArg in breeze_away: ### ToDo
+                        device.breeze_away = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.breeze_away)
+                    elif eachArg in breeze_mild: ### ToDo
+                        device.breeze_mild = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.breeze_mild)
+                    elif eachArg in breezeless: ### ToDo
+                        device.breezeless = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.breezeless)
                     elif eachArg in ieco: ### ToDo
                         device.ieco = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.ieco)
@@ -387,7 +399,7 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/target_temperature,%s" % (device.id, device.target_temperature)),                                                            #target_temperature
             ("Midea/%s/operational_mode,operational_mode_enum.%s" % (device.id, device.operational_mode.name.lower())),                             #operational_mode
             ("Midea/%s/fan_speed,fan_speed_enum.%s" % (device.id, device.fan_speed.name.capitalize() if type(device.fan_speed) != int else device.fan_speed)),#fan_speed
-            ("Midea/%s/swing_mode,swing_mode_enum.%s" % (device.id, device.swing_mode.name.capitalize())),                                          #swing_mode
+            ("Midea/%s/swing_mode,swing_mode_enum.%s" % (device.id, device.swing_mode.name.capitalize())),                                               #swing_mode
             ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco))),                                                                                #eco_mode
             ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo))),                                                                            #turbo_mode
             ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                                            #indoor_temperature
