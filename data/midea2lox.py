@@ -167,9 +167,9 @@ async def send_to_midea(data):
                 "supported_swing_modes": [str(swingmode.name) for swingmode in device.supported_swing_modes],
                 "supported_fan_speeds": [str(fanspeed.name) for fanspeed in device.supported_fan_speeds],
                 "supports_custom_fan_speed": device.supports_custom_fan_speed,
-                "supports_eco_mode": device.supports_eco_mode,
-                "supports_turbo_mode": device.supports_turbo_mode,
-                "supports_freeze_protection_mode": device.supports_freeze_protection_mode,
+                "supports_eco_mode": device.supports_eco,
+                "supports_turbo": device.supports_turbo,
+                "supports_freeze_protection": device.supports_freeze_protection,
                 "supports_display_control": device.supports_display_control,
                 "supports_filter_reminder": device.supports_filter_reminder,
                 "supports_purifier": device.supports_purifier,
@@ -179,7 +179,12 @@ async def send_to_midea(data):
                 "supports_horizontal_swing_angle" : device.supports_horizontal_swing_angle,
                 "supports_vertical_swing_angle" : device.supports_vertical_swing_angle,
                 "max_target_temperature": device.max_target_temperature,
-                "min_target_temperature": device.min_target_temperature
+                "min_target_temperature": device.min_target_temperature,
+                "Rate selects": [str(rate.name) for rate in device.supported_rate_selects], ### ToDo
+                "breeze_away": device.supports_breeze_away, ### ToDo
+                "breeze_mild": device.supports_breeze_mild, ### ToDo
+                "breezeless": device.supports_breezeless, ### ToDo
+                "ieco": device.supports_ieco ### ToDo
             }))
 
             device_id_list.append(device.id)
@@ -212,9 +217,9 @@ async def send_to_midea(data):
                     device.target_temperature = int(data[2])
                     device.operational_mode = eval(support_msmart_ng[data[3]])
                     device.fan_speed = eval(support_msmart_ng[data[4]])
-                    device.swing_mode = eval(support_msmart_ng[data[5]])
-                    device.eco_mode = eval(data[6])
-                    device.turbo_mode = eval(data[7])
+                    device.swing = eval(support_msmart_ng[data[5]])
+                    device.eco = eval(data[6])
+                    device.turbo = eval(data[7])
                 else:
                     for eachArg in data:
                         if eachArg not in key and eachArg != data[2] and eachArg != data[8] and eachArg != data[9]:
@@ -252,6 +257,9 @@ async def send_to_midea(data):
                 follow = ["follow.True", "follow.False"]
                 purifier = ["purifier.True", "purifier.False"]
                 self_clean = ["self_clean.True", "self_clean.False"]
+                rate_select = ["rate_select.OFF", "rate_select.GEAR_50", "rate_select.GEAR_75", "rate_select.LEVEL_1", "rate_select.LEVEL_2", "rate_select.LEVEL_3", "rate_select.LEVEL_4", "rate_select.LEVEL_5"]
+                BreezeMode = ["BreezeMode.OFF","BreezeMode.BREEZE_AWAY","BreezeMode.BREEZE_MILD","BreezeMode.BREEZELESS"]
+                ieco = ["ieco.True", "ieco.False"]
                 
                 for eachArg in data: #find keys from Loxone to msmart
                     if eachArg in power:
@@ -260,12 +268,12 @@ async def send_to_midea(data):
                     elif eachArg in tone:
                         device.beep = eval(eachArg.split(".")[1])                
                         _LOGGER.debug("Device promt Tone '{}'".format(device.beep))
-                    elif eachArg in eco and device.supports_eco_mode:
-                        device.eco_mode = eval(eachArg.split(".")[1])                
-                        _LOGGER.debug("Device Eco Mode '{}'".format(device.eco_mode))
-                    elif eachArg in turbo and device.supports_turbo_mode:
-                        device.turbo_mode = eval(eachArg.split(".")[1])                
-                        _LOGGER.debug("Device Turbo Mode '{}'".format(device.turbo_mode))
+                    elif eachArg in eco and device.supports_eco:
+                        device.eco = eval(eachArg.split(".")[1])                
+                        _LOGGER.debug("Device Eco Mode '{}'".format(device.eco))
+                    elif eachArg in turbo and device.supports_turbo:
+                        device.turbo = eval(eachArg.split(".")[1])                
+                        _LOGGER.debug("Device Turbo Mode '{}'".format(device.turbo))
                     elif eachArg in operation:
                         device.operational_mode = eval(support_msmart_ng[eachArg])
                         _LOGGER.debug(device.operational_mode)
@@ -276,8 +284,8 @@ async def send_to_midea(data):
                             device.fan_speed = eval('ac.FanSpeed.' + str(eachArg.split(".")[2].upper()))
                         _LOGGER.debug(device.fan_speed)
                     elif eachArg in swing:
-                        device.swing_mode = eval(support_msmart_ng[eachArg])
-                        _LOGGER.debug(device.swing_mode)
+                        device.swing = eval(support_msmart_ng[eachArg])
+                        _LOGGER.debug(device.swing)
                     elif len(eachArg) == 2 and eachArg.isdigit():
                         device.target_temperature = int(eachArg)
                         _LOGGER.debug(device.target_temperature)
@@ -293,12 +301,12 @@ async def send_to_midea(data):
                     elif eachArg.split(".")[0] == "v_swing_angle" and device.supports_vertical_swing_angle:
                         device.vertical_swing_angle = eval('ac.SwingAngle.' + eachArg.split(".")[1])
                         _LOGGER.debug(device.vertical_swing_angle)
-                    elif eachArg in freeze and device.supports_freeze_protection_mode:
-                        device.freeze_protection_mode = eval(eachArg.split(".")[1])
-                        _LOGGER.debug(device.freeze_protection_mode)
+                    elif eachArg in freeze and device.supports_freeze_protection:
+                        device.freeze_protection = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.freeze_protection)
                     elif eachArg in sleep:
-                        device.sleep_mode = eval(eachArg.split(".")[1])
-                        _LOGGER.debug(device.sleep_mode)
+                        device.sleep = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.sleep)
                     elif eachArg in follow:
                         device.follow_me = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.follow_me)
@@ -308,6 +316,15 @@ async def send_to_midea(data):
                     elif eachArg in self_clean and device.supports_self_clean:
                         device.self_clean_active = eval(eachArg.split(".")[1])
                         _LOGGER.debug(device.self_clean_active)
+                    elif eachArg in rate_select: ### ToDo
+                        device.rate_select = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.rate_select)
+                    elif eachArg in BreezeMode: ### ToDo
+                        device.BreezeMode = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.BreezeMode)
+                    elif eachArg in ieco: ### ToDo
+                        device.ieco = eval(eachArg.split(".")[1])
+                        _LOGGER.debug(device.ieco)
                     else: #unknown key´s
                         if len(eachArg) != 64 and len(eachArg) != 128 and eachArg != device_id and eachArg != device_ip:
                             _LOGGER.error("Given command '{}' is unknown or not supported from the Device".format(eachArg))
@@ -317,7 +334,7 @@ async def send_to_midea(data):
             if (device.operational_mode.name == support_msmart_ng['ac.operational_mode_enum.auto']) and (device.fan_speed.name != support_msmart_ng['ac.fan_speed.auto']):                    
                 device.fan_speed = ac.FanSpeed.AUTO
                 _LOGGER.info("set auto-Fanspeed because of Auto-Operational Mode")
-            if (device.freeze_protection_mode == True) and (device.operational_mode.name != support_msmart_ng['ac.operational_mode_enum.heat']):
+            if (device.freeze_protection == True) and (device.operational_mode.name != support_msmart_ng['ac.operational_mode_enum.heat']):
                 device.operational_mode = ac.OperationalMode.HEAT
                 _LOGGER.info("set Heatmode to get into Freezeprotection Mode")
             
@@ -369,10 +386,10 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/audible_feedback,%s" % (device.id, int(device.beep))),                                                                       #prompt_tone
             ("Midea/%s/target_temperature,%s" % (device.id, device.target_temperature)),                                                            #target_temperature
             ("Midea/%s/operational_mode,operational_mode_enum.%s" % (device.id, device.operational_mode.name.lower())),                             #operational_mode
-            ("Midea/%s/fan_speed,fan_speed_enum.%s" % (device.id, device.fan_speed.name.capitalize())),                                             #fan_speed
             ("Midea/%s/fan_speed,fan_speed_enum.%s" % (device.id, device.fan_speed.name.capitalize() if type(device.fan_speed) != int else device.fan_speed)),#fan_speed
-            ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco_mode))),                                                                           #eco_mode
-            ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo_mode))),                                                                       #turbo_mode
+            ("Midea/%s/swing_mode,swing_mode_enum.%s" % (device.id, device.swing_mode.name.capitalize())),                                          #swing_mode
+            ("Midea/%s/eco_mode,%s" % (device.id, int(device.eco))),                                                                                #eco_mode
+            ("Midea/%s/turbo_mode,%s" % (device.id, int(device.turbo))),                                                                            #turbo_mode
             ("Midea/%s/indoor_temperature,%s" % (device.id, device.indoor_temperature)),                                                            #indoor_temperature
             ("Midea/%s/outdoor_temperature,%s" % (device.id, device.outdoor_temperature)),                                                          #outdoor_temperature
             ("Midea/%s/display_on,%s" % (device.id, int(device.display_on))),                                                                       #display_on
@@ -382,13 +399,17 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/filter_alert,%s" % (device.id, device.filter_alert)),                                                                        #Filter Alert --untestet--
             ("Midea/%s/horizontal_swing_angle,%s" % (device.id, device.horizontal_swing_angle.name)),                                               #Horizontal swing Angle
             ("Midea/%s/vertical_swing_angle,%s" % (device.id, device.vertical_swing_angle.name)),                                                   #Vertical swing Angle
-            ("Midea/%s/freeze_protection_mode,%s" % (device.id, device.freeze_protection_mode)),                                                    #Freeze Protection
-            ("Midea/%s/sleep_mode,%s" % (device.id, device.sleep_mode)),                                                                            #Sleep Mode
+            ("Midea/%s/freeze_protection_mode,%s" % (device.id, device.freeze_protection)),                                                         #Freeze Protection
+            ("Midea/%s/sleep_mode,%s" % (device.id, device.sleep)),                                                                                 #Sleep Mode
             ("Midea/%s/follow_me,%s" % (device.id, device.follow_me)),                                                                              #Follow Me
             ("Midea/%s/purifier,%s" % (device.id, device.purifier)),                                                                                #Purifier
             ("Midea/%s/total_energy_usage,%s" % (device.id, device.total_energy_usage)),                                                            #Total Energy in KWh
             ("Midea/%s/current_energy_usage,%s" % (device.id, device.current_energy_usage)),                                                        #current Energy in KWh
-            ("Midea/%s/real_time_power_usage,%s" % (device.id, device.real_time_power_usage))                                                       #real time Power usage
+            ("Midea/%s/real_time_power_usage,%s" % (device.id, device.real_time_power_usage)),                                                      #real time Power usage
+            ("Midea/%s/self_clean_active,%s" % (device.id, device.self_clean_active)),                                                              #self clean
+            ("Midea/%s/rate_select,%s" % (device.id, device.rate_select)),                                                                          #rate select
+            ("Midea/%s/breeze_mode,%s" % (device.id, device._breeze_mode)),                                                                         #BreezeMode
+            ("Midea/%s/ieco,%s" % (device.id, device.ieco))                                                                                         #ieco
             ]
     except Exception as e:
         _LOGGER.error(e)
