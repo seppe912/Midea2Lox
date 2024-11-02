@@ -248,7 +248,7 @@ async def send_to_midea(data):
                 power = ["power.True", "power.False"]
                 tone = ["tone.True", "tone.False"]
                 operation = ["ac.operational_mode_enum.auto", "ac.operational_mode_enum.cool", "ac.operational_mode_enum.heat", "ac.operational_mode_enum.dry", "ac.operational_mode_enum.fan_only"] 
-                swing = ["ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"]
+                swing_modes = ["ac.swing_mode_enum.Off", "ac.swing_mode_enum.Vertical", "ac.swing_mode_enum.Horizontal", "ac.swing_mode_enum.Both"]
                 eco = ["eco.True", "eco.False"]
                 turbo = ["turbo.True", "turbo.False"]
                 display = ["toggle_Display"]
@@ -295,8 +295,8 @@ async def send_to_midea(data):
                         else:
                             device.fan_speed = eval('ac.FanSpeed.' + str(eachArg.split(".")[2].upper()))
                         _LOGGER.debug(device.fan_speed)
-                    elif eachArg in swing:
-                        device.swing = eval(support_msmart_ng[eachArg])
+                    elif eachArg in swing_modes:
+                        device.swing_mode = eval(support_msmart_ng[eachArg])
                         _LOGGER.debug(device.swing)
                     elif len(eachArg) == 2 and eachArg.isdigit():
                         device.target_temperature = int(eachArg)
