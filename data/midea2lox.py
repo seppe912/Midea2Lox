@@ -12,7 +12,7 @@ home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 # TCP Socket
 async def start_server():
     script_runtime = datetime.now()
-    _LOGGER.info("Midea2Lox Version: {} msmart Version: {}".format(Midea2Lox_Version, __version__))
+    _LOGGER.info("Midea2Lox Version: {} msmart Version: {} Python Version: {}.{}.{}".format(Midea2Lox_Version, __version__, sys.version_info.major, sys.version_info.minor, sys.version_info.micro))
     import socket
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
