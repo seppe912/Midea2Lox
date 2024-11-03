@@ -60,7 +60,7 @@ async def discovery():
             cfg_devices.read(cfg_path + '/devices.cfg')
             if cfg_devices.has_section('Midea_' + str(device.id)) == False:
                 cfg_devices.add_section('Midea_' + str(device.id)) 
-            cfg_devices.set('Midea_' + str(device.id),"type", device.type)
+            cfg_devices.set('Midea_' + str(device.id),"type", device.type.name)
             #cfg_devices.set('Midea_' + device.id,"version", str(device['version']))
             cfg_devices.set('Midea_' + str(device.id),"supported", device.supported)
             cfg_devices.set('Midea_' + str(device.id),"id", device.id)
