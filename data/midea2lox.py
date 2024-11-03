@@ -163,9 +163,9 @@ async def send_to_midea(data):
             
             _LOGGER.info("%s", str({
                 "device-id": device.id,
-                "supported_modes": [str(mode.name) for mode in device.supported_operation_modes],
-                "supported_swing_modes": [str(swingmode.name) for swingmode in device.supported_swing_modes],
-                "supported_fan_speeds": [str(fanspeed.name) for fanspeed in device.supported_fan_speeds],
+                "supported_modes": [str(mode.name.lower()) for mode in device.supported_operation_modes],
+                "supported_swing_modes": [str(swingmode.name.capitalize()) for swingmode in device.supported_swing_modes],
+                "supported_fan_speeds": [str(fanspeed.name.capitalize()) for fanspeed in device.supported_fan_speeds],
                 "max_target_temperature": device.max_target_temperature,
                 "min_target_temperature": device.min_target_temperature,
                 "supports_custom_fan_speed": device.supports_custom_fan_speed,
