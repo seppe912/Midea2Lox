@@ -30,6 +30,7 @@ our $select_debug;
 our $MideaUser;
 our $MideaPassword;
 our $maxConnectionLifetime;
+our $select_region;
 our $LoxberryIP  = LoxBerry::System::get_localip();
 our $do;
 our $midea2loxstatus;
@@ -66,6 +67,8 @@ if ( !$query{'debug'} ) { if ( param('debug') ) { $debug = quotemeta(param('debu
 if ( !$query{'MideaPassword'} ) { if ( param('MideaPassword')  ) { $MideaPassword = quotemeta(param('MideaPassword')); } else { $MideaPassword = $MideaPassword;  } } else { $MideaPassword = quotemeta($query{'MideaPassword'}); }
 if ( !$query{'MideaUser'} ) { if ( param('MideaUser')  ) { $MideaUser = quotemeta(param('MideaUser')); } else { $MideaUser = $MideaUser;  } } else { $MideaUser = quotemeta($query{'MideaUser'}); }
 if ( !$query{'maxConnectionLifetime'} ) { if ( param('maxConnectionLifetime') ) { $maxConnectionLifetime = quotemeta(param('maxConnectionLifetime')); } else { $maxConnectionLifetime = "90"; } } else { $maxConnectionLifetime = quotemeta($query{'maxConnectionLifetime'}); }
+if ( !$query{'region'} ) { if ( param('region') ) { $region = quotemeta(param('region')); } else { $region = $region;  } } else { $region = quotemeta($query{'region'}); }
+
 
 # Figure out in which subfolder we are installed
 $psubfolder = abs_path($0);
@@ -82,6 +85,7 @@ if (param('savedata')) {
     $conf->param('MideaUser', unquotemeta($MideaUser));	
 	$conf->param('MideaPassword', unquotemeta($MideaPassword));
     $conf->param('maxConnectionLifetime', unquotemeta($maxConnectionLifetime));
+	$conf->param('region', unquotemeta($region));
     
 	$conf->save();
 	system ("$installfolder/system/daemons/plugins/$psubfolder restart");
@@ -95,6 +99,7 @@ if (param('saveanddiscover')) {
     $conf->param('MideaUser', unquotemeta($MideaUser));	
     $conf->param('MideaPassword', unquotemeta($MideaPassword));
     $conf->param('maxConnectionLifetime', unquotemeta($maxConnectionLifetime));
+	$conf->param('region', unquotemeta($region));
     
     $conf->save();
 
@@ -111,6 +116,7 @@ $debug = encode_entities($conf->param('DEBUG'));
 $MideaPassword = encode_entities($conf->param('MideaPassword'));
 $MideaUser = encode_entities($conf->param('MideaUser'));
 $maxConnectionLifetime = encode_entities($conf->param('maxConnectionLifetime'));
+$region = encode_entities($conf->param('region'));
 
 # Set Enabled / Disabled switch
 #
@@ -133,6 +139,19 @@ for (my $i = 1; $i <= $cfg->param('BASE.MINISERVERS');$i++) {
 	}
 }
 
+# ---------------------------------------
+# Fill Country selection dropdown
+# ---------------------------------------
+my @countries = ('DE', 'KR', 'US');  # Liste der Länder
+my $current_region = $conf->param('default.region');  # Aktueller Wert aus der Konfiguration
+
+foreach my $region (@countries) {
+    if ($region eq $current_region) {
+        $select_region .= '<option selected value="'.$region.'">'.$region."</option>\n";
+    } else {
+        $select_region .= '<option value="'.$region.'">'.$region."</option>\n";
+    }
+}
 
 # ---------------------------------------
 # Start Stop Service
