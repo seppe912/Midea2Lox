@@ -6,11 +6,6 @@ import configparser
 import asyncio
 from msmart.discover import Discover
 
-###WORKAROUND OF CLOUD REGION BLOCK FOR EU
-Discover._account = "midea_eu@mailinator.com"
-Discover._password = "das_ist_passwort1"
-###WORKAROUND OF CLOUD REGION BLOCK FOR EU
-
 #set path
 cfg_path = 'REPLACELBPCONFIGDIR' #### REPLACE LBPCONFIGDIR ####
 log_path = 'REPLACELBPLOGDIR' #### REPLACE LBPLOGDIR ####
