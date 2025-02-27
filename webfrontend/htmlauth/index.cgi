@@ -15,6 +15,7 @@ my  $lang;
 my  $installfolder;
 my  $cfg;
 my  $conf;
+my  $region;
 our $psubfolder;
 our $template_title;
 our $namef;
