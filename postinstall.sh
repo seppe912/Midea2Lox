@@ -50,7 +50,6 @@ ARGV5=$5 # Fifth argument is Base folder of LoxBerry
 
 chmod +x $PDATA/midea2lox.py
 chmod +x $PDATA/discover.py
-chmod +x $PCGI/countries.py
 
 # Set minimum required versions
 PYTHON_MINIMUM_MAJOR=3
