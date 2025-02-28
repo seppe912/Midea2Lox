@@ -15,7 +15,7 @@ my  $lang;
 my  $installfolder;
 my  $cfg;
 my  $conf;
-my  $region;
+our  $region;
 our $psubfolder;
 our $template_title;
 our $namef;
@@ -143,7 +143,37 @@ for (my $i = 1; $i <= $cfg->param('BASE.MINISERVERS');$i++) {
 # ---------------------------------------
 # Fill Country selection dropdown
 # ---------------------------------------
-my @countries = ('DE', 'KR', 'US');  # Liste der Länder
+# ------------------------------------
+# 1. Python-Skript aufrufen
+# ------------------------------------
+my $venv_python = "$lbpbindir/venv/bin/python3";  # Absoluter Pfad zur venv
+my $script_path = "./countries.py";
+my $config_value = $conf->param('default.region') || 'DE';
+
+# Argumente sicher escapen
+my @args = ($config_value);
+@args = map { CGI::escape($_) } @args;
+
+# Python-Skript ausführen
+my $output;
+eval {
+    local $SIG{ALRM} = sub { die "Timeout" };
+    alarm 5;  # Timeout nach 5 Sekunden
+    open(my $py_fh, "-|", $venv_python, $script_path, @args) or die $!;
+    $output = do { local $/; <$py_fh> };
+    close $py_fh;
+    alarm 0;
+};
+
+if ($@) {
+    print "Fehler: $@";
+    exit;
+}
+
+# ------------------------------------
+# 2. Dropdown aus Python-Ausgabe generieren
+# ------------------------------------
+my @countries = split(/\n/, $output);
 my $current_region = $conf->param('default.region');  # Aktueller Wert aus der Konfiguration
 
 foreach my $region (@countries) {
