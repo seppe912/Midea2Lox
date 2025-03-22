@@ -14,7 +14,6 @@ home_path = 'REPLACELBHOMEDIR' #### REPLACE LBHOMEDIR ####
 cfg = configparser.RawConfigParser()
 cfg.read(cfg_path + '/midea2lox.cfg')
 DEBUG = cfg.get('default','DEBUG')
-region = cfg.get('default','region')
 
 ## Logging
 _LOGGER = logging.getLogger("discover.py")
@@ -47,9 +46,7 @@ async def discovery():
         "Sending Device Scan Broadcast...")
     
     try:
-        print(region)
-        _LOGGER.info(f"Cloudregion = {region}")
-        discovered_devices = await Discover.discover(region=region)
+        discovered_devices = await Discover.discover()
         for device in discovered_devices:
             _LOGGER.info("*** Found a device: \033[94m\033[1m{} \033[0m".format(device))
             print("*** Found a device: {} ".format(device))
