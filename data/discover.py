@@ -82,6 +82,7 @@ async def discovery():
                 cfg_devices.set('Midea_' + str(device.id),"supports breeze_mild", device.supports_breeze_mild)
                 cfg_devices.set('Midea_' + str(device.id),"supports breezeless", device.supports_breezeless)
                 cfg_devices.set('Midea_' + str(device.id),"supports ieco", device.supports_ieco)
+                cfg_devices.set('Midea_' + str(device.id),"supports self clean", device.supports_self_clean)
             
             if device.token is None and cfg_devices.get('Midea_' + str(device.id),"token"): ### keep last known Key/Token pair if cloud connection gets an error.
                 pass
