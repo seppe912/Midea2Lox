@@ -256,7 +256,7 @@ async def send_to_midea(data):
                 sleep = ["sleep.True", "sleep.False"]
                 follow = ["follow.True", "follow.False"]
                 purifier = ["purifier.True", "purifier.False"]
-                self_clean = ["self_clean.True", "self_clean.False"]
+                self_clean = ["toggle_self_clean"]
                 rate_select = ["rate_select.OFF", "rate_select.GEAR_50", "rate_select.GEAR_75", "rate_select.LEVEL_1", "rate_select.LEVEL_2", "rate_select.LEVEL_3", "rate_select.LEVEL_4", "rate_select.LEVEL_5"]
                 #BreezeModes = ["BreezeMode.OFF","BreezeMode.BREEZE_AWAY","BreezeMode.BREEZE_MILD","BreezeMode.BREEZELESS"]
                 breeze_away = ["breeze_away.True","breeze_away.False"]
@@ -345,8 +345,8 @@ async def send_to_midea(data):
                             _LOGGER.warning("device is not capable of property {}".format(eachArg))
                     elif eachArg in self_clean:
                         if device.supports_self_clean:
-                            device.self_clean_active = eval(eachArg.split(".")[1])
-                            _LOGGER.debug(device.self_clean_active)
+                            device.start_self_clean()
+                            _LOGGER.info("start self_clean")
                         else:
                             _LOGGER.warning("device is not capable of property {}".format(eachArg))
                     elif eachArg in rate_select: ### ToDo
