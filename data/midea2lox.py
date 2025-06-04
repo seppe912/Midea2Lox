@@ -346,7 +346,7 @@ async def send_to_midea(data):
                     elif eachArg in self_clean:
                         if device.supports_self_clean:
                             device.start_self_clean()
-                            _LOGGER.info("start self_clean")
+                            _LOGGER.debug("start self_clean")
                         else:
                             _LOGGER.warning("device is not capable of property {}".format(eachArg))
                     elif eachArg in rate_select: ### ToDo
