@@ -184,7 +184,8 @@ async def send_to_midea(data):
                 "supports_breeze_away": device.supports_breeze_away, ### ToDo
                 "supports_breeze_mild": device.supports_breeze_mild, ### ToDo
                 "supports_breezeless": device.supports_breezeless, ### ToDo
-                "supports_ieco": device.supports_ieco ### ToDo
+                "supports_ieco": device.supports_ieco, ### ToDo
+                "supports self clean": device.supports_self_clean
             }))
 
             device_id_list.append(device.id)
