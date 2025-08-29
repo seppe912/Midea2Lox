@@ -100,7 +100,7 @@ pip3 install --upgrade pip setuptools wheel
 pip3 install requests --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install "paho-mqtt<2.0.0" --extra-index-url https://www.piwheels.org/simple --prefer-binary
 pip3 install ifaddr --extra-index-url https://www.piwheels.org/simple --prefer-binary
-pip3 install msmart-ng==2025.5.1 --extra-index-url https://www.piwheels.org/simple --prefer-binary
+pip3 install msmart-ng==2025.9.0 --extra-index-url https://www.piwheels.org/simple --prefer-binary
 
 deactivate
 
