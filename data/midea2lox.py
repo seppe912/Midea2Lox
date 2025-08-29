@@ -533,9 +533,9 @@ async def send_to_loxone(device, support_mode):
             ("Midea/%s/sleep_mode,%s" % (device.id, device.sleep)),                                                                                 #Sleep Mode
             ("Midea/%s/follow_me,%s" % (device.id, device.follow_me)),                                                                              #Follow Me
             ("Midea/%s/purifier,%s" % (device.id, device.purifier)),                                                                                #Purifier
-            ("Midea/%s/total_energy_usage,%s" % (device.id, device.total_energy_usage)),                                                            #Total Energy in KWh
-            ("Midea/%s/current_energy_usage,%s" % (device.id, device.current_energy_usage)),                                                        #current Energy in KWh
-            ("Midea/%s/real_time_power_usage,%s" % (device.id, device.real_time_power_usage)),                                                      #real time Power usage
+            ("Midea/%s/total_energy_usage,%s" % (device.id, device.get_total_energy_usage())),                                                      #Total Energy in KWh
+            ("Midea/%s/current_energy_usage,%s" % (device.id, device.get_current_energy_usage())),                                                  #current Energy in KWh
+            ("Midea/%s/real_time_power_usage,%s" % (device.id, device.get_real_time_power_usage())),                                                #real time Power usage
             ("Midea/%s/self_clean_active,%s" % (device.id, device.self_clean_active)),                                                              #self clean
             ("Midea/%s/rate_select,%s" % (device.id, device.rate_select)),                                                                          #rate select
             ("Midea/%s/breeze_mode,%s" % (device.id, device._breeze_mode)),                                                                         #BreezeMode
